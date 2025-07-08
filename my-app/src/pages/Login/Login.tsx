@@ -17,6 +17,7 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Call API theo format trong ảnh
       const response = await fetch('/api/accounts/login', {
         method: 'POST',
         headers: {
@@ -34,6 +35,7 @@ const Login: React.FC = () => {
 
       const data = await response.json();
       
+      // Gọi login từ context với data nhận được
       await login(data);
       navigate('/');
     } catch (err) {
@@ -50,8 +52,15 @@ const Login: React.FC = () => {
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh',
+      width: '100vw',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      margin: 0,
+      padding: 0,
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 1000
     }}>
       {/* Medical background pattern */}
       <div style={{
@@ -329,6 +338,25 @@ const Login: React.FC = () => {
       
       <style>
         {`
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+          }
+          
+          #root {
+            height: 100vh;
+            width: 100vw;
+          }
+          
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
