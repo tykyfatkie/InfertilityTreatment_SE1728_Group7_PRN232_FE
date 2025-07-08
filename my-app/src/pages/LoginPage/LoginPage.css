@@ -42,6 +42,14 @@
 }
 
 /*=============== BASE ===============*/
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -80,6 +88,7 @@ img {
 .container {
   max-width: 1120px;
   margin-inline: 1.5rem;
+  width: 100%;
 }
 
 .grid {
@@ -90,9 +99,14 @@ img {
 /*=============== LOGIN  ===============*/
 .login {
   position: relative;
-  height: 100vh;
-  margin: -25px;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -104,7 +118,8 @@ img {
   font-size: var(--big-font-size);
   color: var(--title-color);
   text-align: center;
-  width: 1490px;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 2rem;
 }
 
@@ -240,7 +255,6 @@ img {
 
 .login__access, 
 .login__register {
-
   left: 0;
   right: 0;
   width: 100%;
@@ -296,11 +310,70 @@ img {
   pointer-events: initial;
 }
 
+.login__access {
+  max-width: 400px;
+  margin: auto;
+}
+
+.login__bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.login__background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 100%;
+  mask-image: url("src/assets/img/mask-blob.svg");
+  mask-size: cover;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("src/assets/img/mask-blob.svg");
+  -webkit-mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.login__return-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #007bff;
+  font-weight: bold;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.login__return-button:hover {
+  text-decoration: underline;
+  color: #0056b3;
+  transform: scale(1.05);
+}
+
+.login__return-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
 /*=============== BREAKPOINTS ===============*/
 /* For small devices */
 @media screen and (max-width: 320px) {
   .container {
     margin-inline: 1rem;
+  }
+  
+  .login {
+    grid-template-columns: 1fr;
+    padding: 1rem;
   }
 }
 
@@ -312,9 +385,24 @@ img {
   }
 }
 
+@media screen and (max-width: 768px) {
+  .login {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+  
+  .login__background {
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    right: 0;
+    top: auto;
+  }
+}
+
 @media screen and (min-width: 350px) and (max-height: 600px) {
   .login {
-    height: 760px;
+    min-height: 760px;
   }
 }
 
@@ -328,20 +416,25 @@ img {
     width: 460px;
     margin: initial;
   }
+  
   .login__access, 
   .login__register {
     width: 600px;
   }
+  
   .login__title {
     text-align: initial;
     margin-bottom: 3rem;
   }
+  
   .login__button {
     margin-bottom: 3rem;
   }
+  
   .login__group {
     grid-template-columns: repeat(2, 1fr);
   }
+  
   .login__blob {
     display: block;
     height: 100vh;
@@ -349,78 +442,8 @@ img {
     top: 0;
     right: 0;
   }
+  
   .login__img {
     transform: translate(0rem, 0rem);
   }
-}
-
-.login {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 100vh;
-    align-items: center;
-    padding: 2rem;
-    position: relative;
-  }
-  
-  .login__access {
-    max-width: 400px;
-    margin: auto;
-  }
-  
-
-  .login__bg {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-
-
-  .login__background {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 40%;
-    height: 100%;
-    mask-image: url("src/assets/img/mask-blob.svg");
-    mask-size: cover;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    -webkit-mask-image: url("src/assets/img/mask-blob.svg");
-    -webkit-mask-size: cover;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-  }
-  
-  .login {
-    position: relative; /* Để có thể sử dụng absolute cho các phần tử con */
-}
-
-.login__return-button {
-    position: absolute; /* Định vị tuyệt đối */
-    top: 20px; /* Khoảng cách từ trên */
-    left: 20px; /* Khoảng cách từ trái */
-    background-color: transparent; /* Nền trong suốt */
-    border: none; /* Không viền */
-    cursor: pointer; /* Con trỏ khi rê chuột */
-    font-size: 16px; /* Kích thước chữ */
-    color: #007bff; /* Màu chữ */
-    font-weight: bold; /* Chữ đậm */
-    transition: color 0.3s, transform 0.3s; /* Hiệu ứng chuyển tiếp */
-}
-
-.login__return-button:hover {
-    text-decoration: underline; /* Gạch chân khi hover */
-    color: #0056b3; /* Màu chữ khi hover */
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
-}
-
-/* Thêm một chút không gian cho nút */
-.login__return-button:focus {
-    outline: none; /* Xóa viền khi nút được chọn */
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); /* Hiệu ứng bóng khi chọn */
 }
