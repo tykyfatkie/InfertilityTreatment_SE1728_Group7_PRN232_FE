@@ -64,7 +64,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/auth/verify-token`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/verify-token`, {
         params: { token: oauthState }
       });
       
@@ -87,7 +87,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_ENDPOINT}/auth/login`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/accounts/login`, {
         email,
         password,
       });
