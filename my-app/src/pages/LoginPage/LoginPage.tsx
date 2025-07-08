@@ -107,21 +107,11 @@ const LoginPage: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleGoogleLogin = () => {
-    const state = Math.random().toString(36).substring(2);
-    localStorage.setItem('oauth_state', state);
-    
-    const redirectUri = `${window.location.origin}/login`;
-    const googleLoginUrl = `${import.meta.env.VITE_API_ENDPOINT}/auth/google/login?redirect=${encodeURIComponent(redirectUri)}&state=${state}`;
-    
-    window.location.href = googleLoginUrl;
-  };
-
   return (
     <div className="login" style={{ backgroundColor: "#ffffff" }}>
       <button onClick={() => navigate("/")} className="login__return-button">{"< Return"}</button>
       <div className="login__access">
-        <h1 className="login__title">Log in to your account.</h1>
+        <h1 className="login__title">Welcome!</h1>
         <div className="login__area">
           {loading ? (
             <Spin />
@@ -168,15 +158,6 @@ const LoginPage: React.FC = () => {
             </form>
           )}
 
-          <div className="login__social">
-            <p className="login__social-title">Or login with</p>
-            <div className="login__social-links">
-              <a onClick={handleGoogleLogin} className="login__social-link" style={{ cursor: "pointer" }}>
-                <img src="src/assets/img/icon-google.svg" alt="Google" className="login__social-img" />
-              </a>
-            </div>
-          </div>
-
           <p className="login__switch">
             Don't have an account? <button id="loginButtonRegister" onClick={() => navigate("/register")}>Create Account</button>
           </p>
@@ -184,7 +165,7 @@ const LoginPage: React.FC = () => {
       </div>
 
       <div className="login__background">
-        <img src="src/assets/img/child1.jpg" alt="Background" className="login__bg" style={{ display: "block" }} />
+        <img src="src/assets/img/bg-img.jpg" alt="Background" className="login__bg" style={{ display: "block" }} />
       </div>
     </div>
   );

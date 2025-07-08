@@ -9,9 +9,9 @@
   --first-color-alt: hsl(208, 88%, 50%);
   --title-color: hsl(220, 68%, 4%);
   --white-color: hsl(0, 0%, 100%);
-  --text-color: hsl(220, 15%, 66%);
+  --text-color: hsl(222, 5%, 37%);
   --body-color: hsl(0, 0%, 100%);
-  --container-color: hsl(220, 50%, 97%);
+  --container-color: hsl(228, 17%, 94%);
 
   /*========== Font and typography ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/
@@ -121,6 +121,7 @@ img {
   width: 100%;
   max-width: 100%;
   margin-bottom: 2rem;
+  color: #007bff;
 }
 
 .login__box {
@@ -225,16 +226,6 @@ img {
   column-gap: 1.5rem;
 }
 
-.login__social-link {
-  width: 32px;
-  height: 32px;
-  background-color: var(--body-color);
-  box-shadow: 0 4px 8px hsla(0, 0%, 0%, .1);
-  border-radius: .5rem;
-  display: grid;
-  place-items: center;
-  transition: transform .4s;
-}
 
 .login__social-link:hover {
   transform: translateY(-.25rem);
