@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
-import { DecodedToken, User } from '../types/auth';
+import type { DecodedToken, User } from '../types/auth';
 
 // Lưu token vào localStorage
 export const setToken = (token: string): void => {

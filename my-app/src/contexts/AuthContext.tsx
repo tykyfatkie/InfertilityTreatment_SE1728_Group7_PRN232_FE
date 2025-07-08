@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, LoginCredentials, User } from '../types/auth';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { AuthContextType, LoginCredentials, User } from '../types/auth';
 import { 
   setToken, 
   getToken, 
