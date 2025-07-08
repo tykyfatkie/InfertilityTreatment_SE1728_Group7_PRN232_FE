@@ -1,368 +1,191 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext'; 
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import "./Login.css";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Spin, message } from "antd";
+import { jwtDecode } from "jwt-decode"; 
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+  const handleSuccessfulLogin = (token: string, userId: string) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", userId);
 
     try {
-      // Call API theo format trong ảnh
-      const response = await fetch('/api/accounts/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json();
+      const userData: any = jwtDecode(token);
+      const userRole = userData.role;
       
-      // Gọi login từ context với data nhận được
-      await login(data);
-      navigate('/');
-    } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.');
-      console.error('Login error:', err);
-    } finally {
-      setIsLoading(false);
+      localStorage.setItem("role", userRole);
+
+      if (userRole === "Admin") {
+        navigate("/my-admin/users");
+      } else if (userRole === "Doctor") {
+        navigate("/my-doctor/consultation-response");
+      } else {
+        navigate("/home"); 
+      }
+    } catch (error) {
+      let errorMessage = "Error processing login information.";
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+   
+      message.error(errorMessage);
     }
   };
 
-  return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      width: '100vw',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-      margin: 0,
-      padding: 0,
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      zIndex: 1000
-    }}>
-      {/* Medical background pattern */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        zIndex: -1
-      }} />
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const token = query.get('token');
+    const userId = query.get('userId');
+    
+    if (!token && !userId) {
+      const oauthState = localStorage.getItem('oauth_state');
       
-      <div style={{
-        backgroundColor: 'white',
-        padding: '3rem 2.5rem',
-        borderRadius: '20px',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-        width: '100%',
-        maxWidth: '420px',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Medical cross decoration */}
-        <div style={{
-          position: 'absolute',
-          top: '-20px',
-          right: '-20px',
-          width: '80px',
-          height: '80px',
-          background: 'linear-gradient(45deg, #4CAF50, #45a049)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: 0.1
-        }}>
-          <div style={{
-            width: '40px',
-            height: '8px',
-            backgroundColor: 'white',
-            borderRadius: '4px',
-            position: 'relative'
-          }}>
-            <div style={{
-              width: '8px',
-              height: '40px',
-              backgroundColor: 'white',
-              borderRadius: '4px',
-              position: 'absolute',
-              top: '-16px',
-              left: '16px'
-            }} />
-          </div>
-        </div>
+      if (oauthState) {
+        verifyOAuthToken(oauthState);
+      }
+    } else if (token && userId) {
+      handleSuccessfulLogin(token, userId);
+    }
+  }, [location, navigate]);
 
-        {/* Hospital Logo/Icon */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '2rem'
-        }}>
-          <div style={{
-            width: '80px',
-            height: '80px',
-            background: 'linear-gradient(135deg, #4CAF50, #45a049)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 1rem',
-            boxShadow: '0 10px 30px rgba(76, 175, 80, 0.3)'
-          }}>
-            <div style={{
-              width: '35px',
-              height: '7px',
-              backgroundColor: 'white',
-              borderRadius: '3px',
-              position: 'relative'
-            }}>
-              <div style={{
-                width: '7px',
-                height: '35px',
-                backgroundColor: 'white',
-                borderRadius: '3px',
-                position: 'absolute',
-                top: '-14px',
-                left: '14px'
-              }} />
+  const verifyOAuthToken = async (oauthState: string) => {
+    setLoading(true);
+    
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/auth/verify-token`, {
+        params: { token: oauthState }
+      });
+      
+      if (response.status === 200) {
+        const { accessToken, userId } = response.data.data || response.data;
+        localStorage.removeItem('oauth_state');
+        handleSuccessfulLogin(accessToken, userId);
+      }
+    } catch (error: any) {
+      console.error("OAuth verification failed:", error);
+      message.error(error.response?.data?.message || "OAuth verification failed. Please try again.");
+      localStorage.removeItem('oauth_state');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_ENDPOINT}/auth/login`, {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        const { accessToken, userId } = response.data.data;
+        handleSuccessfulLogin(accessToken, userId);
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.message || "Login failed. Please check your credentials and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleGoogleLogin = () => {
+    const state = Math.random().toString(36).substring(2);
+    localStorage.setItem('oauth_state', state);
+    
+    const redirectUri = `${window.location.origin}/login`;
+    const googleLoginUrl = `${import.meta.env.VITE_API_ENDPOINT}/auth/google/login?redirect=${encodeURIComponent(redirectUri)}&state=${state}`;
+    
+    window.location.href = googleLoginUrl;
+  };
+
+  return (
+    <div className="login" style={{ backgroundColor: "#ffffff" }}>
+      <button onClick={() => navigate("/")} className="login__return-button">{"< Return"}</button>
+      <div className="login__access">
+        <h1 className="login__title">Log in to your account.</h1>
+        <div className="login__area">
+          {loading ? (
+            <Spin />
+          ) : (
+            <form className="login__form" onSubmit={handleLogin} autoComplete="off">
+              <div className="login__content grid">
+                <div className="login__box">
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    placeholder=" "
+                    className="login__input"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="new-email"
+                  />
+                  <label htmlFor="email" className="login__label">Email</label>
+                  <i className="ri-mail-fill login__icon"></i>
+                </div>
+
+                <div className="login__box">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    required
+                    placeholder=" "
+                    className="login__input"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                  <label htmlFor="password" className="login__label">Password</label>
+                  <i 
+                    className={showPassword ? "ri-eye-fill login__icon login__password" : "ri-eye-off-fill login__icon login__password"} 
+                    onClick={togglePasswordVisibility}
+                    style={{ cursor: "pointer" }}
+                  ></i>
+                </div>
+              </div>
+
+              <a href="/forgot-password" className="login__forgot">Forgot your password?</a>
+              <button type="submit" className="login__button">Login</button>
+            </form>
+          )}
+
+          <div className="login__social">
+            <p className="login__social-title">Or login with</p>
+            <div className="login__social-links">
+              <a onClick={handleGoogleLogin} className="login__social-link" style={{ cursor: "pointer" }}>
+                <img src="src/assets/img/icon-google.svg" alt="Google" className="login__social-img" />
+              </a>
             </div>
           </div>
-          <h2 style={{ 
-            textAlign: 'center', 
-            marginBottom: '0.5rem',
-            color: '#2c3e50',
-            fontSize: '2rem',
-            fontWeight: '700'
-          }}>
-            Hệ thống Bệnh viện
-          </h2>
-          <p style={{
-            color: '#7f8c8d',
-            fontSize: '0.9rem',
-            margin: 0
-          }}>
-            Đăng nhập vào hệ thống quản lý
+
+          <p className="login__switch">
+            Don't have an account? <button id="loginButtonRegister" onClick={() => navigate("/register")}>Create Account</button>
           </p>
         </div>
-        
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '0.5rem',
-              color: '#2c3e50',
-              fontWeight: '600',
-              fontSize: '0.9rem'
-            }}>
-              👤 Tên đăng nhập
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="Nhập tên đăng nhập"
-              style={{
-                width: '100%',
-                padding: '1rem',
-                border: '2px solid #e1e8ed',
-                borderRadius: '12px',
-                fontSize: '1rem',
-                transition: 'all 0.3s ease',
-                backgroundColor: '#f8f9fa',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#4CAF50';
-                e.target.style.backgroundColor = 'white';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 5px 15px rgba(76, 175, 80, 0.2)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#e1e8ed';
-                e.target.style.backgroundColor = '#f8f9fa';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-          </div>
-          
-          <div style={{ marginBottom: '2rem' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '0.5rem',
-              color: '#2c3e50',
-              fontWeight: '600',
-              fontSize: '0.9rem'
-            }}>
-              🔒 Mật khẩu
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Nhập mật khẩu"
-              style={{
-                width: '100%',
-                padding: '1rem',
-                border: '2px solid #e1e8ed',
-                borderRadius: '12px',
-                fontSize: '1rem',
-                transition: 'all 0.3s ease',
-                backgroundColor: '#f8f9fa',
-                outline: 'none',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#4CAF50';
-                e.target.style.backgroundColor = 'white';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 5px 15px rgba(76, 175, 80, 0.2)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#e1e8ed';
-                e.target.style.backgroundColor = '#f8f9fa';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-          </div>
-          
-          {error && (
-            <div style={{ 
-              color: '#e74c3c', 
-              marginBottom: '1.5rem',
-              textAlign: 'center',
-              backgroundColor: '#fdf2f2',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              border: '1px solid #fecaca',
-              fontSize: '0.9rem'
-            }}>
-              ⚠️ {error}
-            </div>
-          )}
-          
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '1rem',
-              background: isLoading 
-                ? 'linear-gradient(135deg, #95a5a6, #7f8c8d)' 
-                : 'linear-gradient(135deg, #4CAF50, #45a049)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: isLoading 
-                ? 'none' 
-                : '0 10px 30px rgba(76, 175, 80, 0.3)',
-              transform: isLoading ? 'none' : 'translateY(0)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                const target = e.target as HTMLElement;
-                target.style.transform = 'translateY(-2px)';
-                target.style.boxShadow = '0 15px 35px rgba(76, 175, 80, 0.4)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading) {
-                const target = e.target as HTMLElement;
-                target.style.transform = 'translateY(0)';
-                target.style.boxShadow = '0 10px 30px rgba(76, 175, 80, 0.3)';
-              }
-            }}
-          >
-            {isLoading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  border: '2px solid #ffffff',
-                  borderTop: '2px solid transparent',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                  marginRight: '0.5rem'
-                }} />
-                Đang đăng nhập...
-              </span>
-            ) : (
-              '🏥 Đăng nhập hệ thống'
-            )}
-          </button>
-        </form>
-        
-        <div style={{
-          textAlign: 'center',
-          marginTop: '2rem',
-          color: '#7f8c8d',
-          fontSize: '0.8rem'
-        }}>
-          <p>© 2024 Hệ thống Quản lý Bệnh viện</p>
-          <p>Bảo mật thông tin - An toàn dữ liệu</p>
-        </div>
       </div>
-      
-      <style>
-        {`
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-          
-          html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-          }
-          
-          #root {
-            height: 100vh;
-            width: 100vw;
-          }
-          
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
+
+      <div className="login__background">
+        <img src="src/assets/img/child1.jpg" alt="Background" className="login__bg" style={{ display: "block" }} />
+      </div>
     </div>
   );
 };
