@@ -4,8 +4,12 @@ import { useAuth } from '../../contexts/AuthContext';
 const Homepage: React.FC = () => {
   const { user, logout, token } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import {
   getUserFromToken, 
   isAuthenticated as checkAuth 
 } from '../utils/auth';
+import { authAPI } from '../services/api'; 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -45,20 +46,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
     try {
-      // Giả lập API call - thay bằng API thực tế
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json();
+      const data = await authAPI.login(credentials);
       const { token: newToken } = data;
 
       // Lưu token và decode user info
@@ -72,10 +60,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = (): void => {
-    removeToken();
-    setTokenState(null);
-    setUser(null);
+  const logout = async (): Promise<void> => {
+    try {
+      // Gọi API logout (optional)
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Luôn luôn clear local state
+      removeToken();
+      setTokenState(null);
+      setUser(null);
+    }
   };
 
   const value: AuthContextType = {
