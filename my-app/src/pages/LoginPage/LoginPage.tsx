@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./Login.css";
+import "./LoginPage.css";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Spin, message } from "antd";
 import { jwtDecode } from "jwt-decode"; 
 
-const Login: React.FC = () => {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -190,4 +190,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
