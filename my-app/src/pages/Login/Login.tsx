@@ -34,7 +34,6 @@ const Login: React.FC = () => {
 
       const data = await response.json();
       
-      // Gọi login từ context với data nhận được
       await login(data);
       navigate('/');
     } catch (err) {
