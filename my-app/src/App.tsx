@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Homepage from './pages/Homepage/Homepage';
+import Homepage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Homepage />} />
           <Route 
             path="/" 
             element={

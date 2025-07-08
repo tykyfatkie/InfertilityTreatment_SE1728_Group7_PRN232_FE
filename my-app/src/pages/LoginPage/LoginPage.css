@@ -139,11 +139,16 @@ img {
   border: 3px solid transparent;
   border-radius: 1rem;
   z-index: 1;
+  color: var(--title-color);
   transition: border-color .4s;
 }
 
 .login__input:autofill {
   transition: background-color 6000s, color 6000s;
+}
+
+.login__input::placeholder {
+  color: var(--text-color);
 }
 
 .login__label {

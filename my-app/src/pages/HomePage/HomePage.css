@@ -1,0 +1,208 @@
+.doctors-section {
+  padding: 80px 0;
+  background: #f9f9f9;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100vw; /* Prevent horizontal overflow */
+}
+
+/* Swiper Container Styling */
+.swiper-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 50px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.mySwiper {
+  width: 100%;
+  max-width: 100%;
+  padding: 50px 0;
+  overflow: hidden;
+}
+
+/* Slide Styling */
+.doctor-slide {
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: blur(2px) brightness(0.8);
+  transform: scale(0.85);
+  margin: 0 auto;
+}
+
+.swiper-slide-active {
+  filter: blur(0) brightness(1);
+  transform: scale(1);
+  z-index: 2;
+}
+
+.swiper-slide-prev,
+.swiper-slide-next {
+  filter: blur(1px) brightness(0.9);
+  transform: scale(0.9);
+  z-index: 1;
+}
+
+/* Doctor Card Styling */
+.doctor-card {
+  width: 100%;
+  max-width: 300px;
+  height: 100%;
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.swiper-slide-active .doctor-card {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.doctor-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.doctor-card:hover .doctor-image {
+  transform: scale(1.05);
+}
+
+.doctor-content {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Navigation Buttons Styling */
+.swiper-button-next,
+.swiper-button-prev {
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: #1890ff !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Pagination Styling */
+.swiper-pagination {
+  position: relative;
+  margin-top: 20px;
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  opacity: 0.7;
+}
+
+.swiper-pagination-bullet-active {
+  background: #1890ff;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .doctors-section {
+    padding: 60px 20px;
+  }
+  
+  .doctor-slide {
+    max-width: 280px;
+  }
+  
+  .doctor-card {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctors-section {
+    padding: 40px 15px;
+  }
+  
+  .doctor-slide {
+    max-width: 250px;
+  }
+  
+  .doctor-card {
+    max-width: 250px;
+  }
+  
+  .swiper-container {
+    padding: 30px 0;
+  }
+  
+  .mySwiper {
+    padding: 30px 0;
+  }
+  
+  .doctor-image {
+    height: 180px;
+  }
+  
+  .doctor-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .doctors-section {
+    padding: 30px 10px;
+  }
+  
+  .doctor-slide {
+    max-width: 220px;
+  }
+  
+  .doctor-card {
+    max-width: 220px;
+  }
+  
+  .doctor-image {
+    height: 160px;
+  }
+  
+  .doctor-content {
+    padding: 12px;
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 16px;
+  }
+}
+
+/* Prevent horizontal scrolling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.swiper-wrapper {
+  width: 100%;
+}
