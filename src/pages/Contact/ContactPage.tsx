@@ -19,11 +19,11 @@ const ContactPage: React.FC = () => {
             height: '400px',
             overflow: 'hidden',
             marginBottom: '30px',
-            marginTop: '30px',
+            marginTop: '200px',
             position: 'relative',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
             borderRadius: '0 0 30px 30px',
-            marginRight: '50px',
+            marginRight: '0px',
           }}
         >
           {/* Left Content Section */}
@@ -124,7 +124,7 @@ const ContactPage: React.FC = () => {
                   <Title level={3} style={{ fontSize: '22px', marginBottom: '16px', color: '#1e3a8a', fontWeight: 600 }}>
                     Email Us
                   </Title>
-                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>support@childgrowth.com</Text>
+                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>care@fertilityhope.com</Text>
                 </Space>
               </Card>
             </Col>
@@ -168,7 +168,7 @@ const ContactPage: React.FC = () => {
                   <Title level={3} style={{ fontSize: '22px', marginBottom: '16px', color: '#1e3a8a', fontWeight: 600 }}>
                     Call Us
                   </Title>
-                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>+(84) 123 456 789</Text>
+                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>+(84) 987 654 321</Text>
                 </Space>
               </Card>
             </Col>
@@ -212,7 +212,7 @@ const ContactPage: React.FC = () => {
                   <Title level={3} style={{ fontSize: '22px', marginBottom: '16px', color: '#1e3a8a', fontWeight: 600 }}>
                     Visit Us
                   </Title>
-                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>123 Growth Street, Health City, HC 12345</Text>
+                  <Text style={{ color: '#4b5563', fontSize: '16px' }}>456 Fertility Ave, Wellness City, WC 67890</Text>
                 </Space>
               </Card>
             </Col>

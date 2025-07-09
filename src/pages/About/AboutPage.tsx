@@ -8,10 +8,7 @@ const { Title, Paragraph } = Typography;
 
 const AboutPage: React.FC = () => {
   const navigate = useNavigate();
-  
-
-  
-  
+   
   return (
     <Layout style={{ minHeight: '100vh', margin: "-25px", background: 'white' }}>
       <Content>
@@ -84,22 +81,6 @@ const AboutPage: React.FC = () => {
                 onClick={() => navigate("/contact-us")}
               >
                 Contact Us
-              </Button>
-              <Button 
-                size="large"
-                style={{ 
-                  borderRadius: '50px', 
-                  borderColor: 'rgba(255, 255, 255, 0.3)', 
-                  color: 'white',
-                  paddingLeft: '28px', 
-                  paddingRight: '28px',
-                  height: '52px',
-                  background: 'transparent',
-                  fontWeight: 500,
-                }}
-                onClick={() => navigate("/register")}
-              >
-                Join Us
               </Button>
             </Space>
           </div>
