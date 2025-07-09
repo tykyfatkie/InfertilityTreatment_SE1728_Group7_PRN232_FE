@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Homepage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import PatientHomepage from './pages/HomePage/PatientHomePage';
+import AboutPage from './pages/About/AboutPage';
+import ContactPage from './pages/Contact/ContactPage';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Homepage />} />
           <Route path="/home" element={<PatientHomepage />} />
+          <Route path="/about-us" element={<AboutPage />} />
+          <Route path="/contact-us" element={<ContactPage />} />
           <Route 
             path="/" 
             element={
