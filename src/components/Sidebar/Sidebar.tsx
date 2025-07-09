@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Space } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import {
   CalendarOutlined,
   HistoryOutlined,
