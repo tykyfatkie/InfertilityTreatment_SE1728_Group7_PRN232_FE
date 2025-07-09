@@ -3,14 +3,17 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Homepage from './pages/HomePage/HomePage';
 import LoginPage from './pages/LoginPage/LoginPage';
+import PatientHomepage from './pages/HomePage/PatientHomePage';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Homepage />} />
+          <Route path="/home" element={<PatientHomepage />} />
           <Route 
             path="/" 
             element={
