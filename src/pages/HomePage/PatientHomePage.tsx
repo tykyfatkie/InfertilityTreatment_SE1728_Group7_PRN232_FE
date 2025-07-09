@@ -6,20 +6,27 @@ import {
   HeartTwoTone,
   TeamOutlined,
   SolutionOutlined,
-  CheckCircleOutlined,
-  ArrowRightOutlined
+  ArrowRightOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 const backgroundImages = ['../../../src/assets/home.jpg'];
 
 const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // Lấy username từ localStorage
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,6 +35,21 @@ const PatientHomepage: React.FC = () => {
 
     return () => clearInterval(interval); 
   }, []);
+
+  const handleLogout = () => {
+    // Xóa tất cả dữ liệu trong localStorage
+    localStorage.clear();
+    
+    // Xóa tất cả cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    // Chuyển hướng về trang chủ
+    navigate("/");
+  };
 
   const features = [
     {
@@ -111,30 +133,15 @@ const PatientHomepage: React.FC = () => {
                 borderRadius: '20px',
                 marginBottom: '16px'
               }}>
-                <span style={{ color: 'white', fontWeight: '600', fontSize: '14px' }}>TRUSTED BY COUPLES WORLDWIDE</span>
+                <span style={{ color: 'white', fontWeight: '600', fontSize: '14px' }}>Patient</span>
               </div>
               
               <Title level={1} style={{ color: 'white', fontSize: '52px', marginBottom: '24px', fontWeight: 700, lineHeight: 1.2 }}>
-                Infertility Diagnosis & Treatment Center
+                Welcome {username}!
               </Title>
               <Paragraph style={{ fontSize: 18, marginBottom: 32, color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.6 }}>
                 Regain hope with our cutting-edge reproductive medicine solutions. Your family-building journey starts here.
-              </Paragraph>
-              
-              <Space direction="vertical" size="middle" style={{ width: '100%', marginBottom: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <CheckCircleOutlined style={{ color: '#3b82f6', marginRight: '12px' }} />
-                  <Text style={{ color: 'white' }}>Board-certified fertility experts</Text>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <CheckCircleOutlined style={{ color: '#3b82f6', marginRight: '12px' }} />
-                  <Text style={{ color: 'white' }}>State-of-the-art IVF lab</Text>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <CheckCircleOutlined style={{ color: '#3b82f6', marginRight: '12px' }} />
-                  <Text style={{ color: 'white' }}>Success-driven treatment programs</Text>
-                </div>
-              </Space>
+              </Paragraph>          
               
               <Space size="middle">
                 <Button 
@@ -161,16 +168,18 @@ const PatientHomepage: React.FC = () => {
                   size="large"
                   style={{ 
                     borderRadius: '50px', 
-                    borderColor: 'rgba(255, 255, 255, 0.3)', 
-                    color: 'white',
+                    borderColor: 'rgba(194, 0, 0, 0.53)', 
+                    color: 'rgba(194, 0, 0, 0.53)',
                     paddingLeft: '28px', 
                     paddingRight: '28px',
                     height: '52px',
                     background: 'transparent',
                     fontWeight: 500,
                   }}
+                  onClick={handleLogout}
                 >
-                  Learn More
+                  <LogoutOutlined style={{ marginRight: '8px' }} />
+                  Logout
                 </Button>
               </Space>
             </div>
