@@ -6,29 +6,50 @@ import { Spin, message } from "antd";
 import { jwtDecode } from "jwt-decode"; 
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); // Đổi từ email thành username
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSuccessfulLogin = (token: string, userId: string) => {
+  const handleSuccessfulLogin = (token: string, userId?: string) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("userId", userId);
 
     try {
       const userData: any = jwtDecode(token);
-      const userRole = userData.role;
       
-      localStorage.setItem("role", userRole);
-
-      if (userRole === "Admin") {
-        navigate("/my-admin/users");
-      } else if (userRole === "Doctor") {
-        navigate("/my-doctor/consultation-response");
+      // Lấy userId từ JWT token nếu không được truyền vào
+      const extractedUserId = userId || userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+      const username = userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+      const email = userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+      
+      // Lưu thông tin user
+      localStorage.setItem("userId", extractedUserId);
+      localStorage.setItem("username", username);
+      localStorage.setItem("email", email);
+      
+      // Kiểm tra role - có thể role nằm trong claim khác hoặc cần gọi API khác để lấy
+      const userRole = userData.role || userData["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      
+      if (userRole) {
+        localStorage.setItem("role", userRole);
+        
+        // Điều hướng dựa trên role
+        if (userRole === "Admin") {
+          navigate("/admin/");
+        } else if (userRole === "Doctor") {
+          navigate("/doctor/");
+        } else if (userRole === "Patient") {
+          navigate("/home");
+        } else {
+          navigate("/home");
+        }
       } else {
-        navigate("/home"); 
+        // Nếu không có role trong JWT, có thể cần gọi API khác để lấy thông tin user
+        // Tạm thời điều hướng về home
+        console.warn("No role found in JWT token");
+        navigate("/home");
       }
     } catch (error) {
       let errorMessage = "Error processing login information.";
@@ -69,9 +90,9 @@ const LoginPage: React.FC = () => {
       });
       
       if (response.status === 200) {
-        const { accessToken, userId } = response.data.data || response.data;
+        const { accessToken } = response.data.data || response.data;
         localStorage.removeItem('oauth_state');
-        handleSuccessfulLogin(accessToken, userId);
+        handleSuccessfulLogin(accessToken);
       }
     } catch (error: any) {
       console.error("OAuth verification failed:", error);
@@ -88,13 +109,13 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/accounts/login`, {
-        email,
+        username, // Thay đổi từ email thành username
         password,
       });
 
       if (response.status === 200) {
-        const { accessToken, userId } = response.data.data;
-        handleSuccessfulLogin(accessToken, userId);
+        const { accessToken } = response.data;
+        handleSuccessfulLogin(accessToken);
       }
     } catch (error: any) {
       message.error(error.response?.data?.message || "Login failed. Please check your credentials and try again.");
@@ -120,17 +141,17 @@ const LoginPage: React.FC = () => {
               <div className="login__content grid">
                 <div className="login__box">
                   <input
-                    type="email"
-                    id="email"
+                    type="text" // Đổi từ email thành text
+                    id="username" // Đổi id từ email thành username
                     required
                     placeholder=" "
                     className="login__input"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="new-email"
+                    value={username} // Đổi từ email thành username
+                    onChange={(e) => setUsername(e.target.value)} // Đổi từ setEmail thành setUsername
+                    autoComplete="username" // Đổi từ new-email thành username
                   />
-                  <label htmlFor="email" className="login__label">Email</label>
-                  <i className="ri-mail-fill login__icon"></i>
+                  <label htmlFor="username" className="login__label">Username</label> {/* Đổi label từ Email thành Username */}
+                  <i className="ri-user-fill login__icon"></i> {/* Đổi icon từ mail thành user */}
                 </div>
 
                 <div className="login__box">
@@ -142,7 +163,7 @@ const LoginPage: React.FC = () => {
                     className="login__input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="new-password"
+                    autoComplete="current-password" // Đổi từ new-password thành current-password
                   />
                   <label htmlFor="password" className="login__label">Password</label>
                   <i 
