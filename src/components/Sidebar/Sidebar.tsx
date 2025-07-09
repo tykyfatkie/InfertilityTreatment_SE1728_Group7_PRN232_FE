@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button, Space } from 'antd';
 import {
   CalendarOutlined,
   HistoryOutlined,
@@ -53,6 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       collapsible
       collapsed={collapsed}
       width={250}
+      collapsedWidth={80}
       style={{
         height: '100vh',
         position: 'fixed',
@@ -62,6 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         background: '#fff',
         boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
         zIndex: 1000,
+        overflow: 'hidden'
       }}
     >
       <div style={{ 
@@ -96,13 +98,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Menu Items */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, overflow: 'hidden' }}>
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
             style={{ 
               borderRight: 0,
-              background: 'transparent'
+              background: 'transparent',
+              height: '100%'
             }}
             onClick={({ key }) => handleMenuClick(key)}
             items={menuItems}
