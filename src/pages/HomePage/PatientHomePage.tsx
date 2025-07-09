@@ -6,9 +6,7 @@ import {
   HeartTwoTone,
   TeamOutlined,
   SolutionOutlined,
-  ArrowRightOutlined,
-  LogoutOutlined
-} from '@ant-design/icons';
+  ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
