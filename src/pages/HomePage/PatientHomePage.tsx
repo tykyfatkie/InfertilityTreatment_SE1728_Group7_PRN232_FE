@@ -165,20 +165,23 @@ const PatientHomepage: React.FC = () => {
                   Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
                 </Button>
                 <Button 
-                  size="large"
+                  type="primary" 
+                  size="large" 
                   style={{ 
                     borderRadius: '50px', 
-                    borderColor: 'rgba(194, 0, 0, 0.53)', 
-                    color: 'rgba(194, 0, 0, 0.53)',
                     paddingLeft: '28px', 
                     paddingRight: '28px',
                     height: '52px',
-                    background: 'transparent',
-                    fontWeight: 500,
+                    background: 'rgba(255, 65, 65, 0.77)',
+                    color: '#1e3a8a',
+                    border: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
                   onClick={handleLogout}
                 >
-                  <LogoutOutlined style={{ marginRight: '8px' }} />
                   Logout
                 </Button>
               </Space>
