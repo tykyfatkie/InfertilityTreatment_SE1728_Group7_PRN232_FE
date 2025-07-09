@@ -167,7 +167,7 @@ const PatientHomepage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  onClick={() => navigate("/patient/")}
+                  onClick={() => navigate("/patient/booking/")}
                 >
                   Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
                 </Button>
