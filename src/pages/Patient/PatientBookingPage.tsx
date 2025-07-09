@@ -130,8 +130,17 @@ const PatientBooking: React.FC = () => {
         onCollapsedChange={setCollapsed}
       />
       
-      <Layout style={{ marginLeft: collapsed ? 80 : 250, transition: 'margin-left 0.2s' }}>
-        <Content style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
+      <Layout style={{ 
+        marginLeft: collapsed ? 80 : 250, 
+        transition: 'margin-left 0.2s',
+        minHeight: '100vh'
+      }}>
+        <Content style={{ 
+          padding: '24px', 
+          background: '#f0f2f5', 
+          minHeight: '100vh',
+          overflow: 'auto'
+        }}>
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <Card>
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
