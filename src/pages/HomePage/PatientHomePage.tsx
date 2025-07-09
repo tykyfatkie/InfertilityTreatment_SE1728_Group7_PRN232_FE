@@ -180,7 +180,7 @@ const PatientHomepage: React.FC = () => {
           <div
             style={{
               width: '50%',
-              backgroundImage: 'url(../../../src/assets/0.jpg)',
+              backgroundImage: 'url(../../../src/assets/home1.jpg)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               position: 'relative',
