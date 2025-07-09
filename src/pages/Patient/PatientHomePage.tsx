@@ -132,11 +132,20 @@ const PatientHomepage: React.FC = () => {
                 marginBottom: '16px'
               }}>
                 <span style={{ color: 'white', fontWeight: '600', fontSize: '14px' }}>Patient</span>
-              </div>
-              
-              <Title level={1} style={{ color: 'white', fontSize: '52px', marginBottom: '24px', fontWeight: 700, lineHeight: 1.2 }}>
-                Welcome {username}!
+              </div>             
+              <Title
+                level={1}
+                style={{
+                  color: 'white',
+                  fontSize: '52px',
+                  marginBottom: '24px',
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                }}
+              >
+                Welcome <span style={{ color: 'orange' }}>{username}</span>!
               </Title>
+
               <Paragraph style={{ fontSize: 18, marginBottom: 32, color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.6 }}>
                 Regain hope with our cutting-edge reproductive medicine solutions. Your family-building journey starts here.
               </Paragraph>          
