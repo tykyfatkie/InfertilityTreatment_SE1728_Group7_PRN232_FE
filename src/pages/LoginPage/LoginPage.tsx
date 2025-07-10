@@ -6,7 +6,7 @@ import { Spin, message } from "antd";
 import { jwtDecode } from "jwt-decode"; 
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState(""); // Đổi từ email thành username
+  const [username, setUsername] = useState(""); 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
           navigate("/admin/");
         } else if (userRole === "Doctor") {
           navigate("/doctor/");
-        } else if (userRole === "Patient") {
+        } else if (userRole === "Patient || Customer") {
           navigate("/home");
         } else {
           navigate("/home");
