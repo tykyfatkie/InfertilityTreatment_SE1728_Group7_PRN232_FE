@@ -19,7 +19,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors' },
-    { key: 'appointments', icon: <CalendarOutlined />, label: 'Appointments' },
     { key: 'patients', icon: <UserOutlined />, label: 'Patients' },
     { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
   ];
