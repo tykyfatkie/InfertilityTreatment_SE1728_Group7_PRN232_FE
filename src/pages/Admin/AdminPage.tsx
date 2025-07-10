@@ -18,30 +18,23 @@ import {
   message,
   Badge,
   Tooltip,
-  Dropdown,
-  Menu
 } from 'antd';
-import AppFooter from '../../components/Footer/Footer';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import AdminHeader from '../../components/Header/AdminHeader';
+import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 import {
   UserOutlined,
-  MedicineBoxOutlined,
-  DashboardOutlined,
   TeamOutlined,
   CalendarOutlined,
   SettingOutlined,
-  LogoutOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  EyeOutlined,
-  BellOutlined,
-  DownOutlined,
-  ExclamationCircleOutlined
+  EyeOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import './AdminPage.css';
 
-const { Content, Header, Sider } = Layout;
+const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -87,7 +80,6 @@ const AdminPage: React.FC = () => {
     totalAppointments: 0,
     monthlyRevenue: 0
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -137,23 +129,6 @@ const AdminPage: React.FC = () => {
       totalPatients: 1245,
       totalAppointments: 89,
       monthlyRevenue: 125000
-    });
-  };
-
-  const handleLogout = () => {
-    Modal.confirm({
-      title: 'Confirm Logout',
-      content: 'Are you sure you want to logout?',
-      icon: <ExclamationCircleOutlined />,
-      onOk() {
-        localStorage.clear();
-        document.cookie.split(";").forEach((c) => {
-          document.cookie = c
-            .replace(/^ +/, "")
-            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
-        navigate("/");
-      }
     });
   };
 
@@ -274,29 +249,6 @@ const AdminPage: React.FC = () => {
       ),
     },
   ];
-
-  const menuItems = [
-    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors' },
-    { key: 'appointments', icon: <CalendarOutlined />, label: 'Appointments' },
-    { key: 'patients', icon: <UserOutlined />, label: 'Patients' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
-  ];
-
-  const userMenu = (
-    <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
-        Profile
-      </Menu.Item>
-      <Menu.Item key="settings" icon={<SettingOutlined />}>
-        Settings
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
 
   const renderContent = () => {
     switch (selectedMenuItem) {
@@ -439,45 +391,14 @@ const AdminPage: React.FC = () => {
   };
 
   return (
-    <Layout className="admin-layout" >
-      <Header className="admin-header">
-        <div className="admin-header-left">
-          <div className="admin-logo">
-            <MedicineBoxOutlined />
-            <span>MedAdmin</span>
-          </div>
-        </div>
-        <div className="admin-header-right">
-          <Space>
-            <Badge count={5}>
-              <Button type="text" icon={<BellOutlined />} />
-            </Badge>
-            <Dropdown overlay={userMenu} trigger={['click']}>
-              <Button type="text" className="user-dropdown">
-                <Avatar icon={<UserOutlined />} />
-                <span>Admin {username}</span>
-                <DownOutlined />
-              </Button>
-            </Dropdown>
-          </Space>
-        </div>
-      </Header>
-
+    <Layout className="admin-layout">
+      <AdminHeader username={username} />
+      
       <Layout>
-        <Sider className="admin-sider" width={250}>
-          <div className="admin-menu">
-            {menuItems.map(item => (
-              <div
-                key={item.key}
-                className={`menu-item ${selectedMenuItem === item.key ? 'active' : ''}`}
-                onClick={() => setSelectedMenuItem(item.key)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </Sider>
+        <AdminSidebar 
+          selectedMenuItem={selectedMenuItem} 
+          onMenuItemSelect={setSelectedMenuItem} 
+        />
 
         <Content className="admin-content">
           <div className="admin-content-wrapper">
@@ -533,8 +454,6 @@ const AdminPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-
-      
     </Layout>
   );
 };
