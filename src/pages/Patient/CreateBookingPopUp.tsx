@@ -130,7 +130,7 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
       onCancel={onClose}
       footer={null}
       width={700}
-      destroyOnClose
+      destroyOnHidden
       className="booking-modal"
     >
       <div className="booking-modal-content">
