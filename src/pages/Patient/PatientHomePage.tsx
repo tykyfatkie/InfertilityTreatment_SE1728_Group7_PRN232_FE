@@ -373,12 +373,15 @@ const PatientHomepage: React.FC = () => {
           </div>
         </div>
 
-        <style jsx>{`
-          .doctor-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-          }
-        `}</style>     
+        {/* CSS Styles */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .doctor-card:hover {
+              transform: translateY(-8px);
+              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            }
+          `
+        }} />
       </Content>
       <AppFooter />
       
