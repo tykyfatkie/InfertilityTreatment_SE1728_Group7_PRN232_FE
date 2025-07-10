@@ -24,6 +24,7 @@ import {
   DeleteOutlined,
   EyeOutlined
 } from '@ant-design/icons';
+import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
