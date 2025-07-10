@@ -24,7 +24,7 @@ const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
   const [showBookingPopup, setShowBookingPopup] = useState(false); // State for popup
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]); // Ensure it's always an array
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const navigate = useNavigate();
 
@@ -52,12 +52,20 @@ const PatientHomepage: React.FC = () => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
       if (response.ok) {
         const doctorsData = await response.json();
-        setDoctors(doctorsData);
+        // Ensure doctorsData is an array
+        if (Array.isArray(doctorsData)) {
+          setDoctors(doctorsData);
+        } else {
+          console.error('Doctors data is not an array:', doctorsData);
+          setDoctors([]); // Set empty array as fallback
+        }
       } else {
         console.error('Failed to fetch doctors');
+        setDoctors([]); // Set empty array on error
       }
     } catch (error) {
       console.error('Error fetching doctors:', error);
+      setDoctors([]); // Set empty array on error
     } finally {
       setLoadingDoctors(false);
     }
@@ -247,6 +255,11 @@ const PatientHomepage: React.FC = () => {
               <div style={{ textAlign: 'center', padding: '60px 0' }}>
                 <Spin size="large" />
                 <div style={{ marginTop: '16px', color: '#64748b' }}>Loading our expert doctors...</div>
+              </div>
+            ) : doctors.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <div style={{ color: '#64748b', fontSize: '18px' }}>No doctors available at the moment.</div>
+                <div style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>Please check back later.</div>
               </div>
             ) : (
               <Row gutter={[24, 32]} justify="center">
