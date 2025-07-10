@@ -1,73 +1,157 @@
-/* CreateBookingPopUp.css */
+/* CreateBookingPopUp.css - Rare Disease Hospital Theme */
 
-.booking-modal {
-  border-radius: 16px;
+.rare-disease-modal {
+  border-radius: 20px;
   overflow: hidden;
 }
 
-.booking-modal .ant-modal-content {
-  border-radius: 16px;
+.rare-disease-modal .ant-modal-content {
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e8f4fd;
 }
 
-.booking-modal .ant-modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.rare-disease-modal .ant-modal-header {
+  background: linear-gradient(135deg, #2c5aa0 0%, #1e3a8a 50%, #1e40af 100%);
   border-bottom: none;
-  padding: 24px 32px;
+  padding: 28px 36px;
+  position: relative;
+}
+
+.rare-disease-modal .ant-modal-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
 }
 
 .booking-modal-title {
   display: flex;
   align-items: center;
   color: white;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
 }
 
 .booking-modal-title .title-icon {
-  margin-right: 12px;
-  font-size: 24px;
+  margin-right: 16px;
+  font-size: 28px;
+  color: #60a5fa;
 }
 
-.booking-modal .ant-modal-close {
+.booking-modal-title .subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.rare-disease-modal .ant-modal-close {
   color: white;
   opacity: 0.8;
   transition: opacity 0.3s ease;
+  top: 20px;
+  right: 20px;
 }
 
-.booking-modal .ant-modal-close:hover {
+.rare-disease-modal .ant-modal-close:hover {
   opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
 }
 
 .booking-modal-content {
-  padding: 32px;
-  background: #fafafa;
+  padding: 0;
+  background: #f8fafc;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .booking-header {
-  margin-bottom: 32px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 32px 36px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.booking-header-text {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .booking-header-text h3 {
-  color: #2c3e50;
-  font-size: 24px;
-  font-weight: 600;
+  color: #1e40af;
+  font-size: 26px;
+  font-weight: 700;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-header-text h3 .header-icon {
+  margin-right: 12px;
+  color: #ef4444;
 }
 
 .booking-header-text p {
-  color: #7f8c8d;
+  color: #64748b;
   font-size: 16px;
   margin: 0;
+  font-weight: 500;
+}
+
+.hospital-info {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.info-item .anticon {
+  margin-right: 8px;
+  color: #2563eb;
+  font-size: 16px;
 }
 
 .booking-form {
   background: white;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 36px;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  color: #1e40af;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
 }
 
 .form-row {
@@ -83,86 +167,148 @@
 .form-label {
   display: flex;
   align-items: center;
-  color: #2c3e50;
+  color: #334155;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 8px;
 }
 
 .label-icon {
-  margin-right: 8px;
-  color: #667eea;
-  font-size: 18px;
+  margin-right: 10px;
+  color: #2563eb;
+  font-size: 16px;
 }
 
 .custom-date-picker,
 .custom-time-picker,
 .custom-select {
-  border-radius: 12px;
-  border: 2px solid #e0e6ed;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
   transition: all 0.3s ease;
+  background: #fefefe;
 }
 
 .custom-date-picker:hover,
 .custom-time-picker:hover,
 .custom-select:hover {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .custom-date-picker:focus,
 .custom-time-picker:focus,
 .custom-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-}
-
-.custom-date-picker .ant-picker-input input,
-.custom-time-picker .ant-picker-input input {
-  font-size: 16px;
-  color: #2c3e50;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
 
 .custom-select .ant-select-selector {
   border: none !important;
   box-shadow: none !important;
+  background: transparent !important;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.option-content strong {
+  color: #1e40af;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.option-desc {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .price-display {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  padding: 24px;
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.price-display::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
 }
 
 .price-amount {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
 }
 
 .price-note {
   font-size: 14px;
-  opacity: 0.9;
+  opacity: 0.95;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
 }
 
 .custom-textarea {
-  border-radius: 12px;
-  border: 2px solid #e0e6ed;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
   transition: all 0.3s ease;
   resize: none;
+  background: #fefefe;
+  font-family: inherit;
 }
 
 .custom-textarea:hover {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .custom-textarea:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.important-notice {
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.important-notice h4 {
+  color: #92400e;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.important-notice ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #78350f;
+}
+
+.important-notice li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .form-actions {
@@ -171,36 +317,56 @@
   display: flex;
   justify-content: flex-end;
   gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .cancel-btn {
-  border-radius: 12px;
-  border: 2px solid #e0e6ed;
-  color: #7f8c8d;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  color: #64748b;
   font-weight: 600;
   min-width: 120px;
   transition: all 0.3s ease;
+  background: white;
 }
 
 .cancel-btn:hover {
-  border-color: #bdc3c7;
-  color: #2c3e50;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+  color: #475569;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 600;
-  min-width: 150px;
+  min-width: 160px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
 }
 
 /* Form Item Styles */
@@ -209,7 +375,7 @@
 }
 
 .booking-form .ant-form-item-label > label {
-  color: #2c3e50;
+  color: #334155;
   font-weight: 600;
   height: auto;
 }
@@ -218,19 +384,17 @@
   display: none;
 }
 
-/* Input Focus Effects */
-.booking-form .ant-input:focus,
-.booking-form .ant-picker-input input:focus,
-.booking-form .ant-select-focused .ant-select-selector {
-  border-color: #667eea !important;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+/* Divider Styles */
+.booking-form .ant-divider {
+  border-color: #e2e8f0;
+  margin: 24px 0;
 }
 
 /* Select Dropdown */
 .ant-select-dropdown {
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e6ed;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
 }
 
 .ant-select-item {
@@ -239,18 +403,18 @@
 }
 
 .ant-select-item:hover {
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(37, 99, 235, 0.05);
 }
 
 .ant-select-item-option-selected {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;
 }
 
 /* DatePicker and TimePicker Dropdown */
 .ant-picker-dropdown {
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .ant-picker-panel {
@@ -258,11 +422,11 @@
 }
 
 .ant-picker-cell:hover .ant-picker-cell-inner {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(37, 99, 235, 0.1);
 }
 
 .ant-picker-cell-selected .ant-picker-cell-inner {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 }
 
 /* Loading State */
@@ -272,22 +436,34 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .booking-modal {
+  .rare-disease-modal {
     margin: 0;
     max-width: 100%;
     top: 0;
+    height: 100vh;
   }
   
-  .booking-modal .ant-modal-content {
+  .rare-disease-modal .ant-modal-content {
     border-radius: 0;
+    height: 100vh;
   }
   
   .booking-modal-content {
-    padding: 16px;
+    padding: 0;
+    max-height: calc(100vh - 80px);
+  }
+  
+  .booking-header {
+    padding: 24px 20px;
   }
   
   .booking-form {
-    padding: 20px;
+    padding: 24px 20px;
+  }
+  
+  .hospital-info {
+    flex-direction: column;
+    gap: 12px;
   }
   
   .form-row {
@@ -303,14 +479,15 @@
   .cancel-btn,
   .submit-btn {
     width: 100%;
+    min-width: auto;
   }
 }
 
 /* Animation */
-@keyframes fadeInUp {
+@keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -318,25 +495,43 @@
   }
 }
 
-.booking-modal .ant-modal-content {
-  animation: fadeInUp 0.3s ease-out;
+.rare-disease-modal .ant-modal-content {
+  animation: slideInUp 0.4s ease-out;
 }
 
 /* Custom Scrollbar */
 .booking-modal-content::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .booking-modal-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+  background: #f1f5f9;
+  border-radius: 4px;
 }
 
 .booking-modal-content::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .booking-modal-content::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #94a3b8;
+}
+
+/* Error States */
+.booking-form .ant-form-item-has-error .custom-date-picker,
+.booking-form .ant-form-item-has-error .custom-time-picker,
+.booking-form .ant-form-item-has-error .custom-select,
+.booking-form .ant-form-item-has-error .custom-textarea {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Success States */
+.booking-form .ant-form-item-has-success .custom-date-picker,
+.booking-form .ant-form-item-has-success .custom-time-picker,
+.booking-form .ant-form-item-has-success .custom-select,
+.booking-form .ant-form-item-has-success .custom-textarea {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
