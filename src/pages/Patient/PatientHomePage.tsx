@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
-import CreateBookingPopUp from './CreateBookingPopUp'; // Import the popup component
+import CreateRequestPopUp from './CreateRequestPopUp';
 import {
   UserOutlined,
   MedicineBoxOutlined,
@@ -399,7 +399,7 @@ const PatientHomepage: React.FC = () => {
       <AppFooter />
       
       {/* Booking Popup */}
-      <CreateBookingPopUp
+      <CreateRequestPopUp
         visible={showBookingPopup}
         onClose={() => setShowBookingPopup(false)}
         onSuccess={handleBookingSuccess}
