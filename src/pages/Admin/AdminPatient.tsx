@@ -285,9 +285,6 @@ const AdminPatient: React.FC = () => {
                   <Title level={2}>Patients Management</Title>
                   <Paragraph>Manage all patients in the system</Paragraph>
                 </div>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAddPatient}>
-                  Add Patient
-                </Button>
               </div>
               
               <Card className="patients-table-card">
