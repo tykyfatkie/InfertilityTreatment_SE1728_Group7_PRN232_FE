@@ -62,8 +62,10 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
         patientId: userId,
         timeStarted: timeStarted,
         type: values.type,
-        price: values.type === 'genetic-counseling' ? 150000 : 
-               values.type === 'comprehensive-evaluation' ? 200000 : 100000,
+        price: values.type === 'ivf-consultation' ? 200000 : 
+               values.type === 'reproductive-endocrinology' ? 180000 : 
+               values.type === 'male-fertility' ? 150000 :
+               values.type === 'pregnancy-planning' ? 120000 : 100000,
         step: values.step || 'pending',
         note: values.note || '',
         urgency: values.urgency || 'routine'
@@ -134,12 +136,14 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
 
   const getConsultationPrice = (type: string) => {
     switch (type) {
-      case 'genetic-counseling':
-        return '150,000 VND';
-      case 'comprehensive-evaluation':
+      case 'ivf-consultation':
         return '200,000 VND';
-      case 'multidisciplinary-consultation':
+      case 'reproductive-endocrinology':
         return '180,000 VND';
+      case 'male-fertility':
+        return '150,000 VND';
+      case 'pregnancy-planning':
+        return '120,000 VND';
       default:
         return '100,000 VND';
     }
@@ -153,8 +157,8 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
         <div className="booking-modal-title">
           <MedicineBoxOutlined className="title-icon" />
           <div>
-            <span>Rare Disease Center</span>
-            <div className="subtitle">Specialized Care Appointment</div>
+            <span>Fertility & Reproductive Health Center</span>
+            <div className="subtitle">Specialized Consultation Appointment</div>
           </div>
         </div>
       }
@@ -170,19 +174,19 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
           <div className="booking-header-text">
             <h3>
               <HeartOutlined className="header-icon" />
-              Schedule Your Consultation
+              Schedule Your Fertility Consultation
             </h3>
-            <p>Our specialized team is here to provide expert care for rare diseases</p>
+            <p>Our experienced team specializes in fertility treatments and reproductive health</p>
           </div>
           <div className="hospital-info">
             <div className="info-item">
-              <SafetyOutlined /> Expert specialists in rare diseases
+              <SafetyOutlined /> Expert fertility specialists
             </div>
             <div className="info-item">
               <UserOutlined /> Personalized treatment plans
             </div>
             <div className="info-item">
-              <HeartOutlined /> Compassionate comprehensive care
+              <HeartOutlined /> Comprehensive reproductive care
             </div>
           </div>
         </div>
@@ -263,32 +267,38 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
               >
                 <Option value="initial-consultation">
                   <div className="option-content">
-                    <strong>Initial Consultation</strong>
-                    <span className="option-desc">First visit for rare disease evaluation</span>
+                    <strong>Initial Fertility Consultation</strong>
+                    <span className="option-desc">Comprehensive fertility assessment and evaluation</span>
                   </div>
                 </Option>
                 <Option value="follow-up">
                   <div className="option-content">
                     <strong>Follow-up Appointment</strong>
-                    <span className="option-desc">Ongoing care and monitoring</span>
+                    <span className="option-desc">Ongoing treatment monitoring and adjustments</span>
                   </div>
                 </Option>
-                <Option value="genetic-counseling">
+                <Option value="ivf-consultation">
                   <div className="option-content">
-                    <strong>Genetic Counseling</strong>
-                    <span className="option-desc">Genetic testing and family planning</span>
+                    <strong>IVF Consultation</strong>
+                    <span className="option-desc">In-vitro fertilization planning and guidance</span>
                   </div>
                 </Option>
-                <Option value="comprehensive-evaluation">
+                <Option value="male-fertility">
                   <div className="option-content">
-                    <strong>Comprehensive Evaluation</strong>
-                    <span className="option-desc">Complete diagnostic workup</span>
+                    <strong>Male Fertility Assessment</strong>
+                    <span className="option-desc">Specialized evaluation for male fertility issues</span>
                   </div>
                 </Option>
-                <Option value="multidisciplinary-consultation">
+                <Option value="pregnancy-planning">
                   <div className="option-content">
-                    <strong>Multidisciplinary Consultation</strong>
-                    <span className="option-desc">Team-based approach consultation</span>
+                    <strong>Pre-conception Counseling</strong>
+                    <span className="option-desc">Planning for healthy pregnancy and conception</span>
+                  </div>
+                </Option>
+                <Option value="reproductive-endocrinology">
+                  <div className="option-content">
+                    <strong>Reproductive Endocrinology</strong>
+                    <span className="option-desc">Hormone-related fertility disorders</span>
                   </div>
                 </Option>
               </Select>
@@ -332,10 +342,11 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
               <div className="price-display">
                 <span className="price-amount">{getConsultationPrice(selectedType)}</span>
                 <span className="price-note">
-                  {selectedType === 'genetic-counseling' ? 'Includes genetic testing consultation' :
-                   selectedType === 'comprehensive-evaluation' ? 'Includes comprehensive diagnostic workup' :
-                   selectedType === 'multidisciplinary-consultation' ? 'Team consultation fee' :
-                   'Standard consultation fee'}
+                  {selectedType === 'ivf-consultation' ? 'Includes IVF planning and counseling' :
+                   selectedType === 'reproductive-endocrinology' ? 'Includes hormone evaluation and treatment planning' :
+                   selectedType === 'male-fertility' ? 'Includes comprehensive male fertility assessment' :
+                   selectedType === 'pregnancy-planning' ? 'Includes pre-conception health optimization' :
+                   'Standard fertility consultation fee'}
                 </span>
               </div>
             </Form.Item>
@@ -344,24 +355,26 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
           <Divider />
 
           <div className="form-section">
-            <h4 className="section-title">Medical Information</h4>
+            <h4 className="section-title">Health & Fertility Information</h4>
             <Form.Item
               label={
                 <span className="form-label">
                   <FileTextOutlined className="label-icon" />
-                  Medical History & Symptoms
+                  Medical History & Fertility Concerns
                 </span>
               }
               name="note"
-              rules={[{ required: true, message: 'Please provide medical information' }]}
+              rules={[{ required: true, message: 'Please provide your medical and fertility information' }]}
             >
               <TextArea
                 rows={5}
-                placeholder="Please describe:
-• Current symptoms and their duration
-• Previous diagnoses or suspected conditions
-• Family history of rare diseases
-• Current medications
+                placeholder="Please provide details about:
+• How long you've been trying to conceive
+• Previous pregnancies or pregnancy complications
+• Menstrual cycle irregularities
+• Any previous fertility treatments
+• Current medications or supplements
+• Family history of fertility issues
 • Specific concerns or questions for the specialist"
                 maxLength={1000}
                 showCount
@@ -373,9 +386,11 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
           <div className="important-notice">
             <h4>Important Information:</h4>
             <ul>
-              <li>Please bring all relevant medical records and test results</li>
-              <li>Appointments are confirmed within 24 hours</li>
+              <li>Please bring all relevant medical records, test results, and previous fertility reports</li>
+              <li>Both partners should attend the initial consultation when possible</li>
+              <li>Appointments are confirmed within 24 hours via phone or SMS</li>
               <li>Cancellation policy: 48 hours advance notice required</li>
+              <li>For urgent fertility concerns, please call our emergency hotline</li>
               <li>Insurance verification will be completed before your visit</li>
             </ul>
           </div>
