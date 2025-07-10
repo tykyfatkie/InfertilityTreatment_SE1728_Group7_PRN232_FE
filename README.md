@@ -3,5 +3,6 @@ Hướng dẫn sử dụng:
 2. ctrl + shift + `
 3. chạy lệnh "npm install"
 4. chạy lẹnh "npm run dev"
-5. enjoy hẹ hẹ hẹ
-   - Phát 
+5. enjoy hẹ hẹ hẹ :))
+   - Phát
+   
