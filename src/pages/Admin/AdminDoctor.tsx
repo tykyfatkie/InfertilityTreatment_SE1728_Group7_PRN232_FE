@@ -30,7 +30,6 @@ import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
-const { Option } = Select;
 
 interface Doctor {
   userName: string;
@@ -108,12 +107,20 @@ const AdminDoctor: React.FC = () => {
 
   const createDoctor = async (doctorData: Doctor) => {
     try {
+      // Only send the fields that the API accepts
+      const apiData = {
+        userName: doctorData.userName,
+        imageUrl: doctorData.imageUrl,
+        specialization: doctorData.specialization,
+        introduction: doctorData.introduction
+      };
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(doctorData),
+        body: JSON.stringify(apiData),
       });
 
       if (response.ok) {
@@ -136,12 +143,20 @@ const AdminDoctor: React.FC = () => {
 
   const updateDoctor = async (doctorId: string, doctorData: Doctor) => {
     try {
+      // Only send the fields that the API accepts
+      const apiData = {
+        userName: doctorData.userName,
+        imageUrl: doctorData.imageUrl,
+        specialization: doctorData.specialization,
+        introduction: doctorData.introduction
+      };
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(doctorData),
+        body: JSON.stringify(apiData),
       });
 
       if (response.ok) {
@@ -375,16 +390,6 @@ const AdminDoctor: React.FC = () => {
             label="Image URL"
           >
             <Input />
-          </Form.Item>
-          <Form.Item
-            name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select status!' }]}
-          >
-            <Select>
-              <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
-            </Select>
           </Form.Item>
         </Form>
       </Modal>
