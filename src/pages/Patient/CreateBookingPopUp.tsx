@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { Modal, Form, DatePicker, TimePicker, Input, Button, message, Select } from 'antd';
-import { CalendarOutlined, ClockCircleOutlined, DollarOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
+import {
+  Modal,
+  Form,
+  DatePicker,
+  TimePicker,
+  Input,
+  Button,
+  message,
+  Select
+} from 'antd';
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  DollarOutlined,
+  UserOutlined,
+  FileTextOutlined
+} from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import './CreateBookingPopUp.css';
 
@@ -23,17 +38,15 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
-    
+
     try {
-      // Get userId from localStorage
       const userId = localStorage.getItem('userId');
-      
+
       if (!userId) {
         message.error('Please login to book an appointment');
         return;
       }
 
-      // Combine date and time
       const timeStarted = dayjs(values.date)
         .hour(values.time.hour())
         .minute(values.time.minute())
@@ -41,22 +54,21 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
         .format('YYYY-MM-DDTHH:mm:ss');
 
       const bookingData = {
-        doctorId: 1, // Default doctor ID
-        patientId: userId, // Send as string (UUID)
+        doctorId: 1,
+        patientId: userId,
         timeStarted: timeStarted,
         type: values.type,
-        price: 100000, // Default price: 100,000 VND
-        step: values.step || "pending",
-        note: values.note || ""
+        price: 100000,
+        step: values.step || 'pending',
+        note: values.note || ''
       };
 
-      // API call
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/CreateBooking`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(bookingData),
+        body: JSON.stringify(bookingData)
       });
 
       if (response.ok) {
@@ -77,26 +89,23 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
   };
 
   const disabledDate = (current: Dayjs) => {
-    // Disable past dates
     return current && current < dayjs().startOf('day');
   };
 
   const disabledTime = (selectedDate: Dayjs | null) => {
     if (!selectedDate) return {};
-    
+
     const isToday = selectedDate.isSame(dayjs(), 'day');
     const currentHour = dayjs().hour();
-    
+
     return {
       disabledHours: () => {
         const hours = [];
-        // Disable past hours for today
         if (isToday) {
           for (let i = 0; i < currentHour; i++) {
             hours.push(i);
           }
         }
-        // Disable hours outside clinic hours (8 AM - 6 PM)
         for (let i = 0; i < 8; i++) {
           hours.push(i);
         }
@@ -107,7 +116,6 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
       },
       disabledMinutes: () => {
         const minutes = [];
-        // Only allow appointments at 00, 15, 30, 45 minutes
         for (let i = 0; i < 60; i++) {
           if (i % 15 !== 0) {
             minutes.push(i);
@@ -123,21 +131,21 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
       title={
         <div className="booking-modal-title">
           <UserOutlined className="title-icon" />
-          <span>Đặt lịch khám bệnh hiếm</span>
+          <span>Rare Disease Appointment Booking</span>
         </div>
       }
       open={visible}
       onCancel={onClose}
       footer={null}
       width={700}
-      destroyOnHidden
+      destroyOnClose
       className="booking-modal"
     >
       <div className="booking-modal-content">
         <div className="booking-header">
           <div className="booking-header-text">
-            <h3>Thông tin đặt lịch</h3>
-            <p>Vui lòng điền đầy đủ thông tin để đặt lịch khám</p>
+            <h3>Booking Information</h3>
+            <p>Please fill in all the information to schedule an appointment</p>
           </div>
         </div>
 
@@ -154,15 +162,15 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
                 label={
                   <span className="form-label">
                     <CalendarOutlined className="label-icon" />
-                    Ngày khám
+                    Appointment Date
                   </span>
                 }
                 name="date"
-                rules={[{ required: true, message: 'Vui lòng chọn ngày khám' }]}
+                rules={[{ required: true, message: 'Please select a date' }]}
               >
                 <DatePicker
                   className="custom-date-picker"
-                  placeholder="Chọn ngày"
+                  placeholder="Select a date"
                   disabledDate={disabledDate}
                   format="DD/MM/YYYY"
                   size="large"
@@ -175,15 +183,15 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
                 label={
                   <span className="form-label">
                     <ClockCircleOutlined className="label-icon" />
-                    Giờ khám
+                    Appointment Time
                   </span>
                 }
                 name="time"
-                rules={[{ required: true, message: 'Vui lòng chọn giờ khám' }]}
+                rules={[{ required: true, message: 'Please select a time' }]}
               >
                 <TimePicker
                   className="custom-time-picker"
-                  placeholder="Chọn giờ"
+                  placeholder="Select a time"
                   format="HH:mm"
                   minuteStep={15}
                   disabledTime={() => disabledTime(form.getFieldValue('date'))}
@@ -197,22 +205,22 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
             label={
               <span className="form-label">
                 <FileTextOutlined className="label-icon" />
-                Loại tư vấn
+                Consultation Type
               </span>
             }
             name="type"
-            rules={[{ required: true, message: 'Vui lòng chọn loại tư vấn' }]}
+            rules={[{ required: true, message: 'Please select a consultation type' }]}
           >
-            <Select 
-              placeholder="Chọn loại tư vấn"
+            <Select
+              placeholder="Select consultation type"
               className="custom-select"
               size="large"
             >
-              <Option value="initial">Tư vấn ban đầu</Option>
-              <Option value="follow-up">Tái khám</Option>
-              <Option value="genetic-counseling">Tư vấn di truyền</Option>
-              <Option value="diagnostic-review">Xem xét chẩn đoán</Option>
-              <Option value="treatment-planning">Lập kế hoạch điều trị</Option>
+              <Option value="initial">Initial Consultation</Option>
+              <Option value="follow-up">Follow-up</Option>
+              <Option value="genetic-counseling">Genetic Counseling</Option>
+              <Option value="diagnostic-review">Diagnostic Review</Option>
+              <Option value="treatment-planning">Treatment Planning</Option>
             </Select>
           </Form.Item>
 
@@ -220,14 +228,14 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
             label={
               <span className="form-label">
                 <DollarOutlined className="label-icon" />
-                Phí tư vấn
+                Consultation Fee
               </span>
             }
             name="price"
           >
             <div className="price-display">
               <span className="price-amount">100,000 VND</span>
-              <span className="price-note">Phí cố định cho tư vấn</span>
+              <span className="price-note">Fixed fee for consultation</span>
             </div>
           </Form.Item>
 
@@ -235,14 +243,14 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
             label={
               <span className="form-label">
                 <FileTextOutlined className="label-icon" />
-                Ghi chú thêm
+                Additional Notes
               </span>
             }
             name="note"
           >
             <TextArea
               rows={4}
-              placeholder="Vui lòng mô tả triệu chứng, tiền sử bệnh, hoặc bất kỳ mối quan tâm cụ thể nào bạn muốn thảo luận..."
+              placeholder="Please describe symptoms, medical history, or any specific concerns you want to discuss..."
               maxLength={500}
               showCount
               className="custom-textarea"
@@ -250,12 +258,12 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
           </Form.Item>
 
           <Form.Item className="form-actions">
-            <Button 
+            <Button
               onClick={onClose}
               className="cancel-btn"
               size="large"
             >
-              Hủy
+              Cancel
             </Button>
             <Button
               type="primary"
@@ -264,7 +272,7 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
               className="submit-btn"
               size="large"
             >
-              Đặt lịch khám
+              Book Appointment
             </Button>
           </Form.Item>
         </Form>
