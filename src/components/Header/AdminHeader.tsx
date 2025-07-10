@@ -1,11 +1,9 @@
 import React from 'react';
-import { Layout, Space, Badge, Button, Avatar, Dropdown, Menu, Modal } from 'antd';
+import { Layout, Space, Button, Avatar, Dropdown, Menu, Modal } from 'antd';
 import {
   MedicineBoxOutlined,
-  BellOutlined,
   UserOutlined,
   DownOutlined,
-  SettingOutlined,
   LogoutOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons';
@@ -39,40 +37,34 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
-        Profile
-      </Menu.Item>
-      <Menu.Item key="settings" icon={<SettingOutlined />}>
-        Settings
-      </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout} style={ { color: 'red' }}>
         Logout
       </Menu.Item>
     </Menu>
   );
 
   return (
-    <Header className="admin-header">
+    <Header className="admin-header" >
       <div className="admin-header-left">
         <div className="admin-logo">
-          <MedicineBoxOutlined />
-          <span>MedAdmin</span>
+          <MedicineBoxOutlined style={{ color: 'orange' }} />
+          <span style={{ color: 'orange' }}>Admin Dashboard</span>
         </div>
       </div>
       <div className="admin-header-right">
-        <Space>
-          <Badge count={5}>
-            <Button type="text" icon={<BellOutlined />} />
-          </Badge>
-          <Dropdown overlay={userMenu} trigger={['click']}>
+        <Space style={ { marginRight: '80px'}}>
+        <Dropdown overlay={userMenu} trigger={['click']}>
             <Button type="text" className="user-dropdown">
-              <Avatar icon={<UserOutlined />} />
-              <span>Admin {username}</span>
-              <DownOutlined />
+            <Avatar icon={<UserOutlined />} />
+            <span>
+                Welcome back <span style={{ color: 'orange' }}>{username}</span>!
+            </span>
+            <DownOutlined />
             </Button>
-          </Dropdown>
+        </Dropdown>
         </Space>
+
       </div>
     </Header>
   );
