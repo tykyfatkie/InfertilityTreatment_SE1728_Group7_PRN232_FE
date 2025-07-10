@@ -3,10 +3,7 @@ import { Layout } from 'antd';
 import {
   DashboardOutlined,
   TeamOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  SettingOutlined
-} from '@ant-design/icons';
+  UserOutlined} from '@ant-design/icons';
 
 const { Sider } = Layout;
 
@@ -20,7 +17,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors' },
     { key: 'patients', icon: <UserOutlined />, label: 'Patients' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
   ];
 
   return (
