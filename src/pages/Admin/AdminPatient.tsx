@@ -21,7 +21,6 @@ import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 import {
   UserOutlined,
-  PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
@@ -136,12 +135,6 @@ const AdminPatient: React.FC = () => {
     } finally {
       setLoadingPatients(false);
     }
-  };
-
-  const handleAddPatient = () => {
-    setEditingPatient(null);
-    form.resetFields();
-    setIsModalVisible(true);
   };
 
   const handleEditPatient = (patient: Patient) => {
