@@ -37,9 +37,9 @@ const LoginPage: React.FC = () => {
         
         // Điều hướng dựa trên role
         if (userRole === "admin") {
-          navigate("/admin/");
+          navigate("/admin");
         } else if (userRole === "Doctor") {
-          navigate("/doctor/");
+          navigate("/doctor");
         } else if (userRole === "Patient || Customer") {
           navigate("/home");
         } else {
