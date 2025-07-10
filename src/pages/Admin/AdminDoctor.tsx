@@ -12,7 +12,6 @@ import {
   Form,
   Input,
   message,
-  Badge,
   Tooltip,
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -25,7 +24,6 @@ import {
   DeleteOutlined,
   EyeOutlined
 } from '@ant-design/icons';
-import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -36,19 +34,16 @@ interface Doctor {
   specialization: string;
   introduction: string;
   id?: string;
-  status?: 'active' | 'inactive';
-  experience?: number;
-  rating?: number;
-  patients?: number;
+  accountName?: string;
+  fullName?: string;
+  isActive?: boolean;
 }
 
-// Enhanced Doctor interface for internal use
+// Enhanced Doctor interface
 interface EnhancedDoctor extends Doctor {
   id: string;
   status: 'active' | 'inactive';
-  experience: number;
-  rating: number;
-  patients: number;
+  accountId?: string;
 }
 
 const AdminDoctor: React.FC = () => {
@@ -76,28 +71,62 @@ const AdminDoctor: React.FC = () => {
       
       if (response.ok) {
         const doctorsData = await response.json();
-        if (Array.isArray(doctorsData)) {
-          // Enhanced doctors with additional mock data for admin view
-          const enhancedDoctors: EnhancedDoctor[] = doctorsData.map((doctor: Doctor, index: number) => ({
+        
+        console.log('Raw API Response:', doctorsData);
+        
+        let doctorsList: any[] = [];
+        
+        // Xử lý response theo cấu trúc thực tế từ API
+        if (doctorsData && doctorsData.$id && doctorsData.$values && Array.isArray(doctorsData.$values)) {
+          // API trả về với cấu trúc có $values array
+          doctorsList = doctorsData.$values;
+        } 
+        else if (doctorsData && typeof doctorsData === 'object' && !Array.isArray(doctorsData)) {
+          // API trả về object với keys là IDs
+          doctorsList = Object.entries(doctorsData).map(([id, doctor]: [string, any]) => ({
             ...doctor,
-            id: doctor.id || `doctor-${index}`,
-            status: (Math.random() > 0.2 ? 'active' : 'inactive') as 'active' | 'inactive',
-            experience: Math.floor(Math.random() * 15) + 5,
-            rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
-            patients: Math.floor(Math.random() * 200) + 50
+            id: id
           }));
+        } 
+        else if (Array.isArray(doctorsData)) {
+          doctorsList = doctorsData;
+        } 
+        else if (doctorsData && doctorsData.data && Array.isArray(doctorsData.data)) {
+          doctorsList = doctorsData.data;
+        }
+        
+        console.log('Processed doctorsList:', doctorsList);
+        
+        if (doctorsList.length > 0) {
+          const enhancedDoctors: EnhancedDoctor[] = doctorsList.map((doctor: any, index: number) => ({
+            id: doctor.$id || doctor.id || doctor._id || `doctor-${index}`,
+            userName: doctor.userName || doctor.username || doctor.name || 'Unknown',
+            fullName: doctor.fullName || doctor.userName || doctor.username || doctor.name,
+            accountName: doctor.accountName || doctor.username,
+            accountId: doctor.accountId || doctor.id,
+            specialization: doctor.specialization || 'General',
+            introduction: doctor.introduction || 'No introduction available',
+            imageUrl: doctor.imageUrl || '',
+            isActive: doctor.isActive !== false,
+            status: (doctor.isActive !== false ? 'active' : 'inactive') as 'active' | 'inactive',
+          }));
+          
+          console.log('Enhanced doctors:', enhancedDoctors);
           setDoctors(enhancedDoctors);
+          message.success(`Loaded ${enhancedDoctors.length} doctors successfully`);
         } else {
+          console.log('No doctors found in processed data');
           setDoctors([]);
-          message.warning('No doctors found');
+          message.info('No doctors found in the system');
         }
       } else {
-        message.error('Failed to fetch doctors');
+        console.error('API Error:', response.status, response.statusText);
+        message.error(`Failed to fetch doctors: ${response.status} ${response.statusText}`);
         setDoctors([]);
       }
     } catch (error) {
       console.error('Error fetching doctors:', error);
-      message.error('Error fetching doctors. Please try again.');
+      message.error('Error fetching doctors. Please check your connection.');
       setDoctors([]);
     } finally {
       setLoadingDoctors(false);
@@ -206,7 +235,12 @@ const AdminDoctor: React.FC = () => {
 
   const handleEditDoctor = (doctor: EnhancedDoctor) => {
     setEditingDoctor(doctor);
-    form.setFieldsValue(doctor);
+    form.setFieldsValue({
+      userName: doctor.userName,
+      specialization: doctor.specialization,
+      introduction: doctor.introduction,
+      imageUrl: doctor.imageUrl
+    });
     setIsModalVisible(true);
   };
 
@@ -250,7 +284,7 @@ const AdminDoctor: React.FC = () => {
       title: 'Doctor',
       dataIndex: 'userName',
       key: 'userName',
-      render: (text: string, record: EnhancedDoctor) => (
+      render: (_text: string, record: EnhancedDoctor) => (
         <div className="doctor-cell">
           <Avatar
             size={40}
@@ -259,8 +293,13 @@ const AdminDoctor: React.FC = () => {
             className="doctor-avatar"
           />
           <div className="doctor-info">
-            <div className="doctor-name">Dr. {text}</div>
+            <div className="doctor-name">
+              {record.fullName || `Dr. ${record.userName}`}
+            </div>
             <div className="doctor-specialization">{record.specialization}</div>
+            {record.accountName && (
+              <div className="doctor-account">@{record.accountName}</div>
+            )}
           </div>
         </div>
       ),
@@ -276,27 +315,16 @@ const AdminDoctor: React.FC = () => {
       ),
     },
     {
-      title: 'Experience',
-      dataIndex: 'experience',
-      key: 'experience',
-      render: (years: number) => `${years} years`,
-    },
-    {
-      title: 'Rating',
-      dataIndex: 'rating',
-      key: 'rating',
-      render: (rating: number) => (
-        <div className="rating-cell">
-          <span className="rating-value">{rating}</span>
-          <span className="rating-stars">★★★★★</span>
+      title: 'Introduction',
+      dataIndex: 'introduction',
+      key: 'introduction',
+      render: (text: string) => (
+        <div className="introduction-cell">
+          <Tooltip title={text}>
+            {text && text.length > 50 ? `${text.substring(0, 50)}...` : text}
+          </Tooltip>
         </div>
       ),
-    },
-    {
-      title: 'Patients',
-      dataIndex: 'patients',
-      key: 'patients',
-      render: (count: number) => <Badge count={count} showZero color="#1890ff" />,
     },
     {
       title: 'Actions',
