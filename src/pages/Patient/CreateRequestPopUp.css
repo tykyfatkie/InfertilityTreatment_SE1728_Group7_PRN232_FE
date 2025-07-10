@@ -1,4 +1,4 @@
-/* CreateBookingPopUp.css - Rare Disease Hospital Theme */
+/* CreaterequestPopUp.css - Rare Disease Hospital Theme */
 
 .rare-disease-modal {
   border-radius: 20px;
@@ -30,7 +30,7 @@
   opacity: 0.3;
 }
 
-.booking-modal-title {
+.request-modal-title {
   display: flex;
   align-items: center;
   color: white;
@@ -40,13 +40,13 @@
   z-index: 1;
 }
 
-.booking-modal-title .title-icon {
+.request-modal-title .title-icon {
   margin-right: 16px;
   font-size: 28px;
   color: #60a5fa;
 }
 
-.booking-modal-title .subtitle {
+.request-modal-title .subtitle {
   font-size: 14px;
   font-weight: 400;
   opacity: 0.9;
@@ -67,25 +67,25 @@
   border-radius: 50%;
 }
 
-.booking-modal-content {
+.request-modal-content {
   padding: 0;
   background: #f8fafc;
   max-height: 80vh;
   overflow-y: auto;
 }
 
-.booking-header {
+.request-header {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   padding: 32px 36px;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.booking-header-text {
+.request-header-text {
   text-align: center;
   margin-bottom: 24px;
 }
 
-.booking-header-text h3 {
+.request-header-text h3 {
   color: #1e40af;
   font-size: 26px;
   font-weight: 700;
@@ -95,12 +95,12 @@
   justify-content: center;
 }
 
-.booking-header-text h3 .header-icon {
+.request-header-text h3 .header-icon {
   margin-right: 12px;
   color: #ef4444;
 }
 
-.booking-header-text p {
+.request-header-text p {
   color: #64748b;
   font-size: 16px;
   margin: 0;
@@ -131,7 +131,7 @@
   font-size: 16px;
 }
 
-.booking-form {
+.request-form {
   background: white;
   padding: 36px;
   margin: 0;
@@ -370,22 +370,22 @@
 }
 
 /* Form Item Styles */
-.booking-form .ant-form-item {
+.request-form .ant-form-item {
   margin-bottom: 24px;
 }
 
-.booking-form .ant-form-item-label > label {
+.request-form .ant-form-item-label > label {
   color: #334155;
   font-weight: 600;
   height: auto;
 }
 
-.booking-form .ant-form-item-label > label::after {
+.request-form .ant-form-item-label > label::after {
   display: none;
 }
 
 /* Divider Styles */
-.booking-form .ant-divider {
+.request-form .ant-divider {
   border-color: #e2e8f0;
   margin: 24px 0;
 }
@@ -448,16 +448,16 @@
     height: 100vh;
   }
   
-  .booking-modal-content {
+  .request-modal-content {
     padding: 0;
     max-height: calc(100vh - 80px);
   }
   
-  .booking-header {
+  .request-header {
     padding: 24px 20px;
   }
   
-  .booking-form {
+  .request-form {
     padding: 24px 20px;
   }
   
@@ -500,38 +500,38 @@
 }
 
 /* Custom Scrollbar */
-.booking-modal-content::-webkit-scrollbar {
+.request-modal-content::-webkit-scrollbar {
   width: 8px;
 }
 
-.booking-modal-content::-webkit-scrollbar-track {
+.request-modal-content::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
 }
 
-.booking-modal-content::-webkit-scrollbar-thumb {
+.request-modal-content::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.booking-modal-content::-webkit-scrollbar-thumb:hover {
+.request-modal-content::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
 /* Error States */
-.booking-form .ant-form-item-has-error .custom-date-picker,
-.booking-form .ant-form-item-has-error .custom-time-picker,
-.booking-form .ant-form-item-has-error .custom-select,
-.booking-form .ant-form-item-has-error .custom-textarea {
+.request-form .ant-form-item-has-error .custom-date-picker,
+.request-form .ant-form-item-has-error .custom-time-picker,
+.request-form .ant-form-item-has-error .custom-select,
+.request-form .ant-form-item-has-error .custom-textarea {
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* Success States */
-.booking-form .ant-form-item-has-success .custom-date-picker,
-.booking-form .ant-form-item-has-success .custom-time-picker,
-.booking-form .ant-form-item-has-success .custom-select,
-.booking-form .ant-form-item-has-success .custom-textarea {
+.request-form .ant-form-item-has-success .custom-date-picker,
+.request-form .ant-form-item-has-success .custom-time-picker,
+.request-form .ant-form-item-has-success .custom-select,
+.request-form .ant-form-item-has-success .custom-textarea {
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
