@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Card, Row, Col, Space } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
+import CreateBookingPopUp from './CreateBookingPopUp'; // Import the popup component
 import {
   MedicineBoxOutlined,
   HeartTwoTone,
@@ -16,6 +17,7 @@ const backgroundImages = ['../../../src/assets/home.jpg'];
 const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
+  const [showBookingPopup, setShowBookingPopup] = useState(false); // State for popup
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +49,12 @@ const PatientHomepage: React.FC = () => {
     
     // Chuyển hướng về trang chủ
     navigate("/");
+  };
+
+  const handleBookingSuccess = () => {
+    // Handle successful booking - you can add any additional logic here
+    console.log('Booking created successfully!');
+    // Could refresh data, show additional success message, etc.
   };
 
   const features = [
@@ -167,7 +175,7 @@ const PatientHomepage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  onClick={() => navigate("/patient/booking/")}
+                  onClick={() => setShowBookingPopup(true)} // Show popup instead of navigate
                 >
                   Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
                 </Button>
@@ -227,6 +235,13 @@ const PatientHomepage: React.FC = () => {
         </Row>     
       </Content>
       <AppFooter />
+      
+      {/* Booking Popup */}
+      <CreateBookingPopUp
+        visible={showBookingPopup}
+        onClose={() => setShowBookingPopup(false)}
+        onSuccess={handleBookingSuccess}
+      />
     </Layout>
   );
 };

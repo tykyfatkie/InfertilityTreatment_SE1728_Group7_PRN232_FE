@@ -6,7 +6,6 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import PatientHomepage from './pages/Patient/PatientHomePage';
 import AboutPage from './pages/About/AboutPage';
 import ContactPage from './pages/Contact/ContactPage';
-import PatientBooking from './pages/Patient/PatientBookingPage';
 
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
           <Route path="/home" element={<PatientHomepage />} />
           <Route path="/about-us" element={<AboutPage />} />
           <Route path="/contact-us" element={<ContactPage />} />
-          <Route path="/patient/booking/" element={<PatientBooking />} />
           <Route 
             path="/" 
             element={
