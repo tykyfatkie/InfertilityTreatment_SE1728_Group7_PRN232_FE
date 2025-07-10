@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Form, DatePicker, TimePicker, Input, Button, message, Select } from 'antd';
-import { CalendarOutlined, ClockCircleOutlined, DollarOutlined } from '@ant-design/icons';
+import { CalendarOutlined, ClockCircleOutlined, DollarOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
+import './CreateBookingPopUp.css';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -119,102 +120,155 @@ const CreateBookingPopUp: React.FC<CreateBookingPopUpProps> = ({
 
   return (
     <Modal
-      title="Book Rare Disease Consultation"
+      title={
+        <div className="booking-modal-title">
+          <UserOutlined className="title-icon" />
+          <span>Đặt lịch khám bệnh hiếm</span>
+        </div>
+      }
       open={visible}
       onCancel={onClose}
       footer={null}
-      width={600}
+      width={700}
       destroyOnClose
+      className="booking-modal"
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        requiredMark={false}
-      >
-        <Form.Item
-          label="Appointment Date"
-          name="date"
-          rules={[{ required: true, message: 'Please select appointment date' }]}
-        >
-          <DatePicker
-            style={{ width: '100%' }}
-            placeholder="Select date"
-            disabledDate={disabledDate}
-            prefix={<CalendarOutlined />}
-            format="YYYY-MM-DD"
-          />
-        </Form.Item>
+      <div className="booking-modal-content">
+        <div className="booking-header">
+          <div className="booking-header-text">
+            <h3>Thông tin đặt lịch</h3>
+            <p>Vui lòng điền đầy đủ thông tin để đặt lịch khám</p>
+          </div>
+        </div>
 
-        <Form.Item
-          label="Appointment Time"
-          name="time"
-          rules={[{ required: true, message: 'Please select appointment time' }]}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          requiredMark={false}
+          className="booking-form"
         >
-          <TimePicker
-            style={{ width: '100%' }}
-            placeholder="Select time"
-            format="HH:mm"
-            minuteStep={15}
-            disabledTime={() => disabledTime(form.getFieldValue('date'))}
-            prefix={<ClockCircleOutlined />}
-          />
-        </Form.Item>
+          <div className="form-row">
+            <div className="form-col">
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <CalendarOutlined className="label-icon" />
+                    Ngày khám
+                  </span>
+                }
+                name="date"
+                rules={[{ required: true, message: 'Vui lòng chọn ngày khám' }]}
+              >
+                <DatePicker
+                  className="custom-date-picker"
+                  placeholder="Chọn ngày"
+                  disabledDate={disabledDate}
+                  format="DD/MM/YYYY"
+                  size="large"
+                />
+              </Form.Item>
+            </div>
 
-        <Form.Item
-          label="Consultation Type"
-          name="type"
-          rules={[{ required: true, message: 'Please select consultation type' }]}
-        >
-          <Select placeholder="Select consultation type">
-            <Option value="initial">Initial Consultation</Option>
-            <Option value="follow-up">Follow-up Consultation</Option>
-            <Option value="genetic-counseling">Genetic Counseling</Option>
-            <Option value="diagnostic-review">Diagnostic Review</Option>
-            <Option value="treatment-planning">Treatment Planning</Option>
-          </Select>
-        </Form.Item>
+            <div className="form-col">
+              <Form.Item
+                label={
+                  <span className="form-label">
+                    <ClockCircleOutlined className="label-icon" />
+                    Giờ khám
+                  </span>
+                }
+                name="time"
+                rules={[{ required: true, message: 'Vui lòng chọn giờ khám' }]}
+              >
+                <TimePicker
+                  className="custom-time-picker"
+                  placeholder="Chọn giờ"
+                  format="HH:mm"
+                  minuteStep={15}
+                  disabledTime={() => disabledTime(form.getFieldValue('date'))}
+                  size="large"
+                />
+              </Form.Item>
+            </div>
+          </div>
 
-        <Form.Item
-          label="Consultation Fee"
-          name="price"
-        >
-          <Input
-            value="100,000 VND"
-            disabled
-            prefix={<DollarOutlined />}
-            style={{ color: '#1890ff', fontWeight: 'bold' }}
-          />
-        </Form.Item>
+          <Form.Item
+            label={
+              <span className="form-label">
+                <FileTextOutlined className="label-icon" />
+                Loại tư vấn
+              </span>
+            }
+            name="type"
+            rules={[{ required: true, message: 'Vui lòng chọn loại tư vấn' }]}
+          >
+            <Select 
+              placeholder="Chọn loại tư vấn"
+              className="custom-select"
+              size="large"
+            >
+              <Option value="initial">Tư vấn ban đầu</Option>
+              <Option value="follow-up">Tái khám</Option>
+              <Option value="genetic-counseling">Tư vấn di truyền</Option>
+              <Option value="diagnostic-review">Xem xét chẩn đoán</Option>
+              <Option value="treatment-planning">Lập kế hoạch điều trị</Option>
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          label="Additional Notes"
-          name="note"
-        >
-          <TextArea
-            rows={4}
-            placeholder="Please describe your symptoms, medical history, or any specific concerns you'd like to discuss..."
-            maxLength={500}
-            showCount
-          />
-        </Form.Item>
+          <Form.Item
+            label={
+              <span className="form-label">
+                <DollarOutlined className="label-icon" />
+                Phí tư vấn
+              </span>
+            }
+            name="price"
+          >
+            <div className="price-display">
+              <span className="price-amount">100,000 VND</span>
+              <span className="price-note">Phí cố định cho tư vấn</span>
+            </div>
+          </Form.Item>
 
-        <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <Button onClick={onClose}>
-              Cancel
+          <Form.Item
+            label={
+              <span className="form-label">
+                <FileTextOutlined className="label-icon" />
+                Ghi chú thêm
+              </span>
+            }
+            name="note"
+          >
+            <TextArea
+              rows={4}
+              placeholder="Vui lòng mô tả triệu chứng, tiền sử bệnh, hoặc bất kỳ mối quan tâm cụ thể nào bạn muốn thảo luận..."
+              maxLength={500}
+              showCount
+              className="custom-textarea"
+            />
+          </Form.Item>
+
+          <Form.Item className="form-actions">
+            <Button 
+              onClick={onClose}
+              className="cancel-btn"
+              size="large"
+            >
+              Hủy
             </Button>
             <Button
               type="primary"
               htmlType="submit"
               loading={loading}
-              style={{ minWidth: 100 }}
+              className="submit-btn"
+              size="large"
             >
-              Book Appointment
+              Đặt lịch khám
             </Button>
-          </div>
-        </Form.Item>
-      </Form>
+          </Form.Item>
+        </Form>
+      </div>
     </Modal>
   );
 };
