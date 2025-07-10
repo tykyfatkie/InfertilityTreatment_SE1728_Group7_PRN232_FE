@@ -162,7 +162,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
       onCancel={onClose}
       footer={null}
       width={800}
-      destroyOnClose
+      destroyOnHidden
       className="request-modal rare-disease-modal"
     >
       <div className="request-modal-content">
