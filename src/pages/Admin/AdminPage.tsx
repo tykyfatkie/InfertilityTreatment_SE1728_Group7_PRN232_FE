@@ -439,7 +439,7 @@ const AdminPage: React.FC = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', margin: "0px", background: 'white' }} className="admin-layout" >
+    <Layout className="admin-layout" >
       <Header className="admin-header">
         <div className="admin-header-left">
           <div className="admin-logo">
