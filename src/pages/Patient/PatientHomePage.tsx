@@ -29,13 +29,11 @@ const PatientHomepage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Lấy username từ localStorage
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
       setUsername(storedUsername);
     }
 
-    // Fetch doctors from API
     fetchDoctors();
   }, []);
 
@@ -52,44 +50,38 @@ const PatientHomepage: React.FC = () => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
       if (response.ok) {
         const doctorsData = await response.json();
-        // Ensure doctorsData is an array
         if (Array.isArray(doctorsData)) {
           setDoctors(doctorsData);
         } else {
-          console.error('Doctors data is not an array:', doctorsData);
-          setDoctors([]); // Set empty array as fallback
+          setDoctors([]); 
         }
       } else {
-        console.error('Failed to fetch doctors');
-        setDoctors([]); // Set empty array on error
+        setDoctors([]);
       }
     } catch (error) {
-      console.error('Error fetching doctors:', error);
-      setDoctors([]); // Set empty array on error
+      setDoctors([]); 
     } finally {
       setLoadingDoctors(false);
     }
   };
 
   const handleLogout = () => {
-    // Xóa tất cả dữ liệu trong localStorage
+
     localStorage.clear();
     
-    // Xóa tất cả cookies
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     
-    // Chuyển hướng về trang chủ
     navigate("/");
   };
 
   const handleBookingSuccess = () => {
-    // Handle successful booking - you can add any additional logic here
+
     console.log('Booking created successfully!');
-    // Could refresh data, show additional success message, etc.
+
   };
 
   return (
