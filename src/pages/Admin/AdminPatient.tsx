@@ -28,7 +28,7 @@ import {
   PhoneOutlined,
   MailOutlined,
 } from '@ant-design/icons';
-import './AdminPatient.css';
+import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;

@@ -3,7 +3,9 @@ import { Layout } from 'antd';
 import {
   DashboardOutlined,
   TeamOutlined,
-  UserOutlined} from '@ant-design/icons';
+  UserOutlined,
+} from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom'; 
 
 const { Sider } = Layout;
 
@@ -13,11 +15,18 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuItemSelect }) => {
+  const navigate = useNavigate(); 
+
   const menuItems = [
-    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors' },
-    { key: 'patients', icon: <UserOutlined />, label: 'Patients' },
+    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', path: '/admin' },
+    { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors', path: '/admin/doctors' },
+    { key: 'patients', icon: <UserOutlined />, label: 'Patients', path: '/admin/patients' },
   ];
+
+  const handleMenuClick = (key: string, path: string) => {
+    onMenuItemSelect(key);
+    navigate(path); 
+  };
 
   return (
     <Sider className="admin-sider" width={250}>
@@ -26,7 +35,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
           <div
             key={item.key}
             className={`menu-item ${selectedMenuItem === item.key ? 'active' : ''}`}
-            onClick={() => onMenuItemSelect(item.key)}
+            onClick={() => handleMenuClick(item.key, item.path)}
           >
             {item.icon}
             <span>{item.label}</span>

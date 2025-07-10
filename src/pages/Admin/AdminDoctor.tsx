@@ -26,7 +26,7 @@ import {
   DeleteOutlined,
   EyeOutlined
 } from '@ant-design/icons';
-import './AdminDoctor.css';
+import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -73,11 +73,13 @@ const AdminDoctor: React.FC = () => {
 
   const fetchDoctors = async () => {
     try {
+      setLoadingDoctors(true);
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
+      
       if (response.ok) {
         const doctorsData = await response.json();
         if (Array.isArray(doctorsData)) {
-          // Add mock data for admin view with proper typing
+          // Enhanced doctors with additional mock data for admin view
           const enhancedDoctors: EnhancedDoctor[] = doctorsData.map((doctor: Doctor, index: number) => ({
             ...doctor,
             id: doctor.id || `doctor-${index}`,
@@ -89,15 +91,96 @@ const AdminDoctor: React.FC = () => {
           setDoctors(enhancedDoctors);
         } else {
           setDoctors([]);
+          message.warning('No doctors found');
         }
       } else {
+        message.error('Failed to fetch doctors');
         setDoctors([]);
       }
     } catch (error) {
       console.error('Error fetching doctors:', error);
+      message.error('Error fetching doctors. Please try again.');
       setDoctors([]);
     } finally {
       setLoadingDoctors(false);
+    }
+  };
+
+  const createDoctor = async (doctorData: Doctor) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(doctorData),
+      });
+
+      if (response.ok) {
+        const newDoctor = await response.json();
+        message.success('Doctor created successfully');
+        // Refresh the doctors list
+        fetchDoctors();
+        return newDoctor;
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || 'Failed to create doctor');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating doctor:', error);
+      message.error('Error creating doctor. Please try again.');
+      return null;
+    }
+  };
+
+  const updateDoctor = async (doctorId: string, doctorData: Doctor) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(doctorData),
+      });
+
+      if (response.ok) {
+        message.success('Doctor updated successfully');
+        // Refresh the doctors list
+        fetchDoctors();
+        return true;
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || 'Failed to update doctor');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating doctor:', error);
+      message.error('Error updating doctor. Please try again.');
+      return false;
+    }
+  };
+
+  const deleteDoctor = async (doctorId: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        message.success('Doctor deleted successfully');
+        // Refresh the doctors list
+        fetchDoctors();
+        return true;
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || 'Failed to delete doctor');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error deleting doctor:', error);
+      message.error('Error deleting doctor. Please try again.');
+      return false;
     }
   };
 
@@ -118,33 +201,34 @@ const AdminDoctor: React.FC = () => {
       title: 'Delete Doctor',
       content: `Are you sure you want to delete Dr. ${doctor.userName}?`,
       icon: <ExclamationCircleOutlined />,
-      onOk() {
-        setDoctors(doctors.filter(d => d.id !== doctor.id));
-        message.success('Doctor deleted successfully');
+      onOk: async () => {
+        await deleteDoctor(doctor.id);
       }
     });
   };
 
-  const handleModalOk = () => {
-    form.validateFields().then(values => {
+  const handleModalOk = async () => {
+    try {
+      const values = await form.validateFields();
+      
       if (editingDoctor) {
-        setDoctors(doctors.map(d => d.id === editingDoctor.id ? { ...d, ...values } : d));
-        message.success('Doctor updated successfully');
+        // Update existing doctor
+        const success = await updateDoctor(editingDoctor.id, values);
+        if (success) {
+          setIsModalVisible(false);
+          form.resetFields();
+        }
       } else {
-        const newDoctor: EnhancedDoctor = {
-          ...values,
-          id: `doctor-${Date.now()}`,
-          status: 'active' as const,
-          experience: 5,
-          rating: 4.0,
-          patients: 0
-        };
-        setDoctors([...doctors, newDoctor]);
-        message.success('Doctor added successfully');
+        // Create new doctor
+        const newDoctor = await createDoctor(values);
+        if (newDoctor) {
+          setIsModalVisible(false);
+          form.resetFields();
+        }
       }
-      setIsModalVisible(false);
-      form.resetFields();
-    });
+    } catch (error) {
+      console.error('Form validation failed:', error);
+    }
   };
 
   const doctorColumns = [

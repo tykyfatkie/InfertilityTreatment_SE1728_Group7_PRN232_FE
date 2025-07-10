@@ -6,19 +6,35 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import PatientHomepage from './pages/Patient/PatientHomePage';
 import AboutPage from './pages/About/AboutPage';
 import ContactPage from './pages/Contact/ContactPage';
-import AdminPage from './pages/Admin/AdminPage';
+import AdminDoctor from './pages/Admin/AdminDoctor';
+import AdminPatient from './pages/Admin/AdminPatient';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>       
-          <Route path="/login" element={<LoginPage />} />
+        <Routes>    
+
+          {/* Guest    */}
           <Route path="/" element={<Homepage />} />
-          <Route path="/home" element={<PatientHomepage />} />
+          <Route path="/login" element={<LoginPage />} /> 
           <Route path="/about-us" element={<AboutPage />} />
           <Route path="/contact-us" element={<ContactPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+
+
+          {/* Patient       */}
+          <Route path="/home" element={<PatientHomepage />} />
+
+
+          {/* Admin */}
+          <Route path="/admin/doctors" element={<AdminDoctor />} />
+          <Route path="/admin/patients" element={<AdminPatient />} />
+
+
+          {/* Doctor */}
+
+
+
           <Route 
             path="/" 
             element={
