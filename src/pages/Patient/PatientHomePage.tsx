@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Row, Col, Space } from 'antd';
+import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateBookingPopUp from './CreateBookingPopUp'; // Import the popup component
 import {
+  UserOutlined,
   MedicineBoxOutlined,
-  HeartTwoTone,
-  TeamOutlined,
-  SolutionOutlined,
+  StarFilled,
   ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 const backgroundImages = ['../../../src/assets/home.jpg'];
+
+interface Doctor {
+  userName: string;
+  imageUrl: string;
+  specialization: string;
+  introduction: string;
+}
 
 const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
   const [showBookingPopup, setShowBookingPopup] = useState(false); // State for popup
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +34,9 @@ const PatientHomepage: React.FC = () => {
     if (storedUsername) {
       setUsername(storedUsername);
     }
+
+    // Fetch doctors from API
+    fetchDoctors();
   }, []);
 
   useEffect(() => {
@@ -35,6 +46,22 @@ const PatientHomepage: React.FC = () => {
 
     return () => clearInterval(interval); 
   }, []);
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
+      if (response.ok) {
+        const doctorsData = await response.json();
+        setDoctors(doctorsData);
+      } else {
+        console.error('Failed to fetch doctors');
+      }
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+    } finally {
+      setLoadingDoctors(false);
+    }
+  };
 
   const handleLogout = () => {
     // Xóa tất cả dữ liệu trong localStorage
@@ -56,29 +83,6 @@ const PatientHomepage: React.FC = () => {
     console.log('Booking created successfully!');
     // Could refresh data, show additional success message, etc.
   };
-
-  const features = [
-    {
-      icon: <MedicineBoxOutlined style={{ fontSize: '48px', color: '#1890ff' }} />,
-      title: "Advanced Fertility Treatments",
-      description: "Access the latest IVF, IUI, and ART technologies for higher success rates."
-    },
-    {
-      icon: <HeartTwoTone twoToneColor="#eb2f96" style={{ fontSize: '48px' }} />,
-      title: "Personalized Care",
-      description: "Tailored treatment plans guided by experienced reproductive specialists."
-    },
-    {
-      icon: <SolutionOutlined style={{ fontSize: '48px', color: '#1890ff' }} />,
-      title: "Comprehensive Diagnostics",
-      description: "In-depth hormonal, genetic, and imaging evaluations for couples."
-    },
-    {
-      icon: <TeamOutlined style={{ fontSize: '48px', color: '#1890ff' }} />,
-      title: "Emotional & Peer Support",
-      description: "Join a supportive community and access counseling during your journey."
-    },
-  ];
 
   return (
     <Layout style={{ minHeight: '100vh', margin: "0px", background: 'white' }}>
@@ -216,23 +220,165 @@ const PatientHomepage: React.FC = () => {
           </div>
         </div>
 
-        {/* Features Section */}
-        <Row gutter={[16, 24]} style={{ padding: '48px 12px' }}>
-          {features.map((feature, index) => (
-            <Col key={index} xs={24} sm={12} md={6}>
-              <Card
-                variant="outlined"
-                style={{ borderRadius: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}
-              >
-                <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-                  {feature.icon}
-                </div>
-                <Title level={4} style={{ textAlign: 'center' }}>{feature.title}</Title>
-                <Paragraph style={{ textAlign: 'center' }}>{feature.description}</Paragraph>
-              </Card>
-            </Col>
-          ))}
-        </Row>     
+        {/* Our Expert Doctors Section */}
+        <div style={{ padding: '80px 24px', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+              <Title level={2} style={{ 
+                fontSize: '42px', 
+                color: '#1e3a8a', 
+                marginBottom: '16px',
+                fontWeight: 700
+              }}>
+                Meet Our Expert Doctors
+              </Title>
+              <Paragraph style={{ 
+                fontSize: '18px', 
+                color: '#64748b', 
+                maxWidth: '600px', 
+                margin: '0 auto',
+                lineHeight: 1.6
+              }}>
+                Our team of specialized fertility doctors brings years of experience and cutting-edge expertise to help you achieve your family dreams.
+              </Paragraph>
+            </div>
+
+            {loadingDoctors ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <Spin size="large" />
+                <div style={{ marginTop: '16px', color: '#64748b' }}>Loading our expert doctors...</div>
+              </div>
+            ) : (
+              <Row gutter={[24, 32]} justify="center">
+                {doctors.map((doctor, index) => (
+                  <Col key={index} xs={24} sm={12} lg={8} xl={6}>
+                    <Card
+                      style={{
+                        borderRadius: '24px',
+                        overflow: 'hidden',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+                        border: 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer',
+                        height: '420px'
+                      }}
+                      bodyStyle={{ padding: '24px' }}
+                      className="doctor-card"
+                      hoverable
+                    >
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ 
+                          position: 'relative', 
+                          marginBottom: '20px',
+                          display: 'inline-block'
+                        }}>
+                          <Avatar
+                            size={120}
+                            src={doctor.imageUrl}
+                            icon={<UserOutlined />}
+                            style={{
+                              border: '4px solid #1890ff',
+                              boxShadow: '0 8px 24px rgba(24, 144, 255, 0.2)'
+                            }}
+                          />
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '-8px',
+                            right: '8px',
+                            background: '#52c41a',
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            border: '3px solid white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            <MedicineBoxOutlined style={{ fontSize: '10px', color: 'white' }} />
+                          </div>
+                        </div>
+                        
+                        <Title level={4} style={{ 
+                          marginBottom: '8px',
+                          color: '#1e3a8a',
+                          fontSize: '20px',
+                          fontWeight: 600
+                        }}>
+                          Dr. {doctor.userName}
+                        </Title>
+                        
+                        <Text style={{ 
+                          color: '#1890ff', 
+                          fontWeight: 500,
+                          fontSize: '14px',
+                          background: 'rgba(24, 144, 255, 0.1)',
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          display: 'inline-block',
+                          marginBottom: '12px'
+                        }}>
+                          {doctor.specialization}
+                        </Text>
+                        
+                        <div style={{ marginBottom: '16px' }}>
+                          <Rate
+                            disabled
+                            defaultValue={4.8}
+                            character={<StarFilled style={{ fontSize: '14px' }} />}
+                            style={{ color: '#ffa940' }}
+                          />
+                          <Text style={{ 
+                            marginLeft: '8px', 
+                            color: '#64748b',
+                            fontSize: '12px'
+                          }}>
+                            4.8/5 (120+ reviews)
+                          </Text>
+                        </div>
+                        
+                        <Paragraph 
+                          ellipsis={{ rows: 3 }}
+                          style={{ 
+                            color: '#64748b', 
+                            fontSize: '14px',
+                            lineHeight: 1.5,
+                            marginBottom: '20px',
+                            height: '63px'
+                          }}
+                        >
+                          {doctor.introduction}
+                        </Paragraph>
+                        
+                        <Button
+                          type="primary"
+                          size="small"
+                          style={{
+                            borderRadius: '20px',
+                            fontWeight: 500,
+                            height: '36px',
+                            background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)'
+                          }}
+                          onClick={() => setShowBookingPopup(true)}
+                        >
+                          Book Consultation
+                        </Button>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </div>
+        </div>
+
+        <style jsx>{`
+          .doctor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+          }
+        `}</style>     
       </Content>
       <AppFooter />
       
