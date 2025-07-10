@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
         localStorage.setItem("role", userRole);
         
         // Điều hướng dựa trên role
-        if (userRole === "Admin") {
+        if (userRole === "admin") {
           navigate("/admin/");
         } else if (userRole === "Doctor") {
           navigate("/doctor/");
