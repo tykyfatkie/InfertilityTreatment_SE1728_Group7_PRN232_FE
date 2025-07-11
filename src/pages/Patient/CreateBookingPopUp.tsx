@@ -21,7 +21,7 @@ import {
   SafetyOutlined
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
-import './CreateRequestPopUp.css';
+import './CreateBookingPopUp.css';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -32,7 +32,7 @@ interface CreateRequestPopUpProps {
   onSuccess?: () => void;
 }
 
-const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
+const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
   visible,
   onClose,
   onSuccess
@@ -390,4 +390,4 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
   );
 };
 
-export default CreateRequestPopUp;
+export default CreateBookingPopUp;

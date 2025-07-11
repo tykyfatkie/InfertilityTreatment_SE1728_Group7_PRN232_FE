@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin, Tag } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
-import CreateRequestPopUp from './CreateRequestPopUp';
+import CreateRequestPopUp from './CreateBookingPopUp';
 import {
   UserOutlined,
   MedicineBoxOutlined,
