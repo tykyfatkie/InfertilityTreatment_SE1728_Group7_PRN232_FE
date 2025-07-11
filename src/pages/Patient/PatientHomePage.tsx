@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin } from 'antd';
+import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin, Tag } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateRequestPopUp from './CreateRequestPopUp';
 import {
   UserOutlined,
   MedicineBoxOutlined,
   StarFilled,
-  ArrowRightOutlined} from '@ant-design/icons';
+  ArrowRightOutlined,
+  HeartOutlined,
+  ExperimentOutlined,
+  SafetyOutlined,
+  ThunderboltOutlined,
+  CheckCircleOutlined
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
@@ -20,12 +26,29 @@ interface Doctor {
   introduction: string;
 }
 
+interface ServiceDetail {
+  id: string;
+  serviceName: string;
+  type: string;
+  price: number;
+  description: string;
+  status: string;
+  doctor: {
+    id: string;
+    userName: string;
+    specialization: string;
+    introduction: string;
+  };
+}
+
 const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
-  const [showBookingPopup, setShowBookingPopup] = useState(false); // State for popup
-  const [doctors, setDoctors] = useState<Doctor[]>([]); // Ensure it's always an array
+  const [showBookingPopup, setShowBookingPopup] = useState(false);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
+  const [services, setServices] = useState<ServiceDetail[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +58,7 @@ const PatientHomepage: React.FC = () => {
     }
 
     fetchDoctors();
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -65,8 +89,68 @@ const PatientHomepage: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const fetchServices = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceDetail/GetAllServiceDetails`);
+      if (response.ok) {
+        const servicesData = await response.json();
+        // Handle the nested structure from your API response
+        if (servicesData && servicesData.values && Array.isArray(servicesData.values)) {
+          setServices(servicesData.values);
+        } else {
+          setServices([]);
+        }
+      } else {
+        setServices([]);
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      setServices([]);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
 
+  const getServiceIcon = (serviceName: string) => {
+    const name = serviceName.toLowerCase();
+    if (name.includes('diagnosis') || name.includes('test')) {
+      return <ExperimentOutlined style={{ fontSize: '24px', color: '#1890ff' }} />;
+    } else if (name.includes('treatment') || name.includes('therapy')) {
+      return <HeartOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />;
+    } else if (name.includes('surgery') || name.includes('operation')) {
+      return <SafetyOutlined style={{ fontSize: '24px', color: '#52c41a' }} />;
+    } else if (name.includes('consultation') || name.includes('counseling')) {
+      return <ThunderboltOutlined style={{ fontSize: '24px', color: '#fa8c16' }} />;
+    } else {
+      return <MedicineBoxOutlined style={{ fontSize: '24px', color: '#722ed1' }} />;
+    }
+  };
+
+  const getServiceTypeColor = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'diagnosis':
+        return '#1890ff';
+      case 'treatment':
+        return '#52c41a';
+      case 'surgery':
+        return '#fa8c16';
+      case 'consultation':
+        return '#722ed1';
+      default:
+        return '#13c2c2';
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const handleLogout = () => {
     localStorage.clear();
     
     document.cookie.split(";").forEach((c) => {
@@ -79,9 +163,7 @@ const PatientHomepage: React.FC = () => {
   };
 
   const handleBookingSuccess = () => {
-
     console.log('Booking created successfully!');
-
   };
 
   return (
@@ -179,7 +261,7 @@ const PatientHomepage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  onClick={() => setShowBookingPopup(true)} // Show popup instead of navigate
+                  onClick={() => setShowBookingPopup(true)}
                 >
                   Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
                 </Button>
@@ -378,12 +460,225 @@ const PatientHomepage: React.FC = () => {
           </div>
         </div>
 
+        {/* Our Services Section */}
+        <div style={{ padding: '80px 24px', background: 'white' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+              <Title level={2} style={{ 
+                fontSize: '42px', 
+                color: '#1e3a8a', 
+                marginBottom: '16px',
+                fontWeight: 700
+              }}>
+                Our Fertility Services
+              </Title>
+              <Paragraph style={{ 
+                fontSize: '18px', 
+                color: '#64748b', 
+                maxWidth: '700px', 
+                margin: '0 auto',
+                lineHeight: 1.6
+              }}>
+                Comprehensive fertility treatments and diagnostic services designed to help you on your journey to parenthood. From initial consultations to advanced reproductive technologies.
+              </Paragraph>
+            </div>
+
+            {loadingServices ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <Spin size="large" />
+                <div style={{ marginTop: '16px', color: '#64748b' }}>Loading our services...</div>
+              </div>
+            ) : services.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                <div style={{ color: '#64748b', fontSize: '18px' }}>No services available at the moment.</div>
+                <div style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>Please check back later.</div>
+              </div>
+            ) : (
+              <Row gutter={[24, 32]} justify="center">
+                {services.map((service) => (
+                  <Col key={service.id} xs={24} sm={12} lg={8}>
+                    <Card
+                      style={{
+                        borderRadius: '20px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)',
+                        border: 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer',
+                        height: '100%',
+                        position: 'relative'
+                      }}
+                      bodyStyle={{ padding: '28px' }}
+                      className="service-card"
+                      hoverable
+                    >
+                      <div style={{ position: 'relative' }}>
+                        {/* Service Status Badge */}
+                        <div style={{
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '-10px',
+                          zIndex: 1
+                        }}>
+                          <Tag 
+                            color={service.status === 'Active' ? 'green' : 'orange'}
+                            style={{
+                              borderRadius: '20px',
+                              padding: '4px 12px',
+                              fontSize: '12px',
+                              fontWeight: 500
+                            }}
+                          >
+                            {service.status === 'Active' ? 
+                              <><CheckCircleOutlined style={{ marginRight: '4px' }} />Available</> :
+                              service.status
+                            }
+                          </Tag>
+                        </div>
+
+                        {/* Service Icon */}
+                        <div style={{
+                          background: `linear-gradient(135deg, ${getServiceTypeColor(service.type)}15 0%, ${getServiceTypeColor(service.type)}25 100%)`,
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: '24px',
+                          position: 'relative'
+                        }}>
+                          {getServiceIcon(service.serviceName)}
+                        </div>
+
+                        {/* Service Title */}
+                        <Title level={4} style={{ 
+                          marginBottom: '12px',
+                          color: '#1e3a8a',
+                          fontSize: '22px',
+                          fontWeight: 600,
+                          lineHeight: 1.3
+                        }}>
+                          {service.serviceName}
+                        </Title>
+
+                        {/* Service Type */}
+                        <Tag 
+                          color={getServiceTypeColor(service.type)}
+                          style={{
+                            borderRadius: '16px',
+                            padding: '4px 12px',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            marginBottom: '16px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {service.type}
+                        </Tag>
+
+                        {/* Service Description */}
+                        <Paragraph 
+                          ellipsis={{ rows: 3 }}
+                          style={{ 
+                            color: '#64748b', 
+                            fontSize: '15px',
+                            lineHeight: 1.6,
+                            marginBottom: '24px',
+                            height: '72px'
+                          }}
+                        >
+                          {service.description}
+                        </Paragraph>
+
+                        {/* Doctor Info */}
+                        <div style={{
+                          background: '#f8fafc',
+                          padding: '16px',
+                          borderRadius: '12px',
+                          marginBottom: '20px'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                            <Avatar
+                              size={32}
+                              icon={<UserOutlined />}
+                              style={{
+                                marginRight: '12px',
+                                border: '2px solid #1890ff'
+                              }}
+                            />
+                            <div>
+                              <Text style={{ 
+                                fontWeight: 600, 
+                                color: '#1e3a8a',
+                                fontSize: '14px'
+                              }}>
+                                Dr. {service.doctor.userName}
+                              </Text>
+                              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                                {service.doctor.specialization}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Price and Action */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginTop: 'auto'
+                        }}>
+                          <div>
+                            <Text style={{ 
+                              fontSize: '24px', 
+                              fontWeight: 700,
+                              color: '#1e3a8a'
+                            }}>
+                              {formatPrice(service.price)}
+                            </Text>
+                            <div style={{ fontSize: '12px', color: '#64748b' }}>
+                              Starting from
+                            </div>
+                          </div>
+                          <Button
+                            type="primary"
+                            size="large"
+                            style={{
+                              borderRadius: '12px',
+                              fontWeight: 500,
+                              background: `linear-gradient(135deg, ${getServiceTypeColor(service.type)} 0%, ${getServiceTypeColor(service.type)}dd 100%)`,
+                              border: 'none',
+                              boxShadow: `0 4px 12px ${getServiceTypeColor(service.type)}40`
+                            }}
+                            onClick={() => setShowBookingPopup(true)}
+                          >
+                            Book Now
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </div>
+        </div>
+
         {/* CSS Styles */}
         <style dangerouslySetInnerHTML={{
           __html: `
             .doctor-card:hover {
               transform: translateY(-8px);
               box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            }
+            .service-card:hover {
+              transform: translateY(-6px);
+              box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12) !important;
+            }
+            .service-card:hover .service-icon {
+              transform: scale(1.05);
             }
           `
         }} />
