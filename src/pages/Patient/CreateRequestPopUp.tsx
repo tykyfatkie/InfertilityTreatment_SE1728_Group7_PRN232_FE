@@ -92,27 +92,21 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
     }
   };
 
+  // Chỉ cho phép chọn từ ngày mai trở đi
   const disabledDate = (current: Dayjs) => {
-    return current && current < dayjs().startOf('day');
+    return current && current <= dayjs().endOf('day');
   };
 
-  const disabledTime = (selectedDate: Dayjs | null) => {
-    if (!selectedDate) return {};
-
-    const isToday = selectedDate.isSame(dayjs(), 'day');
-    const currentHour = dayjs().hour();
-
+  // Chỉ cho phép chọn giờ hành chính (8:00 - 17:00) với khoảng cách 30 phút
+  const disabledTime = () => {
     return {
       disabledHours: () => {
         const hours = [];
-        if (isToday) {
-          for (let i = 0; i < currentHour; i++) {
-            hours.push(i);
-          }
-        }
+        // Disable giờ từ 0-7 (trước 8h sáng)
         for (let i = 0; i < 8; i++) {
           hours.push(i);
         }
+        // Disable giờ từ 17-23 (sau 5h chiều)
         for (let i = 17; i < 24; i++) {
           hours.push(i);
         }
@@ -120,6 +114,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
       },
       disabledMinutes: () => {
         const minutes = [];
+        // Chỉ cho phép chọn phút 00 và 30
         for (let i = 0; i < 60; i++) {
           if (i % 30 !== 0) {
             minutes.push(i);
@@ -202,7 +197,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
                   label={
                     <span className="form-label">
                       <CalendarOutlined className="label-icon" />
-                      Preferred Date
+                      Preferred Date (From tomorrow onwards)
                     </span>
                   }
                   name="date"
@@ -223,7 +218,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
                   label={
                     <span className="form-label">
                       <ClockCircleOutlined className="label-icon" />
-                      Preferred Time
+                      Preferred Time (8:00 AM - 5:00 PM)
                     </span>
                   }
                   name="time"
@@ -234,7 +229,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
                     placeholder="Select time"
                     format="HH:mm"
                     minuteStep={30}
-                    disabledTime={() => disabledTime(form.getFieldValue('date'))}
+                    disabledTime={disabledTime}
                     size="large"
                   />
                 </Form.Item>
@@ -361,6 +356,7 @@ const CreateRequestPopUp: React.FC<CreateRequestPopUpProps> = ({
           <div className="important-notice">
             <h4>Important Information:</h4>
             <ul>
+              <li>Appointments are available from tomorrow onwards during business hours (8:00 AM - 5:00 PM)</li>
               <li>Please bring all relevant medical records, test results, and previous fertility reports</li>
               <li>Both partners should attend the initial consultation when possible</li>
               <li>Service requests are confirmed within 24 hours via phone or SMS</li>
