@@ -7,6 +7,7 @@ import { message } from "antd";
 const RegisterPage: React.FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -26,10 +27,10 @@ const RegisterPage: React.FC = () => {
     }
 
     const apiData = {
-      username: email, 
+      username, 
       password,
       email,
-      fullName: `${firstName} ${lastName}`, 
+      fullName: `${firstName} ${lastName}`,
       phoneNumber,
     };
 
@@ -88,6 +89,20 @@ const RegisterPage: React.FC = () => {
                   <label htmlFor="lastName" className="login__label">Last Name</label>
                   <i className="ri-user-fill login__icon"></i>
                 </div>
+              </div>
+              <div className="login__box">
+                <input
+                  type="text"
+                  id="username"
+                  required
+                  placeholder=" "
+                  className="login__input"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                />
+                <label htmlFor="username" className="login__label">Username</label>
+                <i className="ri-user-3-fill login__icon"></i>
               </div>
               <div className="login__box">
                 <input
