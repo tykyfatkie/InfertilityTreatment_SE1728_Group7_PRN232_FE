@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./RegisterPage.css"; // Giữ nguyên CSS
+import "./RegisterPage.css"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
