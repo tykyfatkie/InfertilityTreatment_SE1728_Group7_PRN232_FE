@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Homepage from './pages/HomePage/HomePage';
-import LoginPage from './pages/LoginPage/LoginPage';
+import Homepage from './pages/Home/HomePage';
+import LoginPage from './pages/Login/LoginPage';
 import PatientHomepage from './pages/Patient/PatientHomePage';
 import AboutPage from './pages/About/AboutPage';
 import ContactPage from './pages/Contact/ContactPage';
 import AdminDoctor from './pages/Admin/AdminDoctor';
 import AdminPatient from './pages/Admin/AdminPatient';
+import RegisterPage from './pages/Register/RegisterPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           {/* Guest    */}
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<LoginPage />} /> 
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/about-us" element={<AboutPage />} />
           <Route path="/contact-us" element={<ContactPage />} />
 
