@@ -10,7 +10,6 @@ import {
   Tag, 
   Modal,
   Form,
-  Input,
   message,
   Tooltip,
 } from 'antd';
@@ -52,8 +51,8 @@ const AdminDoctor: React.FC = () => {
   const [doctors, setDoctors] = useState<EnhancedDoctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const [selectedMenuItem, setSelectedMenuItem] = useState('doctors');
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState<EnhancedDoctor | null>(null);
+  const [, setIsModalVisible] = useState(false);
+  const [, setEditingDoctor] = useState<EnhancedDoctor | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -131,38 +130,6 @@ const AdminDoctor: React.FC = () => {
     }
   };
 
-  const updateDoctor = async (doctorId: string, doctorData: Doctor) => {
-    try {
-      const apiData = {
-        userName: doctorData.userName,
-        imageUrl: doctorData.imageUrl,
-        specialization: doctorData.specialization,
-        phoneNumber: doctorData.phoneNumber
-      };
-
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiData),
-      });
-
-      if (response.ok) {
-        message.success('Doctor updated successfully');
-        fetchDoctors();
-        return true;
-      } else {
-        const errorData = await response.json();
-        message.error(errorData.message);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error updating doctor:', error);
-      message.error('Error updating doctor. Please try again.');
-      return false;
-    }
-  };
 
   const deleteDoctor = async (doctorId: string) => {
     try {
@@ -184,12 +151,6 @@ const AdminDoctor: React.FC = () => {
       message.error('Error deleting doctor. Please try again.');
       return false;
     }
-  };
-
-  const handleAddDoctor = () => {
-    setEditingDoctor(null);
-    form.resetFields();
-    setIsModalVisible(true);
   };
 
   const handleEditDoctor = (doctor: EnhancedDoctor) => {
@@ -301,9 +262,6 @@ const AdminDoctor: React.FC = () => {
                   <Title level={2}>Doctors Management</Title>
                   <Paragraph>Manage all doctors in the system</Paragraph>
                 </div>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAddDoctor}>
-                  Add Doctor
-                </Button>
               </div>
               
               <Card className="doctors-table-card">
