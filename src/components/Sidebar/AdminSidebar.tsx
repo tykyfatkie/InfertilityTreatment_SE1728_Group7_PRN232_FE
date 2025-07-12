@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout } from 'antd';
 import {
+  DashboardOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -17,6 +18,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
   const navigate = useNavigate(); 
 
   const menuItems = [
+    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Doctors', path: '/admin/doctors' },
     { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors', path: '/admin/doctors' },
     { key: 'patients', icon: <UserOutlined />, label: 'Patients', path: '/admin/patients' },
   ];
