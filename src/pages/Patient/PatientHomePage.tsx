@@ -20,10 +20,16 @@ const { Title, Paragraph, Text } = Typography;
 const backgroundImages = ['../../../src/assets/home.jpg'];
 
 interface Doctor {
+  id: string;
   userName: string;
-  imageUrl: string;
-  specialization: string;
-  introduction: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  isActive: boolean;
+  roles: {
+    id: string;
+    values: string[];
+  };
 }
 
 interface ServiceDetail {
@@ -71,18 +77,30 @@ const PatientHomepage: React.FC = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/accounts/all-users`);
       if (response.ok) {
-        const doctorsData = await response.json();
-        if (Array.isArray(doctorsData)) {
-          setDoctors(doctorsData);
+        const usersData = await response.json();
+        console.log('All users data:', usersData); // Debug log
+        
+        if (Array.isArray(usersData)) {
+          // Filter users who have "Doctor" role
+          const doctorUsers = usersData.filter(user => {
+            return user.roles && 
+                   user.roles.values && 
+                   Array.isArray(user.roles.values) && 
+                   user.roles.values.includes('Doctor');
+          });
+          console.log('Filtered doctors:', doctorUsers); // Debug log
+          setDoctors(doctorUsers);
         } else {
           setDoctors([]); 
         }
       } else {
+        console.error('Failed to fetch users:', response.status);
         setDoctors([]);
       }
     } catch (error) {
+      console.error('Error fetching users:', error);
       setDoctors([]); 
     } finally {
       setLoadingDoctors(false);
@@ -164,6 +182,13 @@ const PatientHomepage: React.FC = () => {
 
   const handleBookingSuccess = () => {
     console.log('Booking created successfully!');
+  };
+
+  // Generate a placeholder avatar URL or use default
+  const getAvatarUrl = (doctor: Doctor) => {
+    // You can implement your avatar logic here
+    // For now, using a placeholder service or default icon
+    return `https:/.dicebear.com/7.x/avataaars/svg?seed=${doctor.userName}`;
   };
 
   return (
@@ -338,7 +363,7 @@ const PatientHomepage: React.FC = () => {
             ) : (
               <Row gutter={[24, 32]} justify="center">
                 {doctors.map((doctor, index) => (
-                  <Col key={index} xs={24} sm={12} lg={8} xl={6}>
+                  <Col key={doctor.id} xs={24} sm={12} lg={8} xl={6}>
                     <Card
                       style={{
                         borderRadius: '24px',
@@ -361,7 +386,7 @@ const PatientHomepage: React.FC = () => {
                         }}>
                           <Avatar
                             size={120}
-                            src={doctor.imageUrl}
+                            src={getAvatarUrl(doctor)}
                             icon={<UserOutlined />}
                             style={{
                               border: '4px solid #1890ff',
@@ -372,7 +397,7 @@ const PatientHomepage: React.FC = () => {
                             position: 'absolute',
                             bottom: '-8px',
                             right: '8px',
-                            background: '#52c41a',
+                            background: doctor.isActive ? '#52c41a' : '#faad14',
                             width: '24px',
                             height: '24px',
                             borderRadius: '50%',
@@ -391,7 +416,7 @@ const PatientHomepage: React.FC = () => {
                           fontSize: '20px',
                           fontWeight: 600
                         }}>
-                          Dr. {doctor.userName}
+                          Dr. {doctor.fullName || doctor.userName}
                         </Title>
                         
                         <Text style={{ 
@@ -404,7 +429,7 @@ const PatientHomepage: React.FC = () => {
                           display: 'inline-block',
                           marginBottom: '12px'
                         }}>
-                          {doctor.specialization}
+                          Fertility Specialist
                         </Text>
                         
                         <div style={{ marginBottom: '16px' }}>
@@ -423,18 +448,29 @@ const PatientHomepage: React.FC = () => {
                           </Text>
                         </div>
                         
-                        <Paragraph 
-                          ellipsis={{ rows: 3 }}
-                          style={{ 
+                        <div style={{ marginBottom: '16px' }}>
+                          <Text style={{ 
                             color: '#64748b', 
                             fontSize: '14px',
-                            lineHeight: 1.5,
-                            marginBottom: '20px',
-                            height: '63px'
-                          }}
-                        >
-                          {doctor.introduction}
-                        </Paragraph>
+                            display: 'block',
+                            marginBottom: '4px'
+                          }}>
+                            📧 {doctor.email}
+                          </Text>
+                          <Text style={{ 
+                            color: '#64748b', 
+                            fontSize: '14px',
+                            display: 'block'
+                          }}>
+                            📞 {doctor.phoneNumber}
+                          </Text>
+                        </div>
+                        
+                        <div style={{ marginBottom: '20px' }}>
+                          <Tag color={doctor.isActive ? 'green' : 'orange'}>
+                            {doctor.isActive ? 'Available' : 'Busy'}
+                          </Tag>
+                        </div>
                         
                         <Button
                           type="primary"
