@@ -5,7 +5,6 @@ import {
   TeamOutlined, 
   MedicineBoxOutlined, 
   DollarOutlined,
-  WarningOutlined,
   ReloadOutlined,
   DashboardOutlined,
   CalendarOutlined
@@ -14,7 +13,7 @@ import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 
 const { Content } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 interface DashboardStats {
   id: string;
@@ -22,7 +21,6 @@ interface DashboardStats {
   totalDoctors: number;
   totalPatients: number;
   totalRevenue: number;
-  // Enhanced stats
   activePatients?: number;
   appointmentsToday?: number;
   monthlyGrowth?: number;
@@ -148,9 +146,8 @@ const AdminDashboard: React.FC = () => {
         
         {trend && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <WarningOutlined style={{ color: '#52c41a', fontSize: '14px' }} />
             <Text style={{ fontSize: '14px', color: '#52c41a', fontWeight: 500 }}>
-              +{trendValue}% from last month
+              +{trendValue} from last month
             </Text>
           </div>
         )}
