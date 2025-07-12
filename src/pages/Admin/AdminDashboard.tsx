@@ -249,7 +249,7 @@ const AdminDashboard: React.FC = () => {
               position: 'relative',
               overflow: 'hidden'
             }}>
-              <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ position: 'relative', zIndex: 1, marginTop: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                   <div>
                     <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', fontSize: '36px', fontWeight: 700 }}>
@@ -344,7 +344,7 @@ const AdminDashboard: React.FC = () => {
                     value={stats?.totalDoctors || 0}
                     prefix={<TeamOutlined />}
                     color="#1890ff"
-                    suffix={`/${(stats?.totalDoctors || 0) + 5} capacity`}
+                    suffix={`/${(99)} capacity`}
                     trend={true}
                     trendValue={8}
                     extra={stats?.doctorsOnline || Math.floor((stats?.totalDoctors || 0) * 0.7)}
@@ -378,80 +378,6 @@ const AdminDashboard: React.FC = () => {
             {/* Additional Analytics Section */}
             {!loading && stats && (
               <div style={{ marginTop: '24px' }}>
-                <Row gutter={[24, 24]}>
-                  <Col xs={24} lg={16}>
-                    <Card
-                      title={
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <WarningOutlined style={{ color: '#1890ff' }} />
-                          <span>Quick Insights</span>
-                        </div>
-                      }
-                      style={{
-                        borderRadius: '16px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                        border: '1px solid #f0f0f0'
-                      }}
-                    >
-                      <Row gutter={[16, 16]}>
-                        <Col xs={24} md={12}>
-                          <div style={{ textAlign: 'center', padding: '16px' }}>
-                            <Text style={{ fontSize: '14px', color: '#666' }}>Patient Satisfaction</Text>
-                            <Progress
-                              type="circle"
-                              percent={94}
-                              style={{ marginTop: '12px' }}
-                              strokeColor={{
-                                '0%': '#108ee9',
-                                '100%': '#87d068',
-                              }}
-                            />
-                          </div>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <div style={{ textAlign: 'center', padding: '16px' }}>
-                            <Text style={{ fontSize: '14px', color: '#666' }}>System Health</Text>
-                            <Progress
-                              type="circle"
-                              percent={98}
-                              style={{ marginTop: '12px' }}
-                              strokeColor={{
-                                '0%': '#52c41a',
-                                '100%': '#73d13d',
-                              }}
-                            />
-                          </div>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Col>
-                  <Col xs={24} lg={8}>
-                    <Card
-                      title="Today's Highlights"
-                      style={{
-                        borderRadius: '16px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                        border: '1px solid #f0f0f0',
-                        height: '100%'
-                      }}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text>New Registrations</Text>
-                          <Badge count={12} style={{ backgroundColor: '#52c41a' }} />
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text>Appointments</Text>
-                          <Badge count={stats?.appointmentsToday || 24} style={{ backgroundColor: '#1890ff' }} />
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text>Active Sessions</Text>
-                          <Badge count={stats?.doctorsOnline || 8} style={{ backgroundColor: '#722ed1' }} />
-                        </div>
-                      </div>
-                    </Card>
-                  </Col>
-                </Row>
               </div>
             )}
           </div>
