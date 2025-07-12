@@ -100,7 +100,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
         patientId: userId
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/CreateBooking`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/CreateBooking`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
