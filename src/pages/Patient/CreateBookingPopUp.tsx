@@ -50,26 +50,28 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [loadingServiceRequests, setLoadingServiceRequests] = useState(false);
 
-  // Fetch service requests when modal opens
   useEffect(() => {
     if (visible) {
       fetchServiceRequests();
     }
   }, [visible]);
 
-  const fetchServiceRequests = async () => {
+    const fetchServiceRequests = async () => {
     setLoadingServiceRequests(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
       
       if (response.ok) {
         const data = await response.json();
-        // Filter active service requests
-        const activeRequests = data.values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
+        console.log('API Response:', data);
+        const activeRequests = data.$values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
+        
+        console.log('Active requests:', activeRequests);
         setServiceRequests(activeRequests);
       } else {
       }
     } catch (error) {
+
     } finally {
       setLoadingServiceRequests(false);
     }
