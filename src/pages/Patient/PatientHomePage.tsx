@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Space } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateRequestPopUp from './CreateBookingPopUp';
+import BookingDetailPopUp from './BookingDetailPopUp';
 import {
   ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +15,7 @@ const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
   const [showBookingPopup, setShowBookingPopup] = useState(false);
+  const [showBookingDetailPopup, setShowBookingDetailPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,47 +127,50 @@ const PatientHomepage: React.FC = () => {
                 Regain hope with our cutting-edge reproductive medicine solutions. Your family-building journey starts here.
               </Paragraph>          
               
-              <Space size="middle">
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  style={{ 
-                    borderRadius: '50px', 
-                    paddingLeft: '28px', 
-                    paddingRight: '28px',
-                    height: '52px',
-                    background: 'white',
-                    color: '#1e3a8a',
-                    border: 'none',
-                    fontWeight: 600,
-                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                  onClick={() => setShowBookingPopup(true)}
-                >
-                  Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
-                </Button>
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  style={{ 
-                    borderRadius: '50px', 
-                    paddingLeft: '28px', 
-                    paddingRight: '28px',
-                    height: '52px',
-                    background: 'rgba(255, 65, 65, 0.77)',
-                    color: '#1e3a8a',
-                    border: 'none',
-                    fontWeight: 600,
-                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>
+                <Space size="middle">
+                  <Button 
+                    type="primary" 
+                    size="large" 
+                    style={{ 
+                      borderRadius: '50px', 
+                      paddingLeft: '28px', 
+                      paddingRight: '28px',
+                      height: '52px',
+                      background: 'white',
+                      color: '#1e3a8a',
+                      border: 'none',
+                      fontWeight: 600,
+                      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    onClick={() => setShowBookingPopup(true)}
+                  >
+                    Book Now! <ArrowRightOutlined style={{ marginLeft: '8px' }} />
+                  </Button>
+                  <Button 
+                    type="primary" 
+                    size="large" 
+                    style={{ 
+                      borderRadius: '50px', 
+                      paddingLeft: '28px', 
+                      paddingRight: '28px',
+                      height: '52px',
+                      background: 'rgba(255, 65, 65, 0.77)',
+                      color: '#1e3a8a',
+                      border: 'none',
+                      fontWeight: 600,
+                      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                </Space>
+                
                 <Button 
                   type="primary" 
                   size="large" 
@@ -182,11 +187,11 @@ const PatientHomepage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  onClick={() => setShowBookingPopup(true)}
+                  onClick={() => setShowBookingDetailPopup(true)}
                 >
                   My Booking <ArrowRightOutlined style={{ marginLeft: '8px' }} />
                 </Button>
-              </Space>
+              </div>
             </div>
           </div>
 
@@ -252,6 +257,12 @@ const PatientHomepage: React.FC = () => {
         visible={showBookingPopup}
         onClose={() => setShowBookingPopup(false)}
         onSuccess={handleBookingSuccess}
+      />
+      
+      {/* Booking Detail Popup */}
+      <BookingDetailPopUp
+        visible={showBookingDetailPopup}
+        onClose={() => setShowBookingDetailPopup(false)}
       />
     </Layout>
   );

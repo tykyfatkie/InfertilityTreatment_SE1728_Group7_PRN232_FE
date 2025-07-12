@@ -1,230 +1,382 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Table, message, Spin, Tag } from 'antd';
-import { CalendarOutlined, DollarOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+  Modal,
+  Form,
+  DatePicker,
+  TimePicker,
+  Button,
+  message,
+  Select,
+  Divider,
+  Spin
+} from 'antd';
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  DollarOutlined,
+  UserOutlined,
+  MedicineBoxOutlined,
+  HeartOutlined,
+  SafetyOutlined
+} from '@ant-design/icons';
+import dayjs, { Dayjs } from 'dayjs';
+import './CreateBookingPopUp.css';
 
-interface BookingDetail {
-  id: string;
-  timeStarted: string;
-  price: number;
-  status: string;
-  patientId: string;
-  doctorId?: string;
-  createdAt?: string;
-}
+const { Option } = Select;
 
-interface BookingDetailPopUpProps {
+interface CreateRequestPopUpProps {
   visible: boolean;
   onClose: () => void;
-  userId?: string; 
+  onSuccess?: () => void;
 }
 
-const BookingDetailPopUp: React.FC<BookingDetailPopUpProps> = ({ 
-  visible, 
-  onClose, 
-  userId = "sample-user-id" 
-}) => {
-  const [bookings, setBookings] = useState<BookingDetail[]>([]);
-  const [loading, setLoading] = useState(false);
+interface ServiceRequest {
+  id: number;
+  doctorId: number;
+  serviceName: string;
+  type: string;
+  price: number;
+  description: string;
+  status: string;
+}
 
+const BookingDetailPopUp: React.FC<CreateRequestPopUpProps> = ({
+  visible,
+  onClose,
+  onSuccess
+}) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [loadingServiceRequests, setLoadingServiceRequests] = useState(false);
 
   useEffect(() => {
-    if (visible && userId) {
-      fetchBookingDetails();
+    if (visible) {
+      fetchServiceRequests();
     }
-  }, [visible, userId]);
+  }, [visible]);
 
-  const fetchBookingDetails = async () => {
-    setLoading(true);
-    try {  
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/GetBookingByPatientId/${userId}`);
+    const fetchServiceRequests = async () => {
+    setLoadingServiceRequests(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('API Response:', data);
+        const activeRequests = data.$values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
+        
+        console.log('Active requests:', activeRequests);
+        setServiceRequests(activeRequests);
+      } else {
       }
-      
-      const data = await response.json();
-      
-      const bookingArray = Array.isArray(data) ? data : [data];
-      setBookings(bookingArray);
-      
     } catch (error) {
-      console.error('Error fetching booking details:', error);
-      message.error('Không thể tải thông tin đặt lịch. Vui lòng thử lại sau.');
-      
-      // Demo data for testing UI
-      setBookings([
-        {
-          id: '1',
-          timeStarted: '2024-07-15T10:00:00',
-          price: 500000,
-          status: 'confirmed',
-          patientId: userId
+
+    } finally {
+      setLoadingServiceRequests(false);
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    setLoading(true);
+
+    try {
+      const userId = localStorage.getItem('userId');
+
+      if (!userId) {
+        message.error('Please login to create a booking');
+        return;
+      }
+
+      const startDate = dayjs(values.date)
+        .hour(values.time.hour())
+        .minute(values.time.minute())
+        .second(0)
+        .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+
+      const bookingData = {
+        serviceRequestIds: values.serviceRequestIds, 
+        startDate: startDate,
+        patientId: userId
+      };
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/CreateBooking`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          id: '2',
-          timeStarted: '2024-07-20T14:30:00',
-          price: 750000,
-          status: 'pending',
-          patientId: userId
-        },
-        {
-          id: '3',
-          timeStarted: '2024-07-10T09:15:00',
-          price: 600000,
-          status: 'completed',
-          patientId: userId
-        }
-      ]);
+        body: JSON.stringify(bookingData)
+      });
+  
+      if (response.ok) {
+        message.success('Booking created successfully! Our team will contact you within 24 hours.');
+        form.resetFields();
+        onClose();
+        onSuccess?.();
+      } else {
+        const errorData = await response.json();
+        message.error(`Failed to create booking: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      message.error('Failed to create booking. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDateTime = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleString('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Ho_Chi_Minh'
-      });
-    } catch (error) {
-      return dateString;
-    }
+  // Chỉ cho phép chọn từ ngày mai trở đi
+  const disabledDate = (current: Dayjs) => {
+    return current && current <= dayjs().endOf('day');
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
-  };
-
-  const getStatusTag = (status: string) => {
-    const statusConfig = {
-      'confirmed': { color: 'green', text: 'Đã xác nhận' },
-      'pending': { color: 'orange', text: 'Chờ xác nhận' },
-      'completed': { color: 'blue', text: 'Hoàn thành' },
-      'cancelled': { color: 'red', text: 'Đã hủy' }
+  // Chỉ cho phép chọn giờ hành chính (8:00 - 17:00) với khoảng cách 30 phút
+  const disabledTime = () => {
+    return {
+      disabledHours: () => {
+        const hours = [];
+        // Disable giờ từ 0-7 (trước 8h sáng)
+        for (let i = 0; i < 8; i++) {
+          hours.push(i);
+        }
+        // Disable giờ từ 17-23 (sau 5h chiều)
+        for (let i = 17; i < 24; i++) {
+          hours.push(i);
+        }
+        return hours;
+      },
+      disabledMinutes: () => {
+        const minutes = [];
+        // Chỉ cho phép chọn phút 00 và 30
+        for (let i = 0; i < 60; i++) {
+          if (i % 30 !== 0) {
+            minutes.push(i);
+          }
+        }
+        return minutes;
+      }
     };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || { color: 'default', text: status };
-    return <Tag color={config.color}>{config.text}</Tag>;
   };
 
-  const columns = [
-    {
-      title: 'Thời gian bắt đầu',
-      dataIndex: 'timeStarted',
-      key: 'timeStarted',
-      render: (text: string) => (
-        <div className="flex items-center">
-          <CalendarOutlined className="mr-2 text-blue-500" />
-          <span>{formatDateTime(text)}</span>
-        </div>
-      ),
-      width: '40%'
-    },
-    {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
-      render: (price: number) => (
-        <div className="flex items-center">
-          <DollarOutlined className="mr-2 text-green-500" />
-          <span className="font-semibold text-green-600">{formatPrice(price)}</span>
-        </div>
-      ),
-      width: '30%'
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <div className="flex items-center">
-          <CheckCircleOutlined className="mr-2" />
-          {getStatusTag(status)}
-        </div>
-      ),
-      width: '30%'
+  const getConsultationPrice = (serviceIds: number[]) => {
+    if (!serviceIds || serviceIds.length === 0) {
+      return '0 VND';
     }
-  ];
+    
+    const totalPrice = serviceIds.reduce((total, id) => {
+      const service = serviceRequests.find(sr => sr.id === id);
+      return total + (service?.price || 0);
+    }, 0);
+    
+    return `${totalPrice.toLocaleString()} VND`;
+  };
+
+  const getServiceDescription = (serviceIds: number[]) => {
+    if (!serviceIds || serviceIds.length === 0) {
+      return 'No services selected';
+    }
+    
+    const selectedServices = serviceIds.map(id => {
+      const service = serviceRequests.find(sr => sr.id === id);
+      return service?.serviceName || 'Unknown service';
+    });
+    
+    return selectedServices.join(', ');
+  };
+
+  const selectedServiceIds = Form.useWatch('serviceRequestIds', form);
 
   return (
     <Modal
       title={
-        <div className="flex items-center">
-          <CalendarOutlined className="mr-2 text-blue-500" />
-          <span>Chi tiết đặt lịch khám</span>
+        <div className="request-modal-title">
+          <MedicineBoxOutlined className="title-icon" />
+          <div>
+            <span>Fertility & Reproductive Health Center</span>
+            <div className="subtitle">Book Your Appointment</div>
+          </div>
         </div>
       }
       open={visible}
       onCancel={onClose}
       footer={null}
       width={800}
-      className="booking-detail-modal"
+      destroyOnHidden
+      className="request-modal rare-disease-modal"
     >
-      <div className="p-4">
-        {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <Spin size="large" />
-            <span className="ml-3">Đang tải thông tin...</span>
+      <div className="request-modal-content">
+        <div className="request-header">
+          <div className="request-header-text">
+            <h3>
+              <HeartOutlined className="header-icon" />
+              Book Your Fertility Consultation
+            </h3>
+            <p>Our experienced team specializes in fertility treatments and reproductive health</p>
           </div>
-        ) : (
-          <>
-            {bookings.length === 0 ? (
-              <div className="text-center py-8">
-                <CalendarOutlined className="text-4xl text-gray-400 mb-4" />
-                <p className="text-gray-500">Không có lịch đặt khám nào</p>
+          <div className="hospital-info">
+            <div className="info-item">
+              <SafetyOutlined /> Expert fertility specialists
+            </div>
+            <div className="info-item">
+              <UserOutlined /> Personalized treatment plans
+            </div>
+            <div className="info-item">
+              <HeartOutlined /> Comprehensive reproductive care
+            </div>
+          </div>
+        </div>
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          requiredMark={false}
+          className="request-form"
+        >
+          <div className="form-section">
+            <h4 className="section-title">Appointment Details</h4>
+            <div className="form-row">
+              <div className="form-col">
+                <Form.Item
+                  label={
+                    <span className="form-label">
+                      <CalendarOutlined className="label-icon" />
+                      Preferred Date (From tomorrow onwards)
+                    </span>
+                  }
+                  name="date"
+                  rules={[{ required: true, message: 'Please select a date' }]}
+                >
+                  <DatePicker
+                    className="custom-date-picker"
+                    placeholder="Select appointment date"
+                    disabledDate={disabledDate}
+                    format="DD/MM/YYYY"
+                    size="large"
+                  />
+                </Form.Item>
               </div>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <p className="text-gray-600">
-                    Tổng số lịch đặt: <span className="font-semibold text-blue-600">{bookings.length}</span>
-                  </p>
-                </div>
-                <Table
-                  columns={columns}
-                  dataSource={bookings}
-                  rowKey="id"
-                  pagination={false}
-                  scroll={{ y: 400 }}
-                  className="booking-table"
-                />
-              </>
-            )}
-          </>
-        )}
+
+              <div className="form-col">
+                <Form.Item
+                  label={
+                    <span className="form-label">
+                      <ClockCircleOutlined className="label-icon" />
+                      Preferred Time (8:00 AM - 5:00 PM)
+                    </span>
+                  }
+                  name="time"
+                  rules={[{ required: true, message: 'Please select a time' }]}
+                >
+                  <TimePicker
+                    className="custom-time-picker"
+                    placeholder="Select time"
+                    format="HH:mm"
+                    minuteStep={30}
+                    disabledTime={disabledTime}
+                    size="large"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
+
+          <Divider />
+
+          <div className="form-section">
+            <h4 className="section-title">Service Selection</h4>
+            <Form.Item
+              label={
+                <span className="form-label">
+                  <MedicineBoxOutlined className="label-icon" />
+                  Available Services
+                </span>
+              }
+              name="serviceRequestIds"
+              rules={[{ required: true, message: 'Please select at least one service' }]}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select service requests"
+                className="custom-select"
+                size="large"
+                loading={loadingServiceRequests}
+                notFoundContent={loadingServiceRequests ? <Spin size="small" /> : 'No services available'}
+                onChange={(selectedIds) => {
+                  // Update price display when selection changes
+                  form.setFieldsValue({ serviceRequestIds: selectedIds });
+                }}
+              >
+                {serviceRequests.map(service => (
+                  <Option key={service.id} value={service.id}>
+                    <div className="option-content">
+                      <strong>{service.serviceName}</strong>
+                      <span className="option-desc">{service.description}</span>
+                      <span className="option-price">{service.price.toLocaleString()} VND</span>
+                    </div>
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+
+          <Divider />
+
+          <div className="form-section">
+            <h4 className="section-title">Total Service Fee</h4>
+            <Form.Item
+              label={
+                <span className="form-label">
+                  <DollarOutlined className="label-icon" />
+                  Estimate Cost
+                </span>
+              }
+            >
+              <div className="price-display">
+                <span className="price-amount">{getConsultationPrice(selectedServiceIds)}</span>
+                <span className="price-note">
+                  Selected services: {getServiceDescription(selectedServiceIds)}
+                </span>
+              </div>
+            </Form.Item>
+          </div>
+
+          <Divider />
+
+          <div className="important-notice">
+            <h4>Important Information:</h4>
+            <ul>
+              <li>Appointments are available from tomorrow onwards during business hours (8:00 AM - 5:00 PM)</li>
+              <li>Please bring all relevant medical records, test results, and previous fertility reports</li>
+              <li>Both partners should attend the initial consultation when possible</li>
+              <li>Bookings are confirmed within 24 hours via phone or SMS</li>
+              <li>Cancellation policy: 48 hours advance notice required</li>
+              <li>For urgent fertility concerns, please call our emergency hotline</li>
+              <li>Insurance verification will be completed before your visit</li>
+            </ul>
+          </div>
+
+          <Form.Item className="form-actions">
+            <Button
+              onClick={onClose}
+              className="cancel-btn"
+              size="large"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              className="submit-btn"
+              size="large"
+            >
+              {loading ? 'Creating Booking...' : 'Create Booking'}
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </Modal>
   );
 };
 
-// Demo component to show the popup
-const App: React.FC = () => {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div className="p-8">
-      <button
-        onClick={() => setVisible(true)}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Xem chi tiết đặt lịch
-      </button>
-      
-      <BookingDetailPopUp
-        visible={visible}
-        onClose={() => setVisible(false)}
-        userId="sample-user-id"
-      />
-    </div>
-  );
-};
-
-export default App;
+export default BookingDetailPopUp;
