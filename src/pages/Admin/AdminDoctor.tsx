@@ -149,6 +149,13 @@ const AdminDoctor: React.FC = () => {
     }
   };
 
+  type DoctorRegistrationPopupProps = {
+  open: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+};
+
+
   const toggleDoctorStatus = async (doctorId: string, currentStatus: 'active' | 'inactive', doctorName: string) => {
     try {
       setSwitchLoading(prev => ({ ...prev, [doctorId]: true }));
@@ -250,7 +257,7 @@ const AdminDoctor: React.FC = () => {
 
   const handleCreateDoctorSuccess = () => {
     setIsCreateDoctorModalOpen(false);
-    fetchDoctors(); // Refresh the doctors list
+    fetchDoctors(); 
   };
 
   const doctorColumns = [
@@ -595,7 +602,7 @@ const AdminDoctor: React.FC = () => {
 
       {/* Create Doctor Modal */}
       <CreateDoctorPopUp
-        open={isCreateDoctorModalOpen}
+        visible={isCreateDoctorModalOpen}
         onClose={() => setIsCreateDoctorModalOpen(false)}
         onSuccess={handleCreateDoctorSuccess}
       />
