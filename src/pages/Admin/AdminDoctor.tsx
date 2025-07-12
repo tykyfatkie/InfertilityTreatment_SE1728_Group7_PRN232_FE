@@ -34,7 +34,7 @@ import {
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
-import CreateDoctorPopUp from '../../components/CreateDoctorPopUp/CreateDoctorPopUp';
+// import CreateDoctorPopUp from './CreateDoctorPopUp';
 import './AdminPage.css';
 
 const { Content } = Layout;
