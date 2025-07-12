@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, Button, message, Upload, Select } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, UserAddOutlined, PlusOutlined } from '@ant-design/icons';
-import type { UploadFile, UploadProps } from 'antd';
+import { Modal, Form, Input, Button, message, Select, Card, Avatar, Space, Typography, Divider } from 'antd';
+import { 
+  UserOutlined, 
+  LockOutlined, 
+  MailOutlined, 
+  PhoneOutlined, 
+  UserAddOutlined, 
+  MedicineBoxOutlined,
+  PictureOutlined
+} from '@ant-design/icons';
 
 const { Option } = Select;
+const { Title, Text } = Typography;
 
 interface DoctorRegistrationData {
   username: string;
@@ -30,7 +38,6 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>('');
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const specializations = [
     'Cardiology',
@@ -55,29 +62,8 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
     'General Practice'
   ];
 
-  const handleImageUpload: UploadProps['onChange'] = (info) => {
-    setFileList(info.fileList);
-    
-    if (info.file.status === 'done') {
-      // In a real application, you would get the URL from the server response
-      const url = URL.createObjectURL(info.file.originFileObj as File);
-      setImageUrl(url);
-      form.setFieldsValue({ imageUrl: url });
-    }
-  };
-
-  const beforeUpload = (file: File) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-      return false;
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-      return false;
-    }
-    return false; // Prevent automatic upload
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value);
   };
 
   const handleSubmit = async (values: DoctorRegistrationData) => {
@@ -100,7 +86,6 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
         message.success('Doctor account created successfully!');
         form.resetFields();
         setImageUrl('');
-        setFileList([]);
         onSuccess?.();
         onClose();
       } else {
@@ -118,171 +103,254 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
   const handleCancel = () => {
     form.resetFields();
     setImageUrl('');
-    setFileList([]);
     onClose();
   };
 
   return (
     <Modal
-      title="Register New Doctor"
+      title={
+        <div style={{ textAlign: 'center', padding: '10px 0' }}>
+          <Space direction="vertical" size={0}>
+            <MedicineBoxOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              Register New Doctor
+            </Title>
+            <Text type="secondary">Add a new doctor to the system</Text>
+          </Space>
+        </div>
+      }
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      width={600}
+      width={700}
       destroyOnClose
+      style={{ top: 20 }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        autoComplete="off"
-      >
-        <Form.Item
-          name="username"
-          label="Username"
-          rules={[
-            { required: true, message: 'Please input username!' },
-            { min: 3, message: 'Username must be at least 3 characters!' }
-          ]}
+      <div style={{ padding: '20px 0' }}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          autoComplete="off"
+          requiredMark="optional"
         >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="Enter username"
-            size="large"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            { required: true, message: 'Please input password!' },
-            { min: 6, message: 'Password must be at least 6 characters!' }
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined />}
-            placeholder="Enter password"
-            size="large"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            { required: true, message: 'Please input email!' },
-            { type: 'email', message: 'Please enter a valid email!' }
-          ]}
-        >
-          <Input
-            prefix={<MailOutlined />}
-            placeholder="Enter email address"
-            size="large"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="fullName"
-          label="Full Name"
-          rules={[
-            { required: true, message: 'Please input full name!' },
-            { min: 2, message: 'Full name must be at least 2 characters!' }
-          ]}
-        >
-          <Input
-            prefix={<UserAddOutlined />}
-            placeholder="Enter full name"
-            size="large"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="phoneNumber"
-          label="Phone Number"
-          rules={[
-            { required: true, message: 'Please input phone number!' },
-            { pattern: /^[0-9+\-\s()]+$/, message: 'Please enter a valid phone number!' }
-          ]}
-        >
-          <Input
-            prefix={<PhoneOutlined />}
-            placeholder="Enter phone number"
-            size="large"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="specialization"
-          label="Specialization"
-          rules={[
-            { required: true, message: 'Please select specialization!' }
-          ]}
-        >
-          <Select
-            placeholder="Select specialization"
-            size="large"
-            showSearch
-            optionFilterProp="children"
+          {/* Profile Preview Section */}
+          <Card 
+            style={{ 
+              marginBottom: 24, 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none',
+              borderRadius: '12px'
+            }}
           >
-            {specializations.map(spec => (
-              <Option key={spec} value={spec}>{spec}</Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="introduction"
-          label="Introduction"
-          rules={[
-            { required: true, message: 'Please input introduction!' },
-            { min: 10, message: 'Introduction must be at least 10 characters!' }
-          ]}
-        >
-          <Input.TextArea
-            placeholder="Enter doctor's introduction and background"
-            rows={4}
-            maxLength={500}
-            showCount
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="imageUrl"
-          label="Profile Image"
-        >
-          <Upload
-            listType="picture-card"
-            fileList={fileList}
-            onChange={handleImageUpload}
-            beforeUpload={beforeUpload}
-            maxCount={1}
-          >
-            {fileList.length >= 1 ? null : (
+            <div style={{ textAlign: 'center', color: 'white' }}>
+              <Avatar 
+                size={80} 
+                src={imageUrl || undefined}
+                icon={!imageUrl ? <UserOutlined /> : undefined}
+                style={{ 
+                  marginBottom: 16,
+                  border: '3px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                }}
+              />
               <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <Title level={4} style={{ color: 'white', margin: 0 }}>
+                  {form.getFieldValue('fullName') || 'Doctor Name'}
+                </Title>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  {form.getFieldValue('specialization') || 'Specialization'}
+                </Text>
               </div>
-            )}
-          </Upload>
-        </Form.Item>
+            </div>
+          </Card>
 
-        <Form.Item>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            <Button onClick={handleCancel} size="large">
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              size="large"
+          {/* Basic Information */}
+          <Card title="Basic Information" style={{ marginBottom: 24, borderRadius: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <Form.Item
+                name="username"
+                label="Username"
+                rules={[
+                  { required: true, message: 'Please input username!' },
+                  { min: 3, message: 'Username must be at least 3 characters!' }
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined style={{ color: '#1890ff' }} />}
+                  placeholder="Enter username"
+                  size="large"
+                  style={{ borderRadius: '8px' }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[
+                  { required: true, message: 'Please input password!' },
+                  { min: 6, message: 'Password must be at least 6 characters!' }
+                ]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined style={{ color: '#1890ff' }} />}
+                  placeholder="Enter password"
+                  size="large"
+                  style={{ borderRadius: '8px' }}
+                />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="email"
+              label="Email Address"
+              rules={[
+                { required: true, message: 'Please input email!' },
+                { type: 'email', message: 'Please enter a valid email!' }
+              ]}
             >
-              Register Doctor
-            </Button>
-          </div>
-        </Form.Item>
-      </Form>
+              <Input
+                prefix={<MailOutlined style={{ color: '#1890ff' }} />}
+                placeholder="Enter email address"
+                size="large"
+                style={{ borderRadius: '8px' }}
+              />
+            </Form.Item>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <Form.Item
+                name="fullName"
+                label="Full Name"
+                rules={[
+                  { required: true, message: 'Please input full name!' },
+                  { min: 2, message: 'Full name must be at least 2 characters!' }
+                ]}
+              >
+                <Input
+                  prefix={<UserAddOutlined style={{ color: '#1890ff' }} />}
+                  placeholder="Enter full name"
+                  size="large"
+                  style={{ borderRadius: '8px' }}
+
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="phoneNumber"
+                label="Phone Number"
+                rules={[
+                  { required: true, message: 'Please input phone number!' },
+                  { pattern: /^[0-9+\-\s()]+$/, message: 'Please enter a valid phone number!' }
+                ]}
+              >
+                <Input
+                  prefix={<PhoneOutlined style={{ color: '#1890ff' }} />}
+                  placeholder="Enter phone number"
+                  size="large"
+                  style={{ borderRadius: '8px' }}
+                />
+              </Form.Item>
+            </div>
+          </Card>
+
+          {/* Professional Information */}
+          <Card title="Professional Information" style={{ marginBottom: 24, borderRadius: '8px' }}>
+            <Form.Item
+              name="specialization"
+              label="Medical Specialization"
+              rules={[
+                { required: true, message: 'Please select specialization!' }
+              ]}
+            >
+              <Select
+                placeholder="Select medical specialization"
+                size="large"
+                showSearch
+                optionFilterProp="children"
+                style={{ borderRadius: '8px' }}
+                suffixIcon={<MedicineBoxOutlined style={{ color: '#1890ff' }} />}
+
+              >
+                {specializations.map(spec => (
+                  <Option key={spec} value={spec}>{spec}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="introduction"
+              label="Professional Introduction"
+              rules={[
+                { required: true, message: 'Please input introduction!' },
+                { min: 10, message: 'Introduction must be at least 10 characters!' }
+              ]}
+            >
+              <Input.TextArea
+                placeholder="Enter doctor's professional background, experience, and expertise..."
+                rows={4}
+                maxLength={500}
+                showCount
+                style={{ borderRadius: '8px' }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="imageUrl"
+              label="Profile Image URL"
+              extra="Enter a valid image URL for the doctor's profile photo"
+            >
+              <Input
+                prefix={<PictureOutlined style={{ color: '#1890ff' }} />}
+                placeholder="https://example.com/doctor-photo.jpg"
+                size="large"
+                style={{ borderRadius: '8px' }}
+                value={imageUrl}
+                onChange={handleImageUrlChange}
+              />
+            </Form.Item>
+          </Card>
+
+          <Divider />
+
+          {/* Action Buttons */}
+          <Form.Item style={{ marginBottom: 0 }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: '12px', 
+              justifyContent: 'flex-end',
+              paddingTop: '8px'
+            }}>
+              <Button 
+                onClick={handleCancel} 
+                size="large"
+                style={{ 
+                  borderRadius: '8px',
+                  minWidth: '100px',
+                  height: '44px'
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                size="large"
+                style={{ 
+                  borderRadius: '8px',
+                  minWidth: '140px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  fontWeight: '500'
+                }}
+              >
+                {loading ? 'Creating...' : 'Register Doctor'}
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </div>
     </Modal>
   );
 };
