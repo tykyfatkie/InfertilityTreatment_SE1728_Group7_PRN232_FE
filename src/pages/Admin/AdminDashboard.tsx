@@ -50,7 +50,7 @@ const AdminDashboard: React.FC = () => {
       const data = await response.json();
       setStats(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Có lỗi xảy ra khi tải dữ liệu');
+      setError(err instanceof Error ? err.message : 'An error occurred while loading data');
       console.error('Error fetching dashboard stats:', err);
     } finally {
       setLoading(false);
@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
           <Content className="admin-content">
             <div className="admin-content-wrapper">
               <Alert
-                message="Lỗi tải dữ liệu"
+                message="Data Load Error"
                 description={error}
                 type="error"
                 showIcon
@@ -90,7 +90,7 @@ const AdminDashboard: React.FC = () => {
                       textDecoration: 'underline'
                     }}
                   >
-                    Thử lại
+                    Retry
                   </button>
                 }
               />
@@ -117,21 +117,21 @@ const AdminDashboard: React.FC = () => {
               <div className="dashboard-header">
                 <div className="dashboard-title">
                   <Title level={2}>Admin Dashboard</Title>
-                  <Paragraph>Tổng quan thống kê hệ thống</Paragraph>
+                  <Paragraph>System statistics overview</Paragraph>
                 </div>
               </div>
 
               {loading ? (
                 <div style={{ textAlign: 'center', padding: '50px' }}>
                   <Spin size="large" />
-                  <p style={{ marginTop: '16px' }}>Đang tải dữ liệu...</p>
+                  <p style={{ marginTop: '16px' }}>Loading data...</p>
                 </div>
               ) : (
                 <Row gutter={[24, 24]}>
                   <Col xs={24} sm={12} lg={6}>
                     <Card>
                       <Statistic
-                        title="Tổng số dịch vụ"
+                        title="Total Services"
                         value={stats?.totalServices || 0}
                         prefix={<MedicineBoxOutlined />}
                         valueStyle={{ color: '#3f8600', fontSize: '24px' }}
@@ -141,7 +141,7 @@ const AdminDashboard: React.FC = () => {
                   <Col xs={24} sm={12} lg={6}>
                     <Card>
                       <Statistic
-                        title="Tổng số bác sĩ"
+                        title="Total Doctors"
                         value={stats?.totalDoctors || 0}
                         prefix={<TeamOutlined />}
                         valueStyle={{ color: '#1890ff', fontSize: '24px' }}
@@ -151,7 +151,7 @@ const AdminDashboard: React.FC = () => {
                   <Col xs={24} sm={12} lg={6}>
                     <Card>
                       <Statistic
-                        title="Tổng số bệnh nhân"
+                        title="Total Patients"
                         value={stats?.totalPatients || 0}
                         prefix={<UserOutlined />}
                         valueStyle={{ color: '#722ed1', fontSize: '24px' }}
@@ -161,7 +161,7 @@ const AdminDashboard: React.FC = () => {
                   <Col xs={24} sm={12} lg={6}>
                     <Card>
                       <Statistic
-                        title="Tổng doanh thu"
+                        title="Total Revenue"
                         value={stats?.totalRevenue || 0}
                         prefix={<DollarOutlined />}
                         valueStyle={{ color: '#cf1322', fontSize: '24px' }}
@@ -170,15 +170,6 @@ const AdminDashboard: React.FC = () => {
                     </Card>
                   </Col>
                 </Row>
-              )}
-
-              {/* Debug info cho development */}
-              {process.env.NODE_ENV === 'development' && stats && (
-                <Card title="Debug Info" style={{ marginTop: '24px' }} size="small">
-                  <pre style={{ fontSize: '12px', maxHeight: '150px', overflow: 'auto' }}>
-                    {JSON.stringify(stats, null, 2)}
-                  </pre>
-                </Card>
               )}
             </div>
           </div>
