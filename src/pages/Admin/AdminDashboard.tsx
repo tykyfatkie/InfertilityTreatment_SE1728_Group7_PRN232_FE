@@ -365,7 +365,7 @@ const AdminDashboard: React.FC = () => {
                     value={stats?.totalRevenue || 0}
                     prefix={<DollarOutlined />}
                     color="#fa541c"
-                    suffix="USD"
+                    suffix="VND"
                     trend={true}
                     trendValue={stats?.totalRevenue || 0}
                   />
