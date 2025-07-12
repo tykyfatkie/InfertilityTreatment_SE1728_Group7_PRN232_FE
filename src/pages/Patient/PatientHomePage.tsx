@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin } from 'antd';
+import { Layout, Typography, Button, Space } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateRequestPopUp from './CreateBookingPopUp';
 import {
-  UserOutlined,
-  MedicineBoxOutlined,
-  StarFilled,
   ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 const backgroundImages = ['../../../src/assets/home.jpg'];
-
-interface Doctor {
-  userName: string;
-  imageUrl: string;
-  specialization: string;
-  introduction: string;
-}
 
 const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
   const [showBookingPopup, setShowBookingPopup] = useState(false);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loadingDoctors, setLoadingDoctors] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,8 +21,6 @@ const PatientHomepage: React.FC = () => {
     if (storedUsername) {
       setUsername(storedUsername);
     }
-
-    fetchDoctors();
   }, []);
 
   useEffect(() => {
@@ -44,26 +30,6 @@ const PatientHomepage: React.FC = () => {
 
     return () => clearInterval(interval); 
   }, []);
-
-  const fetchDoctors = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
-      if (response.ok) {
-        const doctorsData = await response.json();
-        if (Array.isArray(doctorsData)) {
-          setDoctors(doctorsData);
-        } else {
-          setDoctors([]); 
-        }
-      } else {
-        setDoctors([]);
-      }
-    } catch (error) {
-      setDoctors([]); 
-    } finally {
-      setLoadingDoctors(false);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -92,7 +58,7 @@ const PatientHomepage: React.FC = () => {
             height: '700px',
             overflow: 'hidden',
             marginBottom: '30px',
-            marginTop: '620px',
+            marginTop: '480px',
             position: 'relative',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
             borderRadius: '0 0 30px 30px',
@@ -239,139 +205,6 @@ const PatientHomepage: React.FC = () => {
                 Our team of specialized fertility doctors brings years of experience and cutting-edge expertise to help you achieve your family dreams.
               </Paragraph>
             </div>
-
-            {loadingDoctors ? (
-              <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                <Spin size="large" />
-                <div style={{ marginTop: '16px', color: '#64748b' }}>Loading our expert doctors...</div>
-              </div>
-            ) : doctors.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                <div style={{ color: '#64748b', fontSize: '18px' }}>No doctors available at the moment.</div>
-                <div style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>Please check back later.</div>
-              </div>
-            ) : (
-              <Row gutter={[24, 32]} justify="center">
-                {doctors.map((doctor, index) => (
-                  <Col key={index} xs={24} sm={12} lg={8} xl={6}>
-                    <Card
-                      style={{
-                        borderRadius: '24px',
-                        overflow: 'hidden',
-                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-                        border: 'none',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer',
-                        height: '420px'
-                      }}
-                      bodyStyle={{ padding: '24px' }}
-                      className="doctor-card"
-                      hoverable
-                    >
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ 
-                          position: 'relative', 
-                          marginBottom: '20px',
-                          display: 'inline-block'
-                        }}>
-                          <Avatar
-                            size={120}
-                            src={doctor.imageUrl}
-                            icon={<UserOutlined />}
-                            style={{
-                              border: '4px solid #1890ff',
-                              boxShadow: '0 8px 24px rgba(24, 144, 255, 0.2)'
-                            }}
-                          />
-                          <div style={{
-                            position: 'absolute',
-                            bottom: '-8px',
-                            right: '8px',
-                            background: '#52c41a',
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '50%',
-                            border: '3px solid white',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}>
-                            <MedicineBoxOutlined style={{ fontSize: '10px', color: 'white' }} />
-                          </div>
-                        </div>
-                        
-                        <Title level={4} style={{ 
-                          marginBottom: '8px',
-                          color: '#1e3a8a',
-                          fontSize: '20px',
-                          fontWeight: 600
-                        }}>
-                          Dr. {doctor.userName}
-                        </Title>
-                        
-                        <Text style={{ 
-                          color: '#1890ff', 
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          background: 'rgba(24, 144, 255, 0.1)',
-                          padding: '4px 12px',
-                          borderRadius: '20px',
-                          display: 'inline-block',
-                          marginBottom: '12px'
-                        }}>
-                          {doctor.specialization}
-                        </Text>
-                        
-                        <div style={{ marginBottom: '16px' }}>
-                          <Rate
-                            disabled
-                            defaultValue={4.8}
-                            character={<StarFilled style={{ fontSize: '14px' }} />}
-                            style={{ color: '#ffa940' }}
-                          />
-                          <Text style={{ 
-                            marginLeft: '8px', 
-                            color: '#64748b',
-                            fontSize: '12px'
-                          }}>
-                            4.8/5 (120+ reviews)
-                          </Text>
-                        </div>
-                        
-                        <Paragraph 
-                          ellipsis={{ rows: 3 }}
-                          style={{ 
-                            color: '#64748b', 
-                            fontSize: '14px',
-                            lineHeight: 1.5,
-                            marginBottom: '20px',
-                            height: '63px'
-                          }}
-                        >
-                          {doctor.introduction}
-                        </Paragraph>
-                        
-                        <Button
-                          type="primary"
-                          size="small"
-                          style={{
-                            borderRadius: '20px',
-                            fontWeight: 500,
-                            height: '36px',
-                            background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
-                            border: 'none',
-                            boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)'
-                          }}
-                          onClick={() => setShowBookingPopup(true)}
-                        >
-                          Book Consultation
-                        </Button>
-                      </div>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            )}
           </div>
         </div>
 
