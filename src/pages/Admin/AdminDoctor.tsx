@@ -106,7 +106,7 @@ const AdminDoctor: React.FC = () => {
             accountId: user.id || user.$id,
             email: user.email || '',
             specialization: user.specialization || 'General Medicine',
-            phoneNumber: user.phoneNumber || user.bio || 'No phoneNumber available',
+            phoneNumber: user.phoneNumber || user.phoneNumber || 'No phoneNumber available',
             imageUrl: user.imageUrl || user.avatar || '',
             isActive: user.isActive !== false,
             status: (user.isActive !== false ? 'active' : 'inactive') as 'active' | 'inactive',
@@ -122,49 +122,12 @@ const AdminDoctor: React.FC = () => {
         }
       } else {
         console.error('API Error:', response.status, response.statusText);
-        message.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
         setDoctors([]);
       }
     } catch (error) {
-      console.error('Error fetching doctors:', error);
-      message.error('Error fetching doctors. Please check your connection.');
       setDoctors([]);
     } finally {
       setLoadingDoctors(false);
-    }
-  };
-
-  const createDoctor = async (doctorData: Doctor) => {
-    try {
-      const apiData = {
-        userName: doctorData.userName,
-        imageUrl: doctorData.imageUrl,
-        specialization: doctorData.specialization,
-        phoneNumber: doctorData.phoneNumber
-      };
-
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiData),
-      });
-
-      if (response.ok) {
-        const newDoctor = await response.json();
-        message.success('Doctor created successfully');
-        fetchDoctors();
-        return newDoctor;
-      } else {
-        const errorData = await response.json();
-        message.error(errorData.message || 'Failed to create doctor');
-        return null;
-      }
-    } catch (error) {
-      console.error('Error creating doctor:', error);
-      message.error('Error creating doctor. Please try again.');
-      return null;
     }
   };
 
@@ -191,7 +154,7 @@ const AdminDoctor: React.FC = () => {
         return true;
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to update doctor');
+        message.error(errorData.message);
         return false;
       }
     } catch (error) {
@@ -213,7 +176,7 @@ const AdminDoctor: React.FC = () => {
         return true;
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to delete doctor');
+        message.error(errorData.message);
         return false;
       }
     } catch (error) {
@@ -269,7 +232,6 @@ const AdminDoctor: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Form validation failed:', error);
     }
   };
 
