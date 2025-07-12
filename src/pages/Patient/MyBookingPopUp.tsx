@@ -9,7 +9,8 @@ import {
   Tag,
   Typography,
   Row,
-  Col} from 'antd';
+  Col,
+  Popconfirm} from 'antd';
 import {
   CalendarOutlined,
   ClockCircleOutlined,
@@ -19,7 +20,8 @@ import {
   SyncOutlined,
   CloseCircleOutlined,
   MedicineBoxOutlined,
-  HistoryOutlined
+  HistoryOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -191,6 +193,17 @@ const styles = {
     borderRadius: '12px',
     backdropFilter: 'blur(10px)',
   },
+  actionSection: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  cancelButton: {
+    borderRadius: '8px',
+    fontWeight: 500,
+    boxShadow: '0 2px 4px rgba(255, 77, 79, 0.2)',
+  },
 };
 
 const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
@@ -200,6 +213,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [cancellingBooking, setCancellingBooking] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -280,6 +294,35 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
     return `${price.toLocaleString()} VND`;
   };
 
+  const handleCancelBooking = async (bookingId: string) => {
+    setCancellingBooking(bookingId);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/RemoveBooking/${bookingId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        message.success('Booking cancelled successfully');
+        setBookings(prev => prev.filter(booking => booking.id !== bookingId));
+      } else {
+        message.error('Failed to cancel booking. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      message.error('Failed to cancel booking. Please try again.');
+    } finally {
+      setCancellingBooking(null);
+    }
+  };
+
+  const canCancelBooking = (status: string) => {
+    const cancellableStatuses = ['pending', 'confirmed'];
+    return cancellableStatuses.includes(status.toLowerCase());
+  };
+
   return (
     <Modal
       title={
@@ -348,7 +391,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
                     <div style={styles.cardAccent} />
                     <div style={styles.bookingCardContent}>
                       <Row gutter={16} align="middle">
-                        <Col xs={24} sm={8}>
+                        <Col xs={24} sm={7}>
                           <div style={styles.bookingDatetime}>
                             <div style={styles.dateSection}>
                               <CalendarOutlined style={styles.infoIcon} />
@@ -375,7 +418,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
                           </div>
                         </Col>
 
-                        <Col xs={24} sm={6}>
+                        <Col xs={24} sm={5}>
                           <div style={styles.bookingPrice}>
                             <DollarOutlined style={styles.priceIcon} />
                             <div>
@@ -389,7 +432,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
                           </div>
                         </Col>
 
-                        <Col xs={24} sm={6}>
+                        <Col xs={24} sm={5}>
                           <div style={styles.bookingStatus}>
                             <Tag
                               color={getStatusColor(booking.status)}
@@ -406,6 +449,32 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
                             <Text type="secondary" style={styles.secondaryText}>
                               ID: {booking.id}
                             </Text>
+                          </div>
+                        </Col>
+
+                        <Col xs={24} sm={3}>
+                          <div style={styles.actionSection}>
+                            {canCancelBooking(booking.status) && (
+                              <Popconfirm
+                                title="Cancel Booking"
+                                description="Are you sure you want to cancel this appointment?"
+                                onConfirm={() => handleCancelBooking(booking.id)}
+                                okText="Yes, Cancel"
+                                cancelText="No"
+                                okButtonProps={{ danger: true }}
+                              >
+                                <Button
+                                  type="primary"
+                                  danger
+                                  size="small"
+                                  loading={cancellingBooking === booking.id}
+                                  icon={<DeleteOutlined />}
+                                  style={styles.cancelButton}
+                                >
+                                  Cancel
+                                </Button>
+                              </Popconfirm>
+                            )}
                           </div>
                         </Col>
                       </Row>
