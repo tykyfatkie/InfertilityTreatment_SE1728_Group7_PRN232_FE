@@ -246,55 +246,6 @@ const AdminDoctor: React.FC = () => {
     return Array.from(specializations);
   };
 
-  const getMoreActionsMenu = (doctor: EnhancedDoctor) => {
-    const items = [
-      {
-        key: 'view',
-        label: 'View Profile',
-        icon: <EyeOutlined />,
-      },
-      {
-        key: 'edit',
-        label: 'Edit Details',
-        icon: <EditOutlined />,
-      },
-      {
-        key: 'toggle',
-        label: doctor.status === 'active' ? 'Deactivate' : 'Activate',
-        icon: doctor.status === 'active' ? <CloseCircleOutlined /> : <CheckCircleOutlined />,
-      },
-      {
-        type: 'divider' as const,
-      },
-      {
-        key: 'delete',
-        label: 'Delete',
-        icon: <DeleteOutlined />,
-        danger: true,
-      },
-    ];
-
-    return {
-      items,
-      onClick: ({ key }: { key: string }) => {
-        switch (key) {
-          case 'view':
-            handleViewDoctor(doctor);
-            break;
-          case 'edit':
-            handleEditDoctor(doctor);
-            break;
-          case 'toggle':
-            message.info(`${doctor.status === 'active' ? 'Deactivating' : 'Activating'} Dr. ${doctor.userName}`);
-            break;
-          case 'delete':
-            handleDeleteDoctor(doctor);
-            break;
-        }
-      },
-    };
-  };
-
   const doctorColumns = [
     {
       title: 'Doctor',
@@ -394,18 +345,6 @@ const AdminDoctor: React.FC = () => {
               style={{ color: '#52c41a' }}
             />
           </Tooltip>
-          <Dropdown 
-            menu={getMoreActionsMenu(record)} 
-            trigger={['click']}
-            placement="bottomRight"
-          >
-            <Button 
-              type="text" 
-              icon={<MoreOutlined />} 
-              size="small"
-              style={{ color: '#666' }}
-            />
-          </Dropdown>
         </Space>
       ),
     },
