@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, Button, message, Select, Card, Avatar, Space, Typography, Divider } from 'antd';
+import { Modal, Form, Input, Button, message, Select, Card, Space, Typography, Divider } from 'antd';
 import { 
   UserOutlined, 
   LockOutlined, 
@@ -111,8 +111,8 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
       title={
         <div style={{ textAlign: 'center', padding: '10px 0' }}>
           <Space direction="vertical" size={0}>
-            <MedicineBoxOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
-            <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+            <MedicineBoxOutlined style={{ fontSize: '24px', color: '#a318ffff' }} />
+            <Title level={3} style={{ margin: 0, color: '#a318ffff' }}>
               Register New Doctor
             </Title>
             <Text type="secondary">Add a new doctor to the system</Text>
@@ -134,36 +134,6 @@ const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
           autoComplete="off"
           requiredMark="optional"
         >
-          {/* Profile Preview Section */}
-          <Card 
-            style={{ 
-              marginBottom: 24, 
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              border: 'none',
-              borderRadius: '12px'
-            }}
-          >
-            <div style={{ textAlign: 'center', color: 'white' }}>
-              <Avatar 
-                size={80} 
-                src={imageUrl || undefined}
-                icon={!imageUrl ? <UserOutlined /> : undefined}
-                style={{ 
-                  marginBottom: 16,
-                  border: '3px solid rgba(255, 255, 255, 0.3)',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-                }}
-              />
-              <div>
-                <Title level={4} style={{ color: 'white', margin: 0 }}>
-                  {form.getFieldValue('fullName') || 'Doctor Name'}
-                </Title>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                  {form.getFieldValue('specialization') || 'Specialization'}
-                </Text>
-              </div>
-            </div>
-          </Card>
 
           {/* Basic Information */}
           <Card title="Basic Information" style={{ marginBottom: 24, borderRadius: '8px' }}>
