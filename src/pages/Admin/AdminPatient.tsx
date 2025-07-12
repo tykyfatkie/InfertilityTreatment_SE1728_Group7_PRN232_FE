@@ -28,7 +28,7 @@ import {
   CloseCircleOutlined,
   PhoneOutlined,
   MailOutlined,
-  MedicineBoxOutlined,
+  HeartOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
@@ -40,41 +40,42 @@ const { Title, Paragraph, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
-interface Doctor {
+interface Patient {
   userName: string;
   imageUrl: string;
-  specialization: string;
   phoneNumber: string;
   id?: string;
   accountName?: string;
   fullName?: string;
   isActive?: boolean;
+  age?: number;
+  gender?: string;
 }
 
-interface EnhancedDoctor extends Doctor {
+interface EnhancedPatient extends Patient {
   id: string;
   status: 'active' | 'inactive';
   accountId?: string;
   email?: string;
 }
 
-interface DoctorStats {
+interface PatientStats {
   total: number;
   active: number;
   inactive: number;
-  specializations: number;
+  genders: number;
 }
 
 const AdminPatient: React.FC = () => {
   const [username, setUsername] = useState('');
-  const [doctors, setDoctors] = useState<EnhancedDoctor[]>([]);
-  const [filteredDoctors, setFilteredDoctors] = useState<EnhancedDoctor[]>([]);
-  const [loadingDoctors, setLoadingDoctors] = useState(true);
-  const [selectedMenuItem, setSelectedMenuItem] = useState('doctors');
+  const [patients, setPatients] = useState<EnhancedPatient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<EnhancedPatient[]>([]);
+  const [loadingPatients, setLoadingPatients] = useState(true);
+  const [selectedMenuItem, setSelectedMenuItem] = useState('patients');
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [specializationFilter, setSpecializationFilter] = useState<string>('all');
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  const [genderFilter, setGenderFilter] = useState<string>('all');
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [switchLoading, setSwitchLoading] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -83,16 +84,16 @@ const AdminPatient: React.FC = () => {
       setUsername(storedUsername);
     }
 
-    fetchDoctors();
+    fetchPatients();
   }, []);
 
   useEffect(() => {
-    filterDoctors();
-  }, [doctors, searchText, statusFilter, specializationFilter]);
+    filterPatients();
+  }, [patients, searchText, statusFilter, genderFilter]);
 
-  const fetchDoctors = async () => {
+  const fetchPatients = async () => {
     try {
-      setLoadingDoctors(true);
+      setLoadingPatients(true);
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/accounts/all-users`);
       
       if (response.ok) {
@@ -108,55 +109,56 @@ const AdminPatient: React.FC = () => {
           usersList = usersData.data;
         }
         
-        const doctorUsers = usersList.filter((user: any) => {
+        const patientUsers = usersList.filter((user: any) => {
           const roles = user.roles?.$values || user.roles || [];
-          return roles.some((role: any) => role.value === 'Doctor' || role === 'Doctor');
+          return roles.some((role: any) => role.value === 'Patient' || role === 'Patient');
         });
         
-        if (doctorUsers.length > 0) {
-          const enhancedDoctors: EnhancedDoctor[] = doctorUsers.map((user: any, index: number) => ({
-            id: user.id || user.$id || `doctor-${index}`,
+        if (patientUsers.length > 0) {
+          const enhancedPatients: EnhancedPatient[] = patientUsers.map((user: any, index: number) => ({
+            id: user.id || user.$id || `patient-${index}`,
             userName: user.userName || user.username || user.name || 'Unknown',
             fullName: user.fullName || user.userName || user.username || user.name,
             accountName: user.userName || user.username,
             accountId: user.id || user.$id,
             email: user.email || '',
-            specialization: user.specialization || 'General Medicine',
+            age: user.age || 0,
+            gender: user.gender || 'Not specified',
             phoneNumber: user.phoneNumber || user.phoneNumber || 'No phone available',
             imageUrl: user.imageUrl || user.avatar || '',
             isActive: user.isActive !== false,
             status: (user.isActive !== false ? 'active' : 'inactive') as 'active' | 'inactive',
           }));
           
-          setDoctors(enhancedDoctors);
-          message.success(`Loaded ${enhancedDoctors.length} doctors successfully`);
+          setPatients(enhancedPatients);
+          message.success(`Loaded ${enhancedPatients.length} patients successfully`);
         } else {
-          setDoctors([]);
-          message.info('No doctors found in the system');
+          setPatients([]);
+          message.info('No patients found in the system');
         }
       } else {
         console.error('API Error:', response.status, response.statusText);
-        setDoctors([]);
+        setPatients([]);
       }
     } catch (error) {
-      setDoctors([]);
-      message.error('Failed to load doctors. Please try again.');
+      setPatients([]);
+      message.error('Failed to load patients. Please try again.');
     } finally {
-      setLoadingDoctors(false);
+      setLoadingPatients(false);
     }
   };
 
-  const toggleDoctorStatus = async (doctorId: string, currentStatus: 'active' | 'inactive', doctorName: string) => {
+  const togglePatientStatus = async (patientId: string, currentStatus: 'active' | 'inactive', patientName: string) => {
     try {
-      setSwitchLoading(prev => ({ ...prev, [doctorId]: true }));
+      setSwitchLoading(prev => ({ ...prev, [patientId]: true }));
       
-      const doctor = doctors.find(d => d.id === doctorId);
-      if (!doctor) {
-        message.error('Doctor not found');
+      const patient = patients.find(p => p.id === patientId);
+      if (!patient) {
+        message.error('Patient not found');
         return;
       }
 
-      const username = doctor.accountName || doctor.userName;
+      const username = patient.accountName || patient.userName;
       let apiUrl = '';
       let method = '';
       
@@ -179,79 +181,79 @@ const AdminPatient: React.FC = () => {
 
       if (response.ok) {
         // Update local state
-        const updatedDoctors: EnhancedDoctor[] = doctors.map(doc => {
-          if (doc.id === doctorId) {
+        const updatedPatients: EnhancedPatient[] = patients.map(pat => {
+          if (pat.id === patientId) {
             const newStatus: 'active' | 'inactive' = currentStatus === 'active' ? 'inactive' : 'active';
             return {
-              ...doc,
+              ...pat,
               status: newStatus,
               isActive: newStatus === 'active'
             };
           }
-          return doc;
+          return pat;
         });
         
-        setDoctors(updatedDoctors);
+        setPatients(updatedPatients);
         
         const action = currentStatus === 'active' ? 'deactivated' : 'activated';
-        message.success(`Dr. ${doctorName} has been ${action} successfully`);
+        message.success(`${patientName} has been ${action} successfully`);
       } else {
         const errorData = await response.json().catch(() => ({}));
-        message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} doctor: ${errorData.message || 'Unknown error'}`);
+        message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} patient: ${errorData.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error toggling doctor status:', error);
-      message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} doctor. Please try again.`);
+      console.error('Error toggling patient status:', error);
+      message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} patient. Please try again.`);
     } finally {
-      setSwitchLoading(prev => ({ ...prev, [doctorId]: false }));
+      setSwitchLoading(prev => ({ ...prev, [patientId]: false }));
     }
   };
 
-  const filterDoctors = () => {
-    let filtered = [...doctors];
+  const filterPatients = () => {
+    let filtered = [...patients];
 
     if (searchText) {
-      filtered = filtered.filter(doctor =>
-        doctor.userName.toLowerCase().includes(searchText.toLowerCase()) ||
-        doctor.fullName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        doctor.specialization.toLowerCase().includes(searchText.toLowerCase()) ||
-        doctor.email?.toLowerCase().includes(searchText.toLowerCase())
+      filtered = filtered.filter(patient =>
+        patient.userName.toLowerCase().includes(searchText.toLowerCase()) ||
+        patient.fullName?.toLowerCase().includes(searchText.toLowerCase()) ||
+        patient.gender?.toLowerCase().includes(searchText.toLowerCase()) ||
+        patient.email?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(doctor => doctor.status === statusFilter);
+      filtered = filtered.filter(patient => patient.status === statusFilter);
     }
 
-    if (specializationFilter !== 'all') {
-      filtered = filtered.filter(doctor => doctor.specialization === specializationFilter);
+    if (genderFilter !== 'all') {
+      filtered = filtered.filter(patient => patient.gender === genderFilter);
     }
 
-    setFilteredDoctors(filtered);
+    setFilteredPatients(filtered);
   };
 
-  const getStats = (): DoctorStats => {
-    const specializations = new Set(doctors.map(d => d.specialization));
+  const getStats = (): PatientStats => {
+    const genders = new Set(patients.map(p => p.gender).filter(g => g && g !== 'Not specified'));
     return {
-      total: doctors.length,
-      active: doctors.filter(d => d.status === 'active').length,
-      inactive: doctors.filter(d => d.status === 'inactive').length,
-      specializations: specializations.size,
+      total: patients.length,
+      active: patients.filter(p => p.status === 'active').length,
+      inactive: patients.filter(p => p.status === 'inactive').length,
+      genders: genders.size,
     };
   };
 
-  const getUniqueSpecializations = () => {
-    const specializations = new Set(doctors.map(d => d.specialization));
-    return Array.from(specializations);
+  const getUniqueGenders = () => {
+    const genders = new Set(patients.map(p => p.gender).filter(g => g && g !== 'Not specified'));
+    return Array.from(genders);
   };
 
-  const doctorColumns = [
+  const patientColumns = [
     {
-      title: 'Doctor',
+      title: 'Patient',
       dataIndex: 'userName',
       key: 'userName',
       width: 300,
-      render: (_text: string, record: EnhancedDoctor) => (
+      render: (_text: string, record: EnhancedPatient) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Badge 
             dot 
@@ -271,11 +273,11 @@ const AdminPatient: React.FC = () => {
           </Badge>
           <div>
             <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '2px' }}>
-              {record.fullName || `Dr. ${record.userName}`}
+              {record.fullName || record.userName}
             </div>
             <div style={{ color: '#666', fontSize: '12px', marginBottom: '2px' }}>
-              <MedicineBoxOutlined style={{ marginRight: '4px' }} />
-              {record.specialization}
+              <HeartOutlined style={{ marginRight: '4px' }} />
+              {record.age ? `${record.age} years old` : 'Age not specified'} • {record.gender || 'Gender not specified'}
             </div>
             {record.accountName && (
               <div style={{ color: '#999', fontSize: '11px' }}>
@@ -290,7 +292,7 @@ const AdminPatient: React.FC = () => {
       title: 'Contact',
       key: 'contact',
       width: 200,
-      render: (_: any, record: EnhancedDoctor) => (
+      render: (_: any, record: EnhancedPatient) => (
         <div>
           {record.email && (
             <div style={{ marginBottom: '4px', fontSize: '12px' }}>
@@ -324,12 +326,12 @@ const AdminPatient: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       width: 120,
-      render: (_: any, record: EnhancedDoctor) => (
+      render: (_: any, record: EnhancedPatient) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Popconfirm
-            title={`${record.status === 'active' ? 'Deactivate' : 'Activate'} Doctor`}
-            description={`Are you sure you want to ${record.status === 'active' ? 'deactivate' : 'activate'} Dr. ${record.fullName || record.userName}?`}
-            onConfirm={() => toggleDoctorStatus(record.id, record.status, record.fullName || record.userName)}
+            title={`${record.status === 'active' ? 'Deactivate' : 'Activate'} Patient`}
+            description={`Are you sure you want to ${record.status === 'active' ? 'deactivate' : 'activate'} ${record.fullName || record.userName}?`}
+            onConfirm={() => togglePatientStatus(record.id, record.status, record.fullName || record.userName)}
             okText="Yes"
             cancelText="No"
             placement="topRight"
@@ -376,10 +378,10 @@ const AdminPatient: React.FC = () => {
                 <div>
                   <Title level={2} style={{ margin: 0, color: '#1a1a1a' }}>
                     <TeamOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-                    Doctors Management
+                    Patients Management
                   </Title>
                   <Paragraph style={{ margin: '8px 0 0 0', color: '#666', fontSize: '14px' }}>
-                    Manage all medical professionals in your healthcare system
+                    Manage all patients in your healthcare system
                   </Paragraph>
                 </div>
               </div>
@@ -396,7 +398,7 @@ const AdminPatient: React.FC = () => {
                     }}
                   >
                     <Statistic
-                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Total Doctors</span>}
+                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Total Patients</span>}
                       value={stats.total}
                       prefix={<TeamOutlined style={{ color: 'white' }} />}
                       valueStyle={{ color: 'white', fontWeight: 'bold' }}
@@ -413,7 +415,7 @@ const AdminPatient: React.FC = () => {
                     }}
                   >
                     <Statistic
-                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Active Doctors</span>}
+                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Active Patients</span>}
                       value={stats.active}
                       prefix={<CheckCircleOutlined style={{ color: 'white' }} />}
                       valueStyle={{ color: 'white', fontWeight: 'bold' }}
@@ -430,7 +432,7 @@ const AdminPatient: React.FC = () => {
                     }}
                   >
                     <Statistic
-                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Inactive Doctors</span>}
+                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Inactive Patients</span>}
                       value={stats.inactive}
                       prefix={<CloseCircleOutlined style={{ color: 'white' }} />}
                       valueStyle={{ color: 'white', fontWeight: 'bold' }}
@@ -447,9 +449,9 @@ const AdminPatient: React.FC = () => {
                     }}
                   >
                     <Statistic
-                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Specializations</span>}
-                      value={stats.specializations}
-                      prefix={<MedicineBoxOutlined style={{ color: 'white' }} />}
+                      title={<span style={{ color: 'rgba(255,255,255,0.9)' }}>Gender Types</span>}
+                      value={stats.genders}
+                      prefix={<HeartOutlined style={{ color: 'white' }} />}
                       valueStyle={{ color: 'white', fontWeight: 'bold' }}
                     />
                   </Card>
@@ -469,7 +471,7 @@ const AdminPatient: React.FC = () => {
               <Row gutter={16} align="middle">
                 <Col span={8}>
                   <Search
-                    placeholder="Search doctors by name, specialization, or email..."
+                    placeholder="Search patients by name, gender, or email..."
                     prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -492,22 +494,22 @@ const AdminPatient: React.FC = () => {
                 </Col>
                 <Col span={4}>
                   <Select
-                    value={specializationFilter}
-                    onChange={setSpecializationFilter}
+                    value={genderFilter}
+                    onChange={setGenderFilter}
                     style={{ width: '100%' }}
                     size="large"
-                    placeholder="Filter by specialization"
+                    placeholder="Filter by gender"
                   >
-                    <Option value="all">All Specializations</Option>
-                    {getUniqueSpecializations().map(spec => (
-                      <Option key={spec} value={spec}>{spec}</Option>
+                    <Option value="all">All Genders</Option>
+                    {getUniqueGenders().map(gender => (
+                      <Option key={gender} value={gender}>{gender}</Option>
                     ))}
                   </Select>
                 </Col>
                 <Col span={8}>
                   <div style={{ textAlign: 'right' }}>
                     <Text style={{ color: '#666', fontSize: '14px' }}>
-                      Showing {filteredDoctors.length} of {doctors.length} doctors
+                      Showing {filteredPatients.length} of {patients.length} patients
                     </Text>
                   </div>
                 </Col>
@@ -523,37 +525,37 @@ const AdminPatient: React.FC = () => {
                 overflow: 'hidden'
               }}
             >
-              {loadingDoctors ? (
+              {loadingPatients ? (
                 <div style={{ textAlign: 'center', padding: '60px 0' }}>
                   <Spin size="large" />
-                  <div style={{ marginTop: '16px', color: '#666' }}>Loading doctors...</div>
+                  <div style={{ marginTop: '16px', color: '#666' }}>Loading patients...</div>
                 </div>
-              ) : filteredDoctors.length === 0 ? (
+              ) : filteredPatients.length === 0 ? (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="No doctors found"
+                  description="No patients found"
                   style={{ padding: '60px 0' }}
                 >
                   <Button type="primary" icon={<PlusOutlined />}>
-                    Add First Doctor
+                    Add First Patient
                   </Button>
                 </Empty>
               ) : (
                 <Table
-                  columns={doctorColumns}
-                  dataSource={filteredDoctors}
+                  columns={patientColumns}
+                  dataSource={filteredPatients}
                   rowKey="id"
                   pagination={{ 
                     pageSize: 10,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} doctors`,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} patients`,
                     style: { marginTop: '16px' }
                   }}
-                  className="doctors-table"
-                  rowClassName={(record) => record.id === selectedDoctorId ? 'selected-row' : ''}
+                  className="patients-table"
+                  rowClassName={(record) => record.id === selectedPatientId ? 'selected-row' : ''}
                   onRow={(record) => ({
-                    onClick: () => setSelectedDoctorId(record.id),
+                    onClick: () => setSelectedPatientId(record.id),
                   })}
                   style={{ backgroundColor: 'white' }}
                 />
