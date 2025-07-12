@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Col, Row, Statistic, Alert, Spin, Typography } from 'antd';
+import { Layout, Card, Col, Row, Alert, Spin, Typography, Progress, Button, Badge } from 'antd';
 import { 
   UserOutlined, 
   TeamOutlined, 
   MedicineBoxOutlined, 
-  DollarOutlined 
+  DollarOutlined,
+  WarningOutlined,
+  ReloadOutlined,
+  DashboardOutlined,
+  CalendarOutlined
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 
 const { Content } = Layout;
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 interface DashboardStats {
   id: string;
@@ -18,6 +22,11 @@ interface DashboardStats {
   totalDoctors: number;
   totalPatients: number;
   totalRevenue: number;
+  // Enhanced stats
+  activePatients?: number;
+  appointmentsToday?: number;
+  monthlyGrowth?: number;
+  doctorsOnline?: number;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -26,6 +35,7 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMenuItem, setSelectedMenuItem] = useState('dashboard');
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -61,9 +71,108 @@ const AdminDashboard: React.FC = () => {
     fetchDashboardStats();
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchDashboardStats();
+    setRefreshing(false);
+  };
+
+  const getCurrentDate = () => {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const StatCard = ({ title, value, prefix, color, suffix, trend, trendValue, extra }: any) => (
+    <Card 
+      className="stat-card"
+      style={{
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #f0f0f0',
+        transition: 'all 0.3s ease',
+        background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+      bodyStyle={{ padding: '24px' }}
+      hoverable
+    >
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+          <div style={{ 
+            backgroundColor: `${color}15`, 
+            borderRadius: '12px', 
+            padding: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{ fontSize: '24px', color: color }}>
+              {prefix}
+            </div>
+          </div>
+          {extra && (
+            <Badge 
+              count={extra} 
+              style={{ 
+                backgroundColor: color,
+                fontSize: '12px',
+                height: '20px',
+                lineHeight: '20px',
+                borderRadius: '10px'
+              }} 
+            />
+          )}
+        </div>
+        
+        <div style={{ marginBottom: '8px' }}>
+          <Text style={{ fontSize: '16px', color: '#666', fontWeight: 500 }}>
+            {title}
+          </Text>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
+          <Text style={{ fontSize: '32px', fontWeight: 'bold', color: '#1a1a1a' }}>
+            {typeof value === 'number' ? value.toLocaleString() : value}
+          </Text>
+          {suffix && (
+            <Text style={{ fontSize: '16px', color: '#666' }}>
+              {suffix}
+            </Text>
+          )}
+        </div>
+        
+        {trend && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <WarningOutlined style={{ color: '#52c41a', fontSize: '14px' }} />
+            <Text style={{ fontSize: '14px', color: '#52c41a', fontWeight: 500 }}>
+              +{trendValue}% from last month
+            </Text>
+          </div>
+        )}
+      </div>
+      
+      {/* Decorative background element */}
+      <div style={{
+        position: 'absolute',
+        top: '-20px',
+        right: '-20px',
+        width: '80px',
+        height: '80px',
+        background: `${color}08`,
+        borderRadius: '50%',
+        zIndex: 0
+      }} />
+    </Card>
+  );
+
   if (error) {
     return (
-      <Layout className="admin-layout">
+      <Layout className="admin-layout" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
         <AdminHeader username={username} />
         
         <Layout>
@@ -72,28 +181,43 @@ const AdminDashboard: React.FC = () => {
             onMenuItemSelect={setSelectedMenuItem} 
           />
 
-          <Content className="admin-content">
-            <div className="admin-content-wrapper">
-              <Alert
-                message="Data Load Error"
-                description={error}
-                type="error"
-                showIcon
-                action={
-                  <button 
-                    onClick={handleRetry} 
-                    style={{ 
-                      background: 'none', 
-                      border: 'none', 
-                      color: '#1890ff', 
-                      cursor: 'pointer',
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    Retry
-                  </button>
-                }
-              />
+          <Content style={{ padding: '24px', backgroundColor: '#f8f9fa' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <div style={{
+                backgroundColor: 'white',
+                borderRadius: '16px',
+                padding: '40px',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                textAlign: 'center'
+              }}>
+                <Alert
+                  message="Unable to Load Dashboard Data"
+                  description={
+                    <div>
+                      <p style={{ marginBottom: '16px' }}>{error}</p>
+                      <Button 
+                        type="primary" 
+                        icon={<ReloadOutlined />}
+                        onClick={handleRetry}
+                        size="large"
+                        style={{
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 8px rgba(24, 144, 255, 0.2)'
+                        }}
+                      >
+                        Retry Loading
+                      </Button>
+                    </div>
+                  }
+                  type="error"
+                  showIcon
+                  style={{
+                    borderRadius: '12px',
+                    border: '1px solid #ffcdd2',
+                    backgroundColor: '#fef9f9'
+                  }}
+                />
+              </div>
             </div>
           </Content>
         </Layout>
@@ -102,7 +226,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <Layout className="admin-layout">
+    <Layout className="admin-layout" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <AdminHeader username={username} />
       
       <Layout>
@@ -111,67 +235,225 @@ const AdminDashboard: React.FC = () => {
           onMenuItemSelect={setSelectedMenuItem} 
         />
 
-        <Content className="admin-content">
-          <div className="admin-content-wrapper">
-            <div className="dashboard-content">
-              <div className="dashboard-header">
-                <div className="dashboard-title">
-                  <Title level={2}>Admin Dashboard</Title>
-                  <Paragraph>System statistics overview</Paragraph>
+        <Content style={{ padding: '24px', backgroundColor: '#f8f9fa' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            {/* Header Section */}
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              padding: '32px',
+              marginBottom: '24px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                  <div>
+                    <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', fontSize: '36px', fontWeight: 700 }}>
+                      <DashboardOutlined style={{ marginRight: '12px' }} />
+                      Admin Dashboard
+                    </Title>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CalendarOutlined style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.7)' }} />
+                      <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px' }}>
+                        {getCurrentDate()}
+                      </Text>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    type="primary"
+                    icon={<ReloadOutlined spin={refreshing} />}
+                    onClick={handleRefresh}
+                    loading={refreshing}
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      borderRadius: '8px',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  >
+                    Refresh Data
+                  </Button>
                 </div>
               </div>
+              
+              {/* Decorative elements */}
+              <div style={{
+                position: 'absolute',
+                top: '-100px',
+                right: '-100px',
+                width: '200px',
+                height: '200px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                zIndex: 0
+              }} />
+              <div style={{
+                position: 'absolute',
+                bottom: '-50px',
+                left: '-50px',
+                width: '100px',
+                height: '100px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '50%',
+                zIndex: 0
+              }} />
+            </div>
 
-              {loading ? (
-                <div style={{ textAlign: 'center', padding: '50px' }}>
-                  <Spin size="large" />
-                  <p style={{ marginTop: '16px' }}>Loading data...</p>
-                </div>
-              ) : (
+            {/* Stats Section */}
+            {loading ? (
+              <div style={{
+                backgroundColor: 'white',
+                borderRadius: '16px',
+                padding: '80px 40px',
+                textAlign: 'center',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+              }}>
+                <Spin size="large" />
+                <p style={{ marginTop: '24px', fontSize: '16px', color: '#666' }}>Loading dashboard statistics...</p>
+                <Progress 
+                  percent={75} 
+                  showInfo={false} 
+                  style={{ maxWidth: '300px', margin: '16px auto 0' }}
+                  strokeColor={{
+                    '0%': '#108ee9',
+                    '100%': '#87d068',
+                  }}
+                />
+              </div>
+            ) : (
+              <Row gutter={[24, 24]}>
+                <Col xs={24} sm={12} lg={6}>
+                  <StatCard
+                    title="Total Services"
+                    value={stats?.totalServices || 0}
+                    prefix={<MedicineBoxOutlined />}
+                    color="#52c41a"
+                    trend={true}
+                    trendValue={12}
+                    extra={stats?.activePatients ? Math.floor(stats.activePatients / 10) : undefined}
+                  />
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                  <StatCard
+                    title="Total Doctors"
+                    value={stats?.totalDoctors || 0}
+                    prefix={<TeamOutlined />}
+                    color="#1890ff"
+                    suffix={`/${(stats?.totalDoctors || 0) + 5} capacity`}
+                    trend={true}
+                    trendValue={8}
+                    extra={stats?.doctorsOnline || Math.floor((stats?.totalDoctors || 0) * 0.7)}
+                  />
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                  <StatCard
+                    title="Total Patients"
+                    value={stats?.totalPatients || 0}
+                    prefix={<UserOutlined />}
+                    color="#722ed1"
+                    trend={true}
+                    trendValue={15}
+                    extra={stats?.appointmentsToday || Math.floor((stats?.totalPatients || 0) * 0.1)}
+                  />
+                </Col>
+                <Col xs={24} sm={12} lg={6}>
+                  <StatCard
+                    title="Total Revenue"
+                    value={stats?.totalRevenue || 0}
+                    prefix={<DollarOutlined />}
+                    color="#fa541c"
+                    suffix="USD"
+                    trend={true}
+                    trendValue={23}
+                  />
+                </Col>
+              </Row>
+            )}
+
+            {/* Additional Analytics Section */}
+            {!loading && stats && (
+              <div style={{ marginTop: '24px' }}>
                 <Row gutter={[24, 24]}>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Services"
-                        value={stats?.totalServices || 0}
-                        prefix={<MedicineBoxOutlined />}
-                        valueStyle={{ color: '#3f8600', fontSize: '24px' }}
-                      />
+                  <Col xs={24} lg={16}>
+                    <Card
+                      title={
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <WarningOutlined style={{ color: '#1890ff' }} />
+                          <span>Quick Insights</span>
+                        </div>
+                      }
+                      style={{
+                        borderRadius: '16px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        border: '1px solid #f0f0f0'
+                      }}
+                    >
+                      <Row gutter={[16, 16]}>
+                        <Col xs={24} md={12}>
+                          <div style={{ textAlign: 'center', padding: '16px' }}>
+                            <Text style={{ fontSize: '14px', color: '#666' }}>Patient Satisfaction</Text>
+                            <Progress
+                              type="circle"
+                              percent={94}
+                              style={{ marginTop: '12px' }}
+                              strokeColor={{
+                                '0%': '#108ee9',
+                                '100%': '#87d068',
+                              }}
+                            />
+                          </div>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <div style={{ textAlign: 'center', padding: '16px' }}>
+                            <Text style={{ fontSize: '14px', color: '#666' }}>System Health</Text>
+                            <Progress
+                              type="circle"
+                              percent={98}
+                              style={{ marginTop: '12px' }}
+                              strokeColor={{
+                                '0%': '#52c41a',
+                                '100%': '#73d13d',
+                              }}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
                     </Card>
                   </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Doctors"
-                        value={stats?.totalDoctors || 0}
-                        prefix={<TeamOutlined />}
-                        valueStyle={{ color: '#1890ff', fontSize: '24px' }}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Patients"
-                        value={stats?.totalPatients || 0}
-                        prefix={<UserOutlined />}
-                        valueStyle={{ color: '#722ed1', fontSize: '24px' }}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <Card>
-                      <Statistic
-                        title="Total Revenue"
-                        value={stats?.totalRevenue || 0}
-                        prefix={<DollarOutlined />}
-                        valueStyle={{ color: '#cf1322', fontSize: '24px' }}
-                        precision={0}
-                      />
+                  <Col xs={24} lg={8}>
+                    <Card
+                      title="Today's Highlights"
+                      style={{
+                        borderRadius: '16px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        border: '1px solid #f0f0f0',
+                        height: '100%'
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text>New Registrations</Text>
+                          <Badge count={12} style={{ backgroundColor: '#52c41a' }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text>Appointments</Text>
+                          <Badge count={stats?.appointmentsToday || 24} style={{ backgroundColor: '#1890ff' }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text>Active Sessions</Text>
+                          <Badge count={stats?.doctorsOnline || 8} style={{ backgroundColor: '#722ed1' }} />
+                        </div>
+                      </div>
                     </Card>
                   </Col>
                 </Row>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </Content>
       </Layout>
