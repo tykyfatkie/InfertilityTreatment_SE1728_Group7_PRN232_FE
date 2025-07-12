@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Col, Row, Statistic, Alert, Spin } from 'antd';
+import { Layout, Card, Col, Row, Statistic, Alert, Spin, Typography } from 'antd';
 import { 
   UserOutlined, 
   TeamOutlined, 
   MedicineBoxOutlined, 
   DollarOutlined 
 } from '@ant-design/icons';
+import AdminHeader from '../../components/Header/AdminHeader';
+import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 
 const { Content } = Layout;
+const { Title, Paragraph } = Typography;
 
 interface DashboardStats {
   id: string;
@@ -18,9 +21,20 @@ interface DashboardStats {
 }
 
 const AdminDashboard: React.FC = () => {
+  const [username, setUsername] = useState('');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState('dashboard');
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+
+    fetchDashboardStats();
+  }, []);
 
   const fetchDashboardStats = async () => {
     try {
@@ -43,115 +57,133 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
-
   const handleRetry = () => {
     fetchDashboardStats();
   };
 
   if (error) {
     return (
-      <Layout style={{ minHeight: '100vh', padding: '24px' }}>
-        <Content>
-          <Alert
-            message="Lỗi tải dữ liệu"
-            description={error}
-            type="error"
-            showIcon
-            action={
-              <button 
-                onClick={handleRetry} 
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  color: '#1890ff', 
-                  cursor: 'pointer',
-                  textDecoration: 'underline'
-                }}
-              >
-                Thử lại
-              </button>
-            }
+      <Layout className="admin-layout">
+        <AdminHeader username={username} />
+        
+        <Layout>
+          <AdminSidebar 
+            selectedMenuItem={selectedMenuItem} 
+            onMenuItemSelect={setSelectedMenuItem} 
           />
-        </Content>
+
+          <Content className="admin-content">
+            <div className="admin-content-wrapper">
+              <Alert
+                message="Lỗi tải dữ liệu"
+                description={error}
+                type="error"
+                showIcon
+                action={
+                  <button 
+                    onClick={handleRetry} 
+                    style={{ 
+                      background: 'none', 
+                      border: 'none', 
+                      color: '#1890ff', 
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Thử lại
+                  </button>
+                }
+              />
+            </div>
+          </Content>
+        </Layout>
       </Layout>
     );
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
-      <Content style={{ padding: '24px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold', margin: 0 }}>
-            Admin Dashboard
-          </h1>
-          <p style={{ color: '#666', margin: '8px 0 0 0', fontSize: '16px' }}>
-            Tổng quan thống kê hệ thống
-          </p>
-        </div>
+    <Layout className="admin-layout">
+      <AdminHeader username={username} />
+      
+      <Layout>
+        <AdminSidebar 
+          selectedMenuItem={selectedMenuItem} 
+          onMenuItemSelect={setSelectedMenuItem} 
+        />
 
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <Spin size="large" />
-            <p style={{ marginTop: '16px' }}>Đang tải dữ liệu...</p>
+        <Content className="admin-content">
+          <div className="admin-content-wrapper">
+            <div className="dashboard-content">
+              <div className="dashboard-header">
+                <div className="dashboard-title">
+                  <Title level={2}>Admin Dashboard</Title>
+                  <Paragraph>Tổng quan thống kê hệ thống</Paragraph>
+                </div>
+              </div>
+
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '50px' }}>
+                  <Spin size="large" />
+                  <p style={{ marginTop: '16px' }}>Đang tải dữ liệu...</p>
+                </div>
+              ) : (
+                <Row gutter={[24, 24]}>
+                  <Col xs={24} sm={12} lg={6}>
+                    <Card>
+                      <Statistic
+                        title="Tổng số dịch vụ"
+                        value={stats?.totalServices || 0}
+                        prefix={<MedicineBoxOutlined />}
+                        valueStyle={{ color: '#3f8600', fontSize: '24px' }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} lg={6}>
+                    <Card>
+                      <Statistic
+                        title="Tổng số bác sĩ"
+                        value={stats?.totalDoctors || 0}
+                        prefix={<TeamOutlined />}
+                        valueStyle={{ color: '#1890ff', fontSize: '24px' }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} lg={6}>
+                    <Card>
+                      <Statistic
+                        title="Tổng số bệnh nhân"
+                        value={stats?.totalPatients || 0}
+                        prefix={<UserOutlined />}
+                        valueStyle={{ color: '#722ed1', fontSize: '24px' }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} lg={6}>
+                    <Card>
+                      <Statistic
+                        title="Tổng doanh thu"
+                        value={stats?.totalRevenue || 0}
+                        prefix={<DollarOutlined />}
+                        valueStyle={{ color: '#cf1322', fontSize: '24px' }}
+                        precision={0}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+              )}
+
+              {/* Debug info cho development */}
+              {process.env.NODE_ENV === 'development' && stats && (
+                <Card title="Debug Info" style={{ marginTop: '24px' }} size="small">
+                  <pre style={{ fontSize: '12px', maxHeight: '150px', overflow: 'auto' }}>
+                    {JSON.stringify(stats, null, 2)}
+                  </pre>
+                </Card>
+              )}
+            </div>
           </div>
-        ) : (
-          <Row gutter={[24, 24]}>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Tổng số dịch vụ"
-                  value={stats?.totalServices || 0}
-                  prefix={<MedicineBoxOutlined />}
-                  valueStyle={{ color: '#3f8600', fontSize: '24px' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Tổng số bác sĩ"
-                  value={stats?.totalDoctors || 0}
-                  prefix={<TeamOutlined />}
-                  valueStyle={{ color: '#1890ff', fontSize: '24px' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Tổng số bệnh nhân"
-                  value={stats?.totalPatients || 0}
-                  prefix={<UserOutlined />}
-                  valueStyle={{ color: '#722ed1', fontSize: '24px' }}
-                />
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} lg={6}>
-              <Card>
-                <Statistic
-                  title="Tổng doanh thu"
-                  value={stats?.totalRevenue || 0}
-                  prefix={<DollarOutlined />}
-                  valueStyle={{ color: '#cf1322', fontSize: '24px' }}
-                  precision={0}
-                />
-              </Card>
-            </Col>
-          </Row>
-        )}
-
-        {/* Debug info cho development */}
-        {process.env.NODE_ENV === 'development' && stats && (
-          <Card title="Debug Info" style={{ marginTop: '24px' }} size="small">
-            <pre style={{ fontSize: '12px', maxHeight: '150px', overflow: 'auto' }}>
-              {JSON.stringify(stats, null, 2)}
-            </pre>
-          </Card>
-        )}
-      </Content>
+        </Content>
+      </Layout>
     </Layout>
   );
 };
