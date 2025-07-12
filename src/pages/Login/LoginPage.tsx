@@ -19,35 +19,29 @@ const LoginPage: React.FC = () => {
     try {
       const userData: any = jwtDecode(token);
       
-      // Lấy userId từ JWT token nếu không được truyền vào
       const extractedUserId = userId || userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
       const username = userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
       const email = userData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
       
-      // Lưu thông tin user
       localStorage.setItem("userId", extractedUserId);
       localStorage.setItem("username", username);
       localStorage.setItem("email", email);
       
-      // Kiểm tra role - có thể role nằm trong claim khác hoặc cần gọi API khác để lấy
       const userRole = userData.role || userData["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       
       if (userRole) {
         localStorage.setItem("role", userRole);
         
-        // Điều hướng dựa trên role
-        if (userRole === "admin") {
+        if (userRole === "Admin || admin") {
           navigate("/admin/doctors");
-        } else if (userRole === "Doctor") {
+        } else if (userRole === "Doctor || doctor") {
           navigate("/doctor");
-        } else if (userRole === "Patient || Customer") {
+        } else if (userRole === "Patient") {
           navigate("/home");
         } else {
           navigate("/home");
         }
       } else {
-        // Nếu không có role trong JWT, có thể cần gọi API khác để lấy thông tin user
-        // Tạm thời điều hướng về home
         console.warn("No role found in JWT token");
         navigate("/home");
       }
