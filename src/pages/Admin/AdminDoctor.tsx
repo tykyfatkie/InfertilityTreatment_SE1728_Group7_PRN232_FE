@@ -4,39 +4,32 @@ import {
   Typography, 
   Button, 
   Card, 
-  Space, 
   Avatar, 
   Table, 
   Tag, 
-  Modal,
-  Form,
   message,
-  Tooltip,
   Input,
   Select,
   Badge,
   Row,
   Col,
   Statistic,
-  Dropdown,
   Empty,
   Spin,
+  Switch,
+  Popconfirm,
 } from 'antd';
 import { 
-  ExclamationCircleOutlined,
   UserOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
   SearchOutlined,
   PlusOutlined,
   TeamOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  MoreOutlined,
   PhoneOutlined,
   MailOutlined,
   MedicineBoxOutlined,
+  PoweroffOutlined,
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
@@ -78,13 +71,11 @@ const AdminDoctor: React.FC = () => {
   const [filteredDoctors, setFilteredDoctors] = useState<EnhancedDoctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const [selectedMenuItem, setSelectedMenuItem] = useState('doctors');
-  const [, setIsModalVisible] = useState(false);
-  const [, setEditingDoctor] = useState<EnhancedDoctor | null>(null);
-  const [form] = Form.useForm();
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [specializationFilter, setSpecializationFilter] = useState<string>('all');
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  const [switchLoading, setSwitchLoading] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -155,6 +146,67 @@ const AdminDoctor: React.FC = () => {
     }
   };
 
+  const toggleDoctorStatus = async (doctorId: string, currentStatus: 'active' | 'inactive', doctorName: string) => {
+    try {
+      setSwitchLoading(prev => ({ ...prev, [doctorId]: true }));
+      
+      const doctor = doctors.find(d => d.id === doctorId);
+      if (!doctor) {
+        message.error('Doctor not found');
+        return;
+      }
+
+      const username = doctor.accountName || doctor.userName;
+      let apiUrl = '';
+      let method = '';
+      
+      if (currentStatus === 'active') {
+        // Deactivate user
+        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/accounts/${username}`;
+        method = 'DELETE';
+      } else {
+        // Activate user
+        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/accounts/${username}/restore`;
+        method = 'PUT';
+      }
+
+      const response = await fetch(apiUrl, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Update local state
+        const updatedDoctors: EnhancedDoctor[] = doctors.map(doc => {
+          if (doc.id === doctorId) {
+            const newStatus: 'active' | 'inactive' = currentStatus === 'active' ? 'inactive' : 'active';
+            return {
+              ...doc,
+              status: newStatus,
+              isActive: newStatus === 'active'
+            };
+          }
+          return doc;
+        });
+        
+        setDoctors(updatedDoctors);
+        
+        const action = currentStatus === 'active' ? 'deactivated' : 'activated';
+        message.success(`Dr. ${doctorName} has been ${action} successfully`);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} doctor: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error toggling doctor status:', error);
+      message.error(`Failed to ${currentStatus === 'active' ? 'deactivate' : 'activate'} doctor. Please try again.`);
+    } finally {
+      setSwitchLoading(prev => ({ ...prev, [doctorId]: false }));
+    }
+  };
+
   const filterDoctors = () => {
     let filtered = [...doctors];
 
@@ -176,59 +228,6 @@ const AdminDoctor: React.FC = () => {
     }
 
     setFilteredDoctors(filtered);
-  };
-
-  const deleteDoctor = async (doctorId: string) => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        message.success('Doctor deleted successfully');
-        fetchDoctors();
-        return true;
-      } else {
-        const errorData = await response.json();
-        message.error(errorData.message);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error deleting doctor:', error);
-      message.error('Error deleting doctor. Please try again.');
-      return false;
-    }
-  };
-
-  const handleEditDoctor = (doctor: EnhancedDoctor) => {
-    setEditingDoctor(doctor);
-    form.setFieldsValue({
-      userName: doctor.userName,
-      specialization: doctor.specialization,
-      phoneNumber: doctor.phoneNumber,
-      imageUrl: doctor.imageUrl
-    });
-    setIsModalVisible(true);
-  };
-
-  const handleDeleteDoctor = (doctor: EnhancedDoctor) => {
-    Modal.confirm({
-      title: 'Delete Doctor',
-      content: `Are you sure you want to delete Dr. ${doctor.userName}?`,
-      icon: <ExclamationCircleOutlined />,
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: async () => {
-        await deleteDoctor(doctor.id);
-      }
-    });
-  };
-
-  const handleViewDoctor = (doctor: EnhancedDoctor) => {
-    setSelectedDoctorId(doctor.id);
-    // You can implement a detailed view modal here
-    message.info(`Viewing details for Dr. ${doctor.userName}`);
   };
 
   const getStats = (): DoctorStats => {
@@ -326,26 +325,33 @@ const AdminDoctor: React.FC = () => {
       key: 'actions',
       width: 120,
       render: (_: any, record: EnhancedDoctor) => (
-        <Space size="small">
-          <Tooltip title="View Details">
-            <Button 
-              type="text" 
-              icon={<EyeOutlined />} 
-              size="small"
-              onClick={() => handleViewDoctor(record)}
-              style={{ color: '#1890ff' }}
-            />
-          </Tooltip>
-          <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              icon={<EditOutlined />} 
-              size="small" 
-              onClick={() => handleEditDoctor(record)}
-              style={{ color: '#52c41a' }}
-            />
-          </Tooltip>
-        </Space>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Popconfirm
+            title={`${record.status === 'active' ? 'Deactivate' : 'Activate'} Doctor`}
+            description={`Are you sure you want to ${record.status === 'active' ? 'deactivate' : 'activate'} Dr. ${record.fullName || record.userName}?`}
+            onConfirm={() => toggleDoctorStatus(record.id, record.status, record.fullName || record.userName)}
+            okText="Yes"
+            cancelText="No"
+            placement="topRight"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PoweroffOutlined 
+                style={{ 
+                  color: record.status === 'active' ? '#52c41a' : '#ff4d4f',
+                  fontSize: '12px'
+                }} 
+              />
+              <Switch
+                size="small"
+                checked={record.status === 'active'}
+                loading={switchLoading[record.id] || false}
+                style={{
+                  backgroundColor: record.status === 'active' ? '#52c41a' : '#ff4d4f',
+                }}
+              />
+            </div>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
