@@ -92,7 +92,7 @@ const PatientHomepage: React.FC = () => {
             height: '700px',
             overflow: 'hidden',
             marginBottom: '30px',
-            marginTop: '1220px',
+            marginTop: '620px',
             position: 'relative',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
             borderRadius: '0 0 30px 30px',
