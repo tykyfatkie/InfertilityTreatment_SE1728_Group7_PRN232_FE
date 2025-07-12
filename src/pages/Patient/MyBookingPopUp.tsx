@@ -38,95 +38,158 @@ interface Booking {
   serviceDetails?: any;
 }
 
-// Styles object to replace styled-jsx
+// Enhanced styles with better visual design
 const styles = {
   bookingsContent: {
-    padding: '8px',
+    padding: '16px',
+    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+    borderRadius: '12px',
+    minHeight: '400px',
   },
   bookingCard: {
-    transition: 'all 0.3s ease',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    border: '1px solid #f0f0f0',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+    border: 'none',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+    overflow: 'hidden',
+    position: 'relative' as const,
   },
   bookingCardHover: {
-    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)',
+    transform: 'translateY(-4px)',
   },
   bookingCardContent: {
-    padding: '8px',
+    padding: '20px',
+    position: 'relative' as const,
+  },
+  cardAccent: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #1890ff, #52c41a)',
   },
   bookingDatetime: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '8px',
+    gap: '12px',
+    padding: '16px',
+    background: 'rgba(24, 144, 255, 0.05)',
+    borderRadius: '12px',
+    border: '1px solid rgba(24, 144, 255, 0.1)',
   },
   dateSection: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
+    gap: '12px',
   },
   timeSection: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    marginTop: '12px',
+    gap: '12px',
   },
   infoIcon: {
     color: '#1890ff',
-    fontSize: '16px',
+    fontSize: '18px',
+    padding: '8px',
+    background: 'rgba(24, 144, 255, 0.1)',
+    borderRadius: '8px',
   },
   priceIcon: {
     color: '#52c41a',
-    fontSize: '16px',
-    marginRight: '8px',
+    fontSize: '20px',
+    padding: '8px',
+    background: 'rgba(82, 196, 26, 0.1)',
+    borderRadius: '8px',
+    marginRight: '12px',
   },
   dateText: {
-    fontWeight: 500,
-    fontSize: '14px',
+    fontWeight: 600,
+    fontSize: '16px',
+    color: '#1f2937',
   },
   timeText: {
-    fontWeight: 500,
-    fontSize: '14px',
+    fontWeight: 600,
+    fontSize: '16px',
+    color: '#1f2937',
   },
   bookingPrice: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '16px',
+    background: 'rgba(82, 196, 26, 0.05)',
+    borderRadius: '12px',
+    border: '1px solid rgba(82, 196, 26, 0.1)',
   },
   bookingStatus: {
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   bookingId: {
     textAlign: 'center' as const,
+    padding: '8px',
+    background: 'rgba(0, 0, 0, 0.03)',
+    borderRadius: '8px',
   },
   requestModalTitle: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '16px',
+    padding: '8px 0',
   },
   titleIcon: {
     color: '#1890ff',
-    fontSize: '24px',
+    fontSize: '28px',
+    padding: '8px',
+    background: 'rgba(24, 144, 255, 0.1)',
+    borderRadius: '12px',
   },
   subtitle: {
     fontSize: '14px',
-    color: '#666',
+    color: '#6b7280',
     fontWeight: 'normal' as const,
+    marginTop: '4px',
   },
   priceAmount: {
-    fontSize: '18px',
+    fontSize: '20px',
     fontWeight: 'bold' as const,
-    color: '#1890ff',
+    color: '#059669',
+    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
   },
   tag: {
     fontSize: '14px',
-    padding: '4px 12px',
-    borderRadius: '6px',
+    padding: '8px 16px',
+    borderRadius: '20px',
+    fontWeight: 500,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
   },
   secondaryText: {
     fontSize: '12px',
+    color: '#6b7280',
+  },
+  headerSection: {
+    marginBottom: '24px',
+    padding: '20px',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+    borderRadius: '12px',
+    border: '1px solid rgba(0, 0, 0, 0.06)',
+  },
+  loadingContainer: {
+    textAlign: 'center' as const,
+    padding: '60px 20px',
+    background: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: '12px',
+    backdropFilter: 'blur(10px)',
+  },
+  emptyContainer: {
+    padding: '60px 20px',
+    background: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: '12px',
+    backdropFilter: 'blur(10px)',
   },
 };
 
@@ -235,34 +298,38 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
           Close
         </Button>
       ]}
-      width={900}
+      width={950}
       destroyOnClose
       className="request-modal bookings-display-modal"
+      styles={{
+        content: { padding: '24px' },
+        header: { padding: '24px 24px 0' },
+      }}
     >
       <div style={styles.bookingsContent}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
+          <div style={styles.loadingContainer}>
             <Spin size="large" />
-            <div style={{ marginTop: '16px' }}>Loading your bookings...</div>
+            <div style={{ marginTop: '16px', color: '#6b7280' }}>Loading your bookings...</div>
           </div>
         ) : bookings.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description="No bookings found"
-            style={{ padding: '50px' }}
+            style={styles.emptyContainer}
           >
-            <Button type="primary" onClick={onClose}>
+            <Button type="primary" onClick={onClose} size="large">
               Book an Appointment
             </Button>
           </Empty>
         ) : (
           <div>
-            <div style={{ marginBottom: '24px' }}>
-              <Title level={4}>
-                <MedicineBoxOutlined style={{ marginRight: '8px' }} />
+            <div style={styles.headerSection}>
+              <Title level={4} style={{ margin: 0, color: '#1f2937' }}>
+                <MedicineBoxOutlined style={{ marginRight: '12px', color: '#1890ff' }} />
                 Your Appointments ({bookings.length})
               </Title>
-              <Text type="secondary">
+              <Text type="secondary" style={{ fontSize: '14px', color: '#6b7280' }}>
                 Here are all your booked appointments with our fertility specialists
               </Text>
             </div>
@@ -278,6 +345,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
                     onMouseEnter={() => setHoveredCard(booking.id)}
                     onMouseLeave={() => setHoveredCard(null)}
                   >
+                    <div style={styles.cardAccent} />
                     <div style={styles.bookingCardContent}>
                       <Row gutter={16} align="middle">
                         <Col xs={24} sm={8}>
