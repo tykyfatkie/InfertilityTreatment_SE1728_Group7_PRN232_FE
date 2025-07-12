@@ -7,7 +7,8 @@ import {
   DollarOutlined,
   ReloadOutlined,
   DashboardOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  RiseOutlined 
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
@@ -146,6 +147,7 @@ const AdminDashboard: React.FC = () => {
         
         {trend && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <RiseOutlined   style={{ color: '#52c41a', fontSize: '14px' }} />
             <Text style={{ fontSize: '14px', color: '#52c41a', fontWeight: 500 }}>
               +{trendValue} from last month
             </Text>
@@ -331,7 +333,7 @@ const AdminDashboard: React.FC = () => {
                     prefix={<MedicineBoxOutlined />}
                     color="#52c41a"
                     trend={true}
-                    trendValue={12}
+                    trendValue={stats?.totalServices || 0}
                     extra={stats?.activePatients ? Math.floor(stats.activePatients / 10) : undefined}
                   />
                 </Col>
@@ -341,9 +343,8 @@ const AdminDashboard: React.FC = () => {
                     value={stats?.totalDoctors || 0}
                     prefix={<TeamOutlined />}
                     color="#1890ff"
-                    suffix={`/${(99)} capacity`}
                     trend={true}
-                    trendValue={8}
+                    trendValue={stats?.totalDoctors || 0}
                     extra={stats?.doctorsOnline || Math.floor((stats?.totalDoctors || 0) * 0.7)}
                   />
                 </Col>
@@ -354,7 +355,7 @@ const AdminDashboard: React.FC = () => {
                     prefix={<UserOutlined />}
                     color="#722ed1"
                     trend={true}
-                    trendValue={15}
+                    trendValue={stats?.totalPatients || 0}
                     extra={stats?.appointmentsToday || Math.floor((stats?.totalPatients || 0) * 0.1)}
                   />
                 </Col>
@@ -366,7 +367,7 @@ const AdminDashboard: React.FC = () => {
                     color="#fa541c"
                     suffix="USD"
                     trend={true}
-                    trendValue={23}
+                    trendValue={stats?.totalRevenue || 0}
                   />
                 </Col>
               </Row>
