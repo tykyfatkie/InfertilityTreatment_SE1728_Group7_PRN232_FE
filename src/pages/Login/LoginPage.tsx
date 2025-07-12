@@ -141,17 +141,17 @@ const LoginPage: React.FC = () => {
               <div className="login__content grid">
                 <div className="login__box">
                   <input
-                    type="text" // Đổi từ email thành text
-                    id="username" // Đổi id từ email thành username
+                    type="text" 
+                    id="username" 
                     required
                     placeholder=" "
                     className="login__input"
-                    value={username} // Đổi từ email thành username
-                    onChange={(e) => setUsername(e.target.value)} // Đổi từ setEmail thành setUsername
-                    autoComplete="username" // Đổi từ new-email thành username
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    autoComplete="username" 
                   />
-                  <label htmlFor="username" className="login__label">Username</label> {/* Đổi label từ Email thành Username */}
-                  <i className="ri-user-fill login__icon"></i> {/* Đổi icon từ mail thành user */}
+                  <label htmlFor="username" className="login__label">Username</label> 
+                  <i className="ri-user-fill login__icon"></i> 
                 </div>
 
                 <div className="login__box">
@@ -163,7 +163,7 @@ const LoginPage: React.FC = () => {
                     className="login__input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password" // Đổi từ new-password thành current-password
+                    autoComplete="current-password" 
                   />
                   <label htmlFor="password" className="login__label">Password</label>
                   <i 
