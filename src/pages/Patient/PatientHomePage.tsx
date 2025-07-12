@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Typography, Button, Space } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateRequestPopUp from './CreateBookingPopUp';
-import BookingDetailPopUp from './BookingDetailPopUp';
+import MyBookingPopUp from './MyBookingPopUp';
 import {
   ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const PatientHomepage: React.FC = () => {
   const [, setCurrentImageIndex] = useState(0);
   const [username, setUsername] = useState('');
   const [showBookingPopup, setShowBookingPopup] = useState(false);
-  const [showBookingDetailPopup, setShowBookingDetailPopup] = useState(false);
+  const [showMyBookingPopup, setShowMyBookingPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,7 +127,8 @@ const PatientHomepage: React.FC = () => {
                 Regain hope with our cutting-edge reproductive medicine solutions. Your family-building journey starts here.
               </Paragraph>          
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* First row - Book Now và Logout */}
                 <Space size="middle">
                   <Button 
                     type="primary" 
@@ -171,26 +172,29 @@ const PatientHomepage: React.FC = () => {
                   </Button>
                 </Space>
                 
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  style={{ 
-                    borderRadius: '50px', 
-                    paddingLeft: '28px', 
-                    paddingRight: '28px',
-                    height: '52px',
-                    background: '#acbdf0ff',
-                    color: '#1e3a8a',
-                    border: 'none',
-                    fontWeight: 600,
-                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                  onClick={() => setShowBookingDetailPopup(true)}
-                >
-                  My Booking <ArrowRightOutlined style={{ marginLeft: '8px' }} />
-                </Button>
+                {/* Second row - My Booking */}
+                <div>
+                  <Button 
+                    type="primary" 
+                    size="large" 
+                    style={{ 
+                      borderRadius: '50px', 
+                      paddingLeft: '28px', 
+                      paddingRight: '28px',
+                      height: '52px',
+                      background: '#acbdf0ff',
+                      color: '#1e3a8a',
+                      border: 'none',
+                      fontWeight: 600,
+                      boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                    onClick={() => setShowMyBookingPopup(true)}
+                  >
+                    My Booking <ArrowRightOutlined style={{ marginLeft: '8px' }} />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -259,10 +263,10 @@ const PatientHomepage: React.FC = () => {
         onSuccess={handleBookingSuccess}
       />
       
-      {/* Booking Detail Popup */}
-      <BookingDetailPopUp
-        visible={showBookingDetailPopup}
-        onClose={() => setShowBookingDetailPopup(false)}
+      {/* My Booking Popup */}
+      <MyBookingPopUp
+        visible={showMyBookingPopup}
+        onClose={() => setShowMyBookingPopup(false)}
       />
     </Layout>
   );
