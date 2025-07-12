@@ -80,7 +80,7 @@ const AdminServiceRequest: React.FC = () => {
   const fetchServiceRequests = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/serviceRequest/GetAllServiceRequests`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,7 +98,7 @@ const AdminServiceRequest: React.FC = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/doctors`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
       if (response.ok) {
         const data = await response.json();
         setDoctors(data.values || []);
@@ -128,7 +128,7 @@ const AdminServiceRequest: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/serviceRequest/RemoveServiceRequest/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/RemoveServiceRequest/${id}`, {
         method: 'DELETE',
       });
 
@@ -150,7 +150,7 @@ const AdminServiceRequest: React.FC = () => {
       
       if (editingRequest) {
         // Update existing service request
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/serviceRequest/UpdateServiceRequest/${editingRequest.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/UpdateServiceRequest/${editingRequest.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ const AdminServiceRequest: React.FC = () => {
         message.success('Service request updated successfully');
       } else {
         // Create new service request
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/serviceRequest/CreateServiceRequest`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/CreateServiceRequest`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
