@@ -15,18 +15,17 @@ interface BookingDetail {
 interface BookingDetailPopUpProps {
   visible: boolean;
   onClose: () => void;
-  userId?: string; // In real app, this would be fetched from localStorage
+  userId?: string; 
 }
 
 const BookingDetailPopUp: React.FC<BookingDetailPopUpProps> = ({ 
   visible, 
   onClose, 
-  userId = "sample-user-id" // Default value for demo
+  userId = "sample-user-id" 
 }) => {
   const [bookings, setBookings] = useState<BookingDetail[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const API_BASE_URL = 'https://localhost:7184/api';
 
   useEffect(() => {
     if (visible && userId) {
@@ -36,11 +35,8 @@ const BookingDetailPopUp: React.FC<BookingDetailPopUpProps> = ({
 
   const fetchBookingDetails = async () => {
     setLoading(true);
-    try {
-      // In real implementation, uncomment the line below:
-      // const userIdFromStorage = localStorage.getItem('userId') || userId;
-      
-      const response = await fetch(`${API_BASE_URL}/Booking/GetBookingByPatientId/${userId}`);
+    try {  
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/GetBookingByPatientId/${userId}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -48,7 +44,6 @@ const BookingDetailPopUp: React.FC<BookingDetailPopUpProps> = ({
       
       const data = await response.json();
       
-      // Handle both single booking and array of bookings
       const bookingArray = Array.isArray(data) ? data : [data];
       setBookings(bookingArray);
       
