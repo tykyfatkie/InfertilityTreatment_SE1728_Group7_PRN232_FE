@@ -142,7 +142,6 @@ const AdminDoctor: React.FC = () => {
       }
     } catch (error) {
       setDoctors([]);
-      message.error('Failed to load doctors. Please try again.');
     } finally {
       setLoadingDoctors(false);
     }
