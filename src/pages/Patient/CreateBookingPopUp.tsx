@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   Form,
@@ -8,7 +8,8 @@ import {
   Button,
   message,
   Select,
-  Divider
+  Divider,
+  Spin
 } from 'antd';
 import {
   CalendarOutlined,
@@ -32,6 +33,16 @@ interface CreateRequestPopUpProps {
   onSuccess?: () => void;
 }
 
+interface ServiceRequest {
+  id: number;
+  doctorId: number;
+  serviceName: string;
+  type: string;
+  price: number;
+  description: string;
+  status: string;
+}
+
 const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
   visible,
   onClose,
@@ -39,6 +50,35 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [loadingServiceRequests, setLoadingServiceRequests] = useState(false);
+
+  // Fetch service requests when modal opens
+  useEffect(() => {
+    if (visible) {
+      fetchServiceRequests();
+    }
+  }, [visible]);
+
+  const fetchServiceRequests = async () => {
+    setLoadingServiceRequests(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Filter active service requests
+        const activeRequests = data.values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
+        setServiceRequests(activeRequests);
+      } else {
+        message.error('Failed to load service requests');
+      }
+    } catch (error) {
+      message.error('Error fetching service requests');
+    } finally {
+      setLoadingServiceRequests(false);
+    }
+  };
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
@@ -47,46 +87,41 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
       const userId = localStorage.getItem('userId');
 
       if (!userId) {
-        message.error('Please login to create a service request');
+        message.error('Please login to create a booking');
         return;
       }
 
-      const timeStarted = dayjs(values.date)
+      const startDate = dayjs(values.date)
         .hour(values.time.hour())
         .minute(values.time.minute())
         .second(0)
         .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
 
-      const serviceRequestData = {
-        doctorId: 0,
-        patientId: userId,
-        timeStarted: timeStarted,
-        type: values.type,
-        price: values.type === 'ivf-consultation' ? 200000 : 
-               values.type === 'reproductive-endocrinology' ? 180000 : 
-               values.type === 'male-fertility' ? 150000 :
-               values.type === 'pregnancy-planning' ? 120000 : 100000
+      const bookingData = {
+        serviceRequestIds: values.serviceRequestIds, // Array of selected service request IDs
+        startDate: startDate,
+        patientId: userId
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/CreateServiceRequest`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/CreateBooking`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(serviceRequestData)
+        body: JSON.stringify(bookingData)
       });
   
       if (response.ok) {
-        message.success('Service request created successfully! Our team will contact you within 24 hours.');
+        message.success('Booking created successfully! Our team will contact you within 24 hours.');
         form.resetFields();
         onClose();
         onSuccess?.();
       } else {
         const errorData = await response.json();
-        message.error(`Failed to create service request: ${errorData.message || 'Unknown error'}`);
+        message.error(`Failed to create booking: ${errorData.message || 'Unknown error'}`);
       }
     } catch (error) {
-      message.error('Failed to create service request. Please try again.');
+      message.error('Failed to create booking. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -125,22 +160,33 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
     };
   };
 
-  const getConsultationPrice = (type: string) => {
-    switch (type) {
-      case 'ivf-consultation':
-        return '200,000 VND';
-      case 'reproductive-endocrinology':
-        return '180,000 VND';
-      case 'male-fertility':
-        return '150,000 VND';
-      case 'pregnancy-planning':
-        return '120,000 VND';
-      default:
-        return '100,000 VND';
+  const getConsultationPrice = (serviceIds: number[]) => {
+    if (!serviceIds || serviceIds.length === 0) {
+      return '0 VND';
     }
+    
+    const totalPrice = serviceIds.reduce((total, id) => {
+      const service = serviceRequests.find(sr => sr.id === id);
+      return total + (service?.price || 0);
+    }, 0);
+    
+    return `${totalPrice.toLocaleString()} VND`;
   };
 
-  const selectedType = Form.useWatch('type', form);
+  const getServiceDescription = (serviceIds: number[]) => {
+    if (!serviceIds || serviceIds.length === 0) {
+      return 'No services selected';
+    }
+    
+    const selectedServices = serviceIds.map(id => {
+      const service = serviceRequests.find(sr => sr.id === id);
+      return service?.serviceName || 'Unknown service';
+    });
+    
+    return selectedServices.join(', ');
+  };
+
+  const selectedServiceIds = Form.useWatch('serviceRequestIds', form);
 
   return (
     <Modal
@@ -149,7 +195,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
           <MedicineBoxOutlined className="title-icon" />
           <div>
             <span>Fertility & Reproductive Health Center</span>
-            <div className="subtitle">Specialized Service Request</div>
+            <div className="subtitle">Book Your Appointment</div>
           </div>
         </div>
       }
@@ -165,7 +211,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
           <div className="request-header-text">
             <h3>
               <HeartOutlined className="header-icon" />
-              Request Your Fertility Consultation
+              Book Your Fertility Consultation
             </h3>
             <p>Our experienced team specializes in fertility treatments and reproductive health</p>
           </div>
@@ -190,7 +236,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
           className="request-form"
         >
           <div className="form-section">
-            <h4 className="section-title">Service Request Details</h4>
+            <h4 className="section-title">Appointment Details</h4>
             <div className="form-row">
               <div className="form-col">
                 <Form.Item
@@ -240,58 +286,38 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
           <Divider />
 
           <div className="form-section">
-            <h4 className="section-title">Service Type</h4>
+            <h4 className="section-title">Service Selection</h4>
             <Form.Item
               label={
                 <span className="form-label">
                   <MedicineBoxOutlined className="label-icon" />
-                  Type of Service
+                  Available Services
                 </span>
               }
-              name="type"
-              rules={[{ required: true, message: 'Please select a service type' }]}
+              name="serviceRequestIds"
+              rules={[{ required: true, message: 'Please select at least one service' }]}
             >
               <Select
-                placeholder="Select service type"
+                mode="multiple"
+                placeholder="Select service requests"
                 className="custom-select"
                 size="large"
+                loading={loadingServiceRequests}
+                notFoundContent={loadingServiceRequests ? <Spin size="small" /> : 'No services available'}
+                onChange={(selectedIds) => {
+                  // Update price display when selection changes
+                  form.setFieldsValue({ serviceRequestIds: selectedIds });
+                }}
               >
-                <Option value="initial-consultation">
-                  <div className="option-content">
-                    <strong>Initial Fertility Consultation</strong>
-                    <span className="option-desc">Comprehensive fertility assessment and evaluation</span>
-                  </div>
-                </Option>
-                <Option value="follow-up">
-                  <div className="option-content">
-                    <strong>Follow-up Appointment</strong>
-                    <span className="option-desc">Ongoing treatment monitoring and adjustments</span>
-                  </div>
-                </Option>
-                <Option value="ivf-consultation">
-                  <div className="option-content">
-                    <strong>IVF Consultation</strong>
-                    <span className="option-desc">In-vitro fertilization planning and guidance</span>
-                  </div>
-                </Option>
-                <Option value="male-fertility">
-                  <div className="option-content">
-                    <strong>Male Fertility Assessment</strong>
-                    <span className="option-desc">Specialized evaluation for male fertility issues</span>
-                  </div>
-                </Option>
-                <Option value="pregnancy-planning">
-                  <div className="option-content">
-                    <strong>Pre-conception Counseling</strong>
-                    <span className="option-desc">Planning for healthy pregnancy and conception</span>
-                  </div>
-                </Option>
-                <Option value="reproductive-endocrinology">
-                  <div className="option-content">
-                    <strong>Reproductive Endocrinology</strong>
-                    <span className="option-desc">Hormone-related fertility disorders</span>
-                  </div>
-                </Option>
+                {serviceRequests.map(service => (
+                  <Option key={service.id} value={service.id}>
+                    <div className="option-content">
+                      <strong>{service.serviceName}</strong>
+                      <span className="option-desc">{service.description}</span>
+                      <span className="option-price">{service.price.toLocaleString()} VND</span>
+                    </div>
+                  </Option>
+                ))}
               </Select>
             </Form.Item>
           </div>
@@ -299,24 +325,19 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
           <Divider />
 
           <div className="form-section">
-            <h4 className="section-title">Service Fee</h4>
+            <h4 className="section-title">Total Service Fee</h4>
             <Form.Item
               label={
                 <span className="form-label">
                   <DollarOutlined className="label-icon" />
-                  Estimated Cost
+                  Estimate Cost
                 </span>
               }
-              name="price"
             >
               <div className="price-display">
-                <span className="price-amount">{getConsultationPrice(selectedType)}</span>
+                <span className="price-amount">{getConsultationPrice(selectedServiceIds)}</span>
                 <span className="price-note">
-                  {selectedType === 'ivf-consultation' ? 'Includes IVF planning and counseling' :
-                   selectedType === 'reproductive-endocrinology' ? 'Includes hormone evaluation and treatment planning' :
-                   selectedType === 'male-fertility' ? 'Includes comprehensive male fertility assessment' :
-                   selectedType === 'pregnancy-planning' ? 'Includes pre-conception health optimization' :
-                   'Standard fertility consultation fee'}
+                  Selected services: {getServiceDescription(selectedServiceIds)}
                 </span>
               </div>
             </Form.Item>
@@ -324,42 +345,13 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
 
           <Divider />
 
-          <div className="form-section">
-            <h4 className="section-title">Health & Fertility Information</h4>
-            <Form.Item
-              label={
-                <span className="form-label">
-                  <FileTextOutlined className="label-icon" />
-                  Medical History & Fertility Concerns
-                </span>
-              }
-              name="note"
-              rules={[{ required: true, message: 'Please provide your medical and fertility information' }]}
-            >
-              <TextArea
-                rows={5}
-                placeholder="Please provide details about:
-• How long you've been trying to conceive
-• Previous pregnancies or pregnancy complications
-• Menstrual cycle irregularities
-• Any previous fertility treatments
-• Current medications or supplements
-• Family history of fertility issues
-• Specific concerns or questions for the specialist"
-                maxLength={1000}
-                showCount
-                className="custom-textarea"
-              />
-            </Form.Item>
-          </div>
-
           <div className="important-notice">
             <h4>Important Information:</h4>
             <ul>
               <li>Appointments are available from tomorrow onwards during business hours (8:00 AM - 5:00 PM)</li>
               <li>Please bring all relevant medical records, test results, and previous fertility reports</li>
               <li>Both partners should attend the initial consultation when possible</li>
-              <li>Service requests are confirmed within 24 hours via phone or SMS</li>
+              <li>Bookings are confirmed within 24 hours via phone or SMS</li>
               <li>Cancellation policy: 48 hours advance notice required</li>
               <li>For urgent fertility concerns, please call our emergency hotline</li>
               <li>Insurance verification will be completed before your visit</li>
@@ -381,7 +373,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
               className="submit-btn"
               size="large"
             >
-              {loading ? 'Creating Request...' : 'Create Service Request'}
+              {loading ? 'Creating Booking...' : 'Create Booking'}
             </Button>
           </Form.Item>
         </Form>
