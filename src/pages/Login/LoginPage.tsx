@@ -32,11 +32,11 @@ const LoginPage: React.FC = () => {
       if (userRole) {
         localStorage.setItem("role", userRole);
         
-        if (userRole === "Admin || admin") {
+        if (userRole === "Admin" || userRole === "admin") {
           navigate("/admin/doctors");
-        } else if (userRole === "Doctor || doctor") {
+        } else if (userRole === "Doctor" || userRole === "doctor") {
           navigate("/doctor");
-        } else if (userRole === "Patient") {
+        } else if (userRole === "Patient" || userRole === "patient") {
           navigate("/home");
         } else {
           navigate("/home");
