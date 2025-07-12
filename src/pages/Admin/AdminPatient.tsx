@@ -122,8 +122,6 @@ const AdminPatient: React.FC = () => {
             accountName: user.userName || user.username,
             accountId: user.id || user.$id,
             email: user.email || '',
-            age: user.age || 0,
-            gender: user.gender || 'Not specified',
             phoneNumber: user.phoneNumber || user.phoneNumber || 'No phone available',
             imageUrl: user.imageUrl || user.avatar || '',
             isActive: user.isActive !== false,
@@ -276,8 +274,6 @@ const AdminPatient: React.FC = () => {
               {record.fullName || record.userName}
             </div>
             <div style={{ color: '#666', fontSize: '12px', marginBottom: '2px' }}>
-              <HeartOutlined style={{ marginRight: '4px' }} />
-              {record.age ? `${record.age} years old` : 'Age not specified'} • {record.gender || 'Gender not specified'}
             </div>
             {record.accountName && (
               <div style={{ color: '#999', fontSize: '11px' }}>
