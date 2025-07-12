@@ -40,7 +40,6 @@ interface Doctor {
   isActive?: boolean;
 }
 
-// Enhanced Doctor interface
 interface EnhancedDoctor extends Doctor {
   id: string;
   status: 'active' | 'inactive';
