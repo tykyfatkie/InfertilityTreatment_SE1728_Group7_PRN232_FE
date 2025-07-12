@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/accounts/login`, {
-        username, // Thay đổi từ email thành username
+        username, 
         password,
       });
 
