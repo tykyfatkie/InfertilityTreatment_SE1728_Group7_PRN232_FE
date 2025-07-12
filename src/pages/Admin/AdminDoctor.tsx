@@ -77,13 +77,10 @@ const AdminDoctor: React.FC = () => {
         
         let doctorsList: any[] = [];
         
-        // Xử lý response theo cấu trúc thực tế từ API
         if (doctorsData && doctorsData.$id && doctorsData.$values && Array.isArray(doctorsData.$values)) {
-          // API trả về với cấu trúc có $values array
           doctorsList = doctorsData.$values;
         } 
         else if (doctorsData && typeof doctorsData === 'object' && !Array.isArray(doctorsData)) {
-          // API trả về object với keys là IDs
           doctorsList = Object.entries(doctorsData).map(([id, doctor]: [string, any]) => ({
             ...doctor,
             id: id
