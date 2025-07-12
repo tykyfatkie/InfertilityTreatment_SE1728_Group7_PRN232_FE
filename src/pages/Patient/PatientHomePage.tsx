@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin, Tag } from 'antd';
+import { Layout, Typography, Button, Card, Row, Col, Space, Avatar, Rate, Spin } from 'antd';
 import AppFooter from '../../components/Footer/Footer';
 import CreateRequestPopUp from './CreateBookingPopUp';
 import {
   UserOutlined,
   MedicineBoxOutlined,
   StarFilled,
-  ArrowRightOutlined,
-  HeartOutlined,
-  ExperimentOutlined,
-  SafetyOutlined,
-  ThunderboltOutlined,
-  CheckCircleOutlined
-} from '@ant-design/icons';
+  ArrowRightOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
@@ -32,8 +26,6 @@ const PatientHomepage: React.FC = () => {
   const [showBookingPopup, setShowBookingPopup] = useState(false);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
-
-  const [loadingServices] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,37 +64,6 @@ const PatientHomepage: React.FC = () => {
       setLoadingDoctors(false);
     }
   };
-
-  const getServiceIcon = (serviceName: string) => {
-    const name = serviceName.toLowerCase();
-    if (name.includes('diagnosis') || name.includes('test')) {
-      return <ExperimentOutlined style={{ fontSize: '24px', color: '#1890ff' }} />;
-    } else if (name.includes('treatment') || name.includes('therapy')) {
-      return <HeartOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />;
-    } else if (name.includes('surgery') || name.includes('operation')) {
-      return <SafetyOutlined style={{ fontSize: '24px', color: '#52c41a' }} />;
-    } else if (name.includes('consultation') || name.includes('counseling')) {
-      return <ThunderboltOutlined style={{ fontSize: '24px', color: '#fa8c16' }} />;
-    } else {
-      return <MedicineBoxOutlined style={{ fontSize: '24px', color: '#722ed1' }} />;
-    }
-  };
-
-  const getServiceTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'diagnosis':
-        return '#1890ff';
-      case 'treatment':
-        return '#52c41a';
-      case 'surgery':
-        return '#fa8c16';
-      case 'consultation':
-        return '#722ed1';
-      default:
-        return '#13c2c2';
-    }
-  };
-
 
   const handleLogout = () => {
     localStorage.clear();
