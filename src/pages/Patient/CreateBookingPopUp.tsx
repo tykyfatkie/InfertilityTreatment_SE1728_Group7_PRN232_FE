@@ -95,7 +95,7 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
         .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
 
       const bookingData = {
-        serviceRequestIds: values.serviceRequestIds, // Array of selected service request IDs
+        serviceRequestIds: values.serviceRequestIds, 
         startDate: startDate,
         patientId: userId
       };
