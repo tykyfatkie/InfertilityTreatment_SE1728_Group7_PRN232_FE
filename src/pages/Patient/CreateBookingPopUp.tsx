@@ -68,10 +68,8 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
         const activeRequests = data.values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
         setServiceRequests(activeRequests);
       } else {
-        message.error('Failed to load service requests');
       }
     } catch (error) {
-      message.error('Error fetching service requests');
     } finally {
       setLoadingServiceRequests(false);
     }
