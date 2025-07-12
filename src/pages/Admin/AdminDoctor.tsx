@@ -30,9 +30,11 @@ import {
   MailOutlined,
   MedicineBoxOutlined,
   PoweroffOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
+import CreateDoctorPopUp from '../../components/CreateDoctorPopUp/CreateDoctorPopUp';
 import './AdminPage.css';
 
 const { Content } = Layout;
@@ -76,6 +78,7 @@ const AdminDoctor: React.FC = () => {
   const [specializationFilter, setSpecializationFilter] = useState<string>('all');
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
   const [switchLoading, setSwitchLoading] = useState<Record<string, boolean>>({});
+  const [isCreateDoctorModalOpen, setIsCreateDoctorModalOpen] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -245,6 +248,11 @@ const AdminDoctor: React.FC = () => {
     return Array.from(specializations);
   };
 
+  const handleCreateDoctorSuccess = () => {
+    setIsCreateDoctorModalOpen(false);
+    fetchDoctors(); // Refresh the doctors list
+  };
+
   const doctorColumns = [
     {
       title: 'Doctor',
@@ -382,6 +390,24 @@ const AdminDoctor: React.FC = () => {
                     Manage all medical professionals in your healthcare system
                   </Paragraph>
                 </div>
+                <Button 
+                  type="primary" 
+                  icon={<UserAddOutlined />} 
+                  size="large"
+                  onClick={() => setIsCreateDoctorModalOpen(true)}
+                  style={{ 
+                    borderRadius: '8px',
+                    fontWeight: 500,
+                    height: '48px',
+                    paddingLeft: '24px',
+                    paddingRight: '24px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                  }}
+                >
+                  Create Doctor Account
+                </Button>
               </div>
 
               {/* Stats Cards */}
@@ -534,8 +560,12 @@ const AdminDoctor: React.FC = () => {
                   description="No doctors found"
                   style={{ padding: '60px 0' }}
                 >
-                  <Button type="primary" icon={<PlusOutlined />}>
-                    Add First Doctor
+                  <Button 
+                    type="primary" 
+                    icon={<UserAddOutlined />}
+                    onClick={() => setIsCreateDoctorModalOpen(true)}
+                  >
+                    Create Doctor Account
                   </Button>
                 </Empty>
               ) : (
@@ -562,6 +592,13 @@ const AdminDoctor: React.FC = () => {
           </div>
         </Content>
       </Layout>
+
+      {/* Create Doctor Modal */}
+      <CreateDoctorPopUp
+        open={isCreateDoctorModalOpen}
+        onClose={() => setIsCreateDoctorModalOpen(false)}
+        onSuccess={handleCreateDoctorSuccess}
+      />
     </Layout>
   );
 };
