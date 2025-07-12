@@ -166,6 +166,26 @@ const PatientHomepage: React.FC = () => {
                 >
                   Logout
                 </Button>
+                <Button 
+                  type="primary" 
+                  size="large" 
+                  style={{ 
+                    borderRadius: '50px', 
+                    paddingLeft: '28px', 
+                    paddingRight: '28px',
+                    height: '52px',
+                    background: '#acbdf0ff',
+                    color: '#1e3a8a',
+                    border: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  onClick={() => setShowBookingPopup(true)}
+                >
+                  My Booking <ArrowRightOutlined style={{ marginLeft: '8px' }} />
+                </Button>
               </Space>
             </div>
           </div>
