@@ -58,7 +58,7 @@ interface Doctor {
 const AdminServiceRequest: React.FC = () => {
   const [username, setUsername] = useState('');
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingRequest, setEditingRequest] = useState<ServiceRequest | null>(null);
@@ -73,7 +73,6 @@ const AdminServiceRequest: React.FC = () => {
     }
 
     fetchServiceRequests();
-    fetchDoctors();
   }, []);
 
   const fetchServiceRequests = async () => {
@@ -92,18 +91,6 @@ const AdminServiceRequest: React.FC = () => {
       console.error('Error fetching service requests:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchDoctors = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
-      if (response.ok) {
-        const data = await response.json();
-        setDoctors(data.values || []);
-      }
-    } catch (error) {
-      console.error('Error fetching doctors:', error);
     }
   };
 
