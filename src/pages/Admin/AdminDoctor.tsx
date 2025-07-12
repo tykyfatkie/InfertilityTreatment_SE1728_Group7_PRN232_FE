@@ -31,15 +31,12 @@ import {
   SearchOutlined,
   PlusOutlined,
   TeamOutlined,
-  UserAddOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   MoreOutlined,
   PhoneOutlined,
   MailOutlined,
   MedicineBoxOutlined,
-  ReloadOutlined,
-  ExportOutlined,
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
@@ -440,30 +437,6 @@ const AdminDoctor: React.FC = () => {
                     Manage all medical professionals in your healthcare system
                   </Paragraph>
                 </div>
-                <Space>
-                  <Button 
-                    type="default" 
-                    icon={<ReloadOutlined />}
-                    onClick={fetchDoctors}
-                    loading={loadingDoctors}
-                  >
-                    Refresh
-                  </Button>
-                  <Button 
-                    type="default" 
-                    icon={<ExportOutlined />}
-                  >
-                    Export
-                  </Button>
-                  <Button 
-                    type="primary" 
-                    icon={<UserAddOutlined />}
-                    size="large"
-                    style={{ borderRadius: '6px' }}
-                  >
-                    Add Doctor
-                  </Button>
-                </Space>
               </div>
 
               {/* Stats Cards */}
