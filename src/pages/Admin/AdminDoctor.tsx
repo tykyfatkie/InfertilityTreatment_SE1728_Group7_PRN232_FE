@@ -132,7 +132,6 @@ const AdminDoctor: React.FC = () => {
 
   const createDoctor = async (doctorData: Doctor) => {
     try {
-      // Only send the fields that the API accepts
       const apiData = {
         userName: doctorData.userName,
         imageUrl: doctorData.imageUrl,
@@ -151,7 +150,6 @@ const AdminDoctor: React.FC = () => {
       if (response.ok) {
         const newDoctor = await response.json();
         message.success('Doctor created successfully');
-        // Refresh the doctors list
         fetchDoctors();
         return newDoctor;
       } else {
@@ -168,7 +166,6 @@ const AdminDoctor: React.FC = () => {
 
   const updateDoctor = async (doctorId: string, doctorData: Doctor) => {
     try {
-      // Only send the fields that the API accepts
       const apiData = {
         userName: doctorData.userName,
         imageUrl: doctorData.imageUrl,
@@ -186,7 +183,6 @@ const AdminDoctor: React.FC = () => {
 
       if (response.ok) {
         message.success('Doctor updated successfully');
-        // Refresh the doctors list
         fetchDoctors();
         return true;
       } else {
@@ -209,7 +205,6 @@ const AdminDoctor: React.FC = () => {
 
       if (response.ok) {
         message.success('Doctor deleted successfully');
-        // Refresh the doctors list
         fetchDoctors();
         return true;
       } else {
@@ -257,14 +252,12 @@ const AdminDoctor: React.FC = () => {
       const values = await form.validateFields();
       
       if (editingDoctor) {
-        // Update existing doctor
         const success = await updateDoctor(editingDoctor.id, values);
         if (success) {
           setIsModalVisible(false);
           form.resetFields();
         }
       } else {
-        // Create new doctor
         const newDoctor = await createDoctor(values);
         if (newDoctor) {
           setIsModalVisible(false);
