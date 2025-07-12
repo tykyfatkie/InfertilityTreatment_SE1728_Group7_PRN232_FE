@@ -214,27 +214,6 @@ const AdminDoctor: React.FC = () => {
     });
   };
 
-  const handleModalOk = async () => {
-    try {
-      const values = await form.validateFields();
-      
-      if (editingDoctor) {
-        const success = await updateDoctor(editingDoctor.id, values);
-        if (success) {
-          setIsModalVisible(false);
-          form.resetFields();
-        }
-      } else {
-        const newDoctor = await createDoctor(values);
-        if (newDoctor) {
-          setIsModalVisible(false);
-          form.resetFields();
-        }
-      }
-    } catch (error) {
-    }
-  };
-
   const doctorColumns = [
     {
       title: 'Doctor',
@@ -341,44 +320,6 @@ const AdminDoctor: React.FC = () => {
           </div>
         </Content>
       </Layout>
-
-      <Modal
-        title={editingDoctor ? 'Edit Doctor' : 'Add New Doctor'}
-        open={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={() => setIsModalVisible(false)}
-        width={600}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="userName"
-            label="Doctor Name"
-            rules={[{ required: true, message: 'Please input doctor name!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="specialization"
-            label="Specialization"
-            rules={[{ required: true, message: 'Please input specialization!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="phoneNumber"
-            label="Phone Number"
-            rules={[{ required: true, message: 'Please input phone number!' }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item
-            name="imageUrl"
-            label="Image URL"
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
     </Layout>
   );
 };
