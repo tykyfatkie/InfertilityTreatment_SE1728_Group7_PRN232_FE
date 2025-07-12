@@ -135,7 +135,6 @@ const AdminServiceRequest: React.FC = () => {
       const values = await form.validateFields();
       
       if (editingRequest) {
-        // Update existing service request
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/UpdateServiceRequest/${editingRequest.id}`, {
           method: 'PUT',
           headers: {
@@ -311,7 +310,7 @@ const AdminServiceRequest: React.FC = () => {
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                   <div>
-                    <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', fontSize: '36px', fontWeight: 700 }}>
+                    <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', marginTop: '60px', fontSize: '36px', fontWeight: 700 }}>
                       <MedicineBoxOutlined style={{ marginRight: '12px' }} />
                       Service Requests Management
                     </Title>
