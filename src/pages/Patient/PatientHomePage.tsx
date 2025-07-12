@@ -80,7 +80,7 @@ const PatientHomepage: React.FC = () => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/accounts/all-users`);
       if (response.ok) {
         const usersData = await response.json();
-        console.log('All users data:', usersData); // Debug log
+        console.log('All users data:', usersData); 
         
         if (Array.isArray(usersData)) {
           // Filter users who have "Doctor" role
@@ -90,7 +90,7 @@ const PatientHomepage: React.FC = () => {
                    Array.isArray(user.roles.values) && 
                    user.roles.values.includes('Doctor');
           });
-          console.log('Filtered doctors:', doctorUsers); // Debug log
+          console.log('Filtered doctors:', doctorUsers);
           setDoctors(doctorUsers);
         } else {
           setDoctors([]); 
