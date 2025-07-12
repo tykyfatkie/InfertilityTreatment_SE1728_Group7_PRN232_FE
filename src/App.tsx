@@ -9,6 +9,7 @@ import ContactPage from './pages/Contact/ContactPage';
 import AdminDoctor from './pages/Admin/AdminDoctor';
 import AdminPatient from './pages/Admin/AdminPatient';
 import RegisterPage from './pages/Register/RegisterPage';
+import AdminDashboard from './pages/Admin/AdminDashboard';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
 
 
           {/* Admin */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/doctors" element={<AdminDoctor />} />
           <Route path="/admin/patients" element={<AdminPatient />} />
 
