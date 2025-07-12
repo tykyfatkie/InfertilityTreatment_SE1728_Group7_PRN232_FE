@@ -13,7 +13,6 @@ import {
   Popconfirm, 
   Space, 
   Typography,
-  Alert,
   Spin,
   Tag,
   Tooltip,
@@ -266,7 +265,7 @@ const AdminServiceRequest: React.FC = () => {
       key: 'actions',
       fixed: 'right' as const,
       width: 120,
-      render: (_, record: ServiceRequest) => (
+      render: (_: any, record: ServiceRequest) => (
         <Space size="small">
           <Tooltip title="Edit">
             <Button 
@@ -536,10 +535,7 @@ const AdminServiceRequest: React.FC = () => {
           >
             <Select
               placeholder="Select a doctor"
-              showSearch
-              filterOption={(input, option) =>
-                option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
+              showSearch                        
               style={{ borderRadius: '8px' }}
             >
               {doctors.map(doctor => (
