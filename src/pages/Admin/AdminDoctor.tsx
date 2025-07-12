@@ -22,7 +22,6 @@ import {
 import { 
   UserOutlined,
   SearchOutlined,
-  PlusOutlined,
   TeamOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -148,13 +147,6 @@ const AdminDoctor: React.FC = () => {
       setLoadingDoctors(false);
     }
   };
-
-  type DoctorRegistrationPopupProps = {
-  open: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-};
-
 
   const toggleDoctorStatus = async (doctorId: string, currentStatus: 'active' | 'inactive', doctorName: string) => {
     try {
