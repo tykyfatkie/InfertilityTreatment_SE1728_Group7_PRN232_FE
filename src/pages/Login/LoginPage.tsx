@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
         } else if (userRole === "Patient" || userRole === "patient") {
           navigate("/home");
         } else {
-          navigate("/home");
+          navigate("/");
         }
       } else {
         console.warn("No role found in JWT token");
