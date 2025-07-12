@@ -33,7 +33,7 @@ interface Doctor {
   userName: string;
   imageUrl: string;
   specialization: string;
-  introduction: string;
+  phoneNumber: string;
   id?: string;
   accountName?: string;
   fullName?: string;
@@ -44,6 +44,7 @@ interface EnhancedDoctor extends Doctor {
   id: string;
   status: 'active' | 'inactive';
   accountId?: string;
+  email?: string;
 }
 
 const AdminDoctor: React.FC = () => {
@@ -67,58 +68,61 @@ const AdminDoctor: React.FC = () => {
   const fetchDoctors = async () => {
     try {
       setLoadingDoctors(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
+      // Changed API endpoint to match the image
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/accounts/all-users`);
       
       if (response.ok) {
-        const doctorsData = await response.json();
+        const usersData = await response.json();
         
-        console.log('Raw API Response:', doctorsData);
+        console.log('Raw API Response:', usersData);
         
-        let doctorsList: any[] = [];
+        let usersList: any[] = [];
         
-        if (doctorsData && doctorsData.$id && doctorsData.$values && Array.isArray(doctorsData.$values)) {
-          doctorsList = doctorsData.$values;
-        } 
-        else if (doctorsData && typeof doctorsData === 'object' && !Array.isArray(doctorsData)) {
-          doctorsList = Object.entries(doctorsData).map(([id, doctor]: [string, any]) => ({
-            ...doctor,
-            id: id
-          }));
-        } 
-        else if (Array.isArray(doctorsData)) {
-          doctorsList = doctorsData;
-        } 
-        else if (doctorsData && doctorsData.data && Array.isArray(doctorsData.data)) {
-          doctorsList = doctorsData.data;
+        // Handle the API response structure from the image
+        if (usersData && usersData.$values && Array.isArray(usersData.$values)) {
+          usersList = usersData.$values;
+        } else if (Array.isArray(usersData)) {
+          usersList = usersData;
+        } else if (usersData && usersData.data && Array.isArray(usersData.data)) {
+          usersList = usersData.data;
         }
         
-        console.log('Processed doctorsList:', doctorsList);
+        console.log('Processed usersList:', usersList);
         
-        if (doctorsList.length > 0) {
-          const enhancedDoctors: EnhancedDoctor[] = doctorsList.map((doctor: any, index: number) => ({
-            id: doctor.$id || doctor.id || doctor._id || `doctor-${index}`,
-            userName: doctor.userName || doctor.username || doctor.name || 'Unknown',
-            fullName: doctor.fullName || doctor.userName || doctor.username || doctor.name,
-            accountName: doctor.accountName || doctor.username,
-            accountId: doctor.accountId || doctor.id,
-            specialization: doctor.specialization || 'General',
-            introduction: doctor.introduction || 'No introduction available',
-            imageUrl: doctor.imageUrl || '',
-            isActive: doctor.isActive !== false,
-            status: (doctor.isActive !== false ? 'active' : 'inactive') as 'active' | 'inactive',
+        // Filter users to only include those with Doctor role
+        const doctorUsers = usersList.filter((user: any) => {
+          const roles = user.roles?.$values || user.roles || [];
+          return roles.some((role: any) => role.value === 'Doctor' || role === 'Doctor');
+        });
+        
+        console.log('Filtered doctor users:', doctorUsers);
+        
+        if (doctorUsers.length > 0) {
+          const enhancedDoctors: EnhancedDoctor[] = doctorUsers.map((user: any, index: number) => ({
+            id: user.id || user.$id || `doctor-${index}`,
+            userName: user.userName || user.username || user.name || 'Unknown',
+            fullName: user.fullName || user.userName || user.username || user.name,
+            accountName: user.userName || user.username,
+            accountId: user.id || user.$id,
+            email: user.email || '',
+            specialization: user.specialization || 'General Medicine',
+            phoneNumber: user.phoneNumber || user.bio || 'No phoneNumber available',
+            imageUrl: user.imageUrl || user.avatar || '',
+            isActive: user.isActive !== false,
+            status: (user.isActive !== false ? 'active' : 'inactive') as 'active' | 'inactive',
           }));
           
           console.log('Enhanced doctors:', enhancedDoctors);
           setDoctors(enhancedDoctors);
           message.success(`Loaded ${enhancedDoctors.length} doctors successfully`);
         } else {
-          console.log('No doctors found in processed data');
+          console.log('No doctors found in the system');
           setDoctors([]);
           message.info('No doctors found in the system');
         }
       } else {
         console.error('API Error:', response.status, response.statusText);
-        message.error(`Failed to fetch doctors: ${response.status} ${response.statusText}`);
+        message.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
         setDoctors([]);
       }
     } catch (error) {
@@ -136,7 +140,7 @@ const AdminDoctor: React.FC = () => {
         userName: doctorData.userName,
         imageUrl: doctorData.imageUrl,
         specialization: doctorData.specialization,
-        introduction: doctorData.introduction
+        phoneNumber: doctorData.phoneNumber
       };
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`, {
@@ -170,7 +174,7 @@ const AdminDoctor: React.FC = () => {
         userName: doctorData.userName,
         imageUrl: doctorData.imageUrl,
         specialization: doctorData.specialization,
-        introduction: doctorData.introduction
+        phoneNumber: doctorData.phoneNumber
       };
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors/${doctorId}`, {
@@ -230,7 +234,7 @@ const AdminDoctor: React.FC = () => {
     form.setFieldsValue({
       userName: doctor.userName,
       specialization: doctor.specialization,
-      introduction: doctor.introduction,
+      phoneNumber: doctor.phoneNumber,
       imageUrl: doctor.imageUrl
     });
     setIsModalVisible(true);
@@ -290,6 +294,9 @@ const AdminDoctor: React.FC = () => {
             {record.accountName && (
               <div className="doctor-account">@{record.accountName}</div>
             )}
+            {record.email && (
+              <div className="doctor-email">{record.email}</div>
+            )}
           </div>
         </div>
       ),
@@ -305,11 +312,11 @@ const AdminDoctor: React.FC = () => {
       ),
     },
     {
-      title: 'Introduction',
-      dataIndex: 'introduction',
-      key: 'introduction',
+      title: 'Phone Number',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
       render: (text: string) => (
-        <div className="introduction-cell">
+        <div className="phoneNumber-cell">
           <Tooltip title={text}>
             {text && text.length > 50 ? `${text.substring(0, 50)}...` : text}
           </Tooltip>
@@ -396,9 +403,9 @@ const AdminDoctor: React.FC = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="introduction"
-            label="Introduction"
-            rules={[{ required: true, message: 'Please input introduction!' }]}
+            name="phoneNumber"
+            label="Phone Number"
+            rules={[{ required: true, message: 'Please input phone number!' }]}
           >
             <Input.TextArea rows={4} />
           </Form.Item>
