@@ -4,7 +4,6 @@ import {
   Form,
   DatePicker,
   TimePicker,
-  Input,
   Button,
   message,
   Select,
@@ -16,7 +15,6 @@ import {
   ClockCircleOutlined,
   DollarOutlined,
   UserOutlined,
-  FileTextOutlined,
   MedicineBoxOutlined,
   HeartOutlined,
   SafetyOutlined
@@ -24,7 +22,6 @@ import {
 import dayjs, { Dayjs } from 'dayjs';
 import './CreateBookingPopUp.css';
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 interface CreateRequestPopUpProps {
