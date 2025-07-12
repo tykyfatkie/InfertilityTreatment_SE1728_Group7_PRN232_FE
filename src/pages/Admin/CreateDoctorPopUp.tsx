@@ -22,7 +22,7 @@ interface DoctorRegistrationPopupProps {
   onSuccess?: () => void;
 }
 
-const DoctorRegistrationPopup: React.FC<DoctorRegistrationPopupProps> = ({
+const CreateDoctorPopUp: React.FC<DoctorRegistrationPopupProps> = ({
   visible,
   onClose,
   onSuccess
@@ -287,4 +287,4 @@ const DoctorRegistrationPopup: React.FC<DoctorRegistrationPopupProps> = ({
   );
 };
 
-export default DoctorRegistrationPopup;
+export default CreateDoctorPopUp;
