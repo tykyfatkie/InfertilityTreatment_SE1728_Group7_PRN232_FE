@@ -34,7 +34,6 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMenuItem, setSelectedMenuItem] = useState('dashboard');
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
