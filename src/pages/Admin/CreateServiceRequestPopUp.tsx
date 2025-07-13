@@ -44,7 +44,6 @@ const CreateServiceRequestPopUp: React.FC<CreateServiceRequestPopUpProps> = ({
       const data = await response.json();
       console.log('Doctors API Response:', data);
       
-      // Handle different response formats
       const doctorsList = data.$values || data.values || data || [];
       setDoctors(doctorsList);
     } catch (error) {
