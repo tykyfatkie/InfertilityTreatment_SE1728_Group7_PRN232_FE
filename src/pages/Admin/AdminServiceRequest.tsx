@@ -52,7 +52,7 @@ interface ServiceRequest {
 
 interface Doctor {
   id: string;
-  name: string;
+  fullName: string;
   specialization: string;
 }
 
@@ -532,7 +532,7 @@ const AdminServiceRequest: React.FC = () => {
             >
               {doctors.map(doctor => (
                 <Option key={doctor.id} value={doctor.id}>
-                  {doctor.name} - {doctor.specialization}
+                  {doctor.fullName} - {doctor.specialization}
                 </Option>
               ))}
             </Select>
