@@ -79,7 +79,7 @@ const DoctorBooking: React.FC = () => {
   const fetchBookings = async (doctorId: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/GetBookingAsDoctor/${doctorId}`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/GetBookingAsDoctor/${doctorId}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -116,7 +116,7 @@ const DoctorBooking: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/${id}`, {
         method: 'DELETE',
       });
 
@@ -144,7 +144,7 @@ const DoctorBooking: React.FC = () => {
         };
 
         // First API call - Update booking details
-        const updateResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/${editingBooking.id}`, {
+        const updateResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/${editingBooking.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const DoctorBooking: React.FC = () => {
         // Second API call - Update booking status (if status has changed)
         if (values.status && values.status !== editingBooking.status) {
           const statusUpdateResponse = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/api/Booking/UpdateBooking/${editingBooking.id}?status=${encodeURIComponent(values.status)}`,
+            `${import.meta.env.VITE_API_BASE_URL}/Booking/UpdateBooking/${editingBooking.id}?status=${encodeURIComponent(values.status)}`,
             {
               method: 'PATCH',
               headers: {
@@ -369,7 +369,7 @@ const DoctorBooking: React.FC = () => {
                   <div>
                     <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', fontSize: '36px', fontWeight: 700 }}>
                       <CalendarOutlined style={{ marginRight: '12px' }} />
-                      Doctor Bookings
+                      Bookings
                     </Title>
                     <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '16px' }}>
                       Manage your patient appointments and bookings
