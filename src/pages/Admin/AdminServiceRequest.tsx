@@ -338,7 +338,7 @@ const AdminServiceRequest: React.FC = () => {
               <div style={{ position: 'relative', zIndex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                   <div>
-                    <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', marginTop: '150px', fontSize: '36px', fontWeight: 700 }}>
+                    <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', marginTop: '100px', fontSize: '36px', fontWeight: 700 }}>
                       <MedicineBoxOutlined style={{ marginRight: '12px' }} />
                       Service Requests Management
                     </Title>
