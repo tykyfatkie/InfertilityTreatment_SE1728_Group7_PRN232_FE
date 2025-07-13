@@ -6,7 +6,7 @@ const { Option } = Select;
 
 interface Doctor {
   id: string;
-  name: string;
+  fullName: string;
   specialization: string;
 }
 
@@ -115,7 +115,7 @@ const CreateServiceRequestPopUp: React.FC<CreateServiceRequestPopUpProps> = ({
           >
             {doctors.map(doctor => (
               <Option key={doctor.id} value={doctor.id}>
-                {doctor.name} - {doctor.specialization}
+                {doctor.fullName} - {doctor.specialization}
               </Option>
             ))}
           </Select>
