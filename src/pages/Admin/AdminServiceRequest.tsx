@@ -192,14 +192,12 @@ const AdminServiceRequest: React.FC = () => {
     setEditingRequest(null);
   };
 
-  // Lọc dữ liệu theo search text
   const filteredData = serviceRequests.filter(item =>
     item.serviceName?.toLowerCase().includes(searchText.toLowerCase()) ||
     item.type?.toLowerCase().includes(searchText.toLowerCase()) ||
     item.description?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Tính toán statistics
   const activeRequests = serviceRequests.filter(r => r.status === 'Available').length;
   const deletedRequests = serviceRequests.filter(r => r.status === 'Deleted').length;
 
