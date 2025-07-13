@@ -14,7 +14,7 @@ const DoctorSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIt
   const navigate = useNavigate(); 
 
   const menuItems = [
-    { key: 'booking', icon: <DashboardOutlined />, label: 'Dashboard', path: '/doctor/bookings' },
+    { key: 'booking', icon: <DashboardOutlined />, label: 'Bookings', path: '/doctor/bookings' },
   ];
 
   const handleMenuClick = (key: string, path: string) => {
