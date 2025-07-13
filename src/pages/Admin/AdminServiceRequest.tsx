@@ -240,7 +240,7 @@ const AdminServiceRequest: React.FC = () => {
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'Active' ? 'green' : 'orange'}>
-          {status || 'pending'}
+          {status || 'Deleted'}
         </Tag>
       ),
     },
