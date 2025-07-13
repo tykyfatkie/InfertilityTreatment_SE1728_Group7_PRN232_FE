@@ -485,7 +485,6 @@ const AdminServiceRequest: React.FC = () => {
                   dataSource={filteredData}
                   rowKey={(record) => record.id}
                   loading={loading}
-                  pagination={false}
                   scroll={{ x: 1200 }}
                   style={{ borderRadius: '8px' }}
                   size="middle"
