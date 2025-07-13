@@ -11,6 +11,7 @@ import AdminPatient from './pages/Admin/AdminPatient';
 import RegisterPage from './pages/Register/RegisterPage';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminServiceRequest from './pages/Admin/AdminServiceRequest';
+import AdminMedications from './pages/Admin/AdminMedications';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/admin/doctors" element={<AdminDoctor />} />
           <Route path="/admin/patients" element={<AdminPatient />} />
           <Route path="/admin/services" element={<AdminServiceRequest />} />
+          <Route path="/admin/medications" element={<AdminMedications />} />
 
 
           {/* Doctor */}
