@@ -123,7 +123,7 @@ const AdminServiceRequest: React.FC = () => {
   const fetchDoctors = async () => {
     try {
       setDoctorsLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/doctors`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/doctors`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
