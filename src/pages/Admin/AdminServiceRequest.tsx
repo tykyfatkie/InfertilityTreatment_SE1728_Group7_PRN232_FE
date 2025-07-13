@@ -200,7 +200,7 @@ const AdminServiceRequest: React.FC = () => {
   );
 
   // Tính toán statistics
-  const activeRequests = serviceRequests.filter(r => r.status === 'Active').length;
+  const activeRequests = serviceRequests.filter(r => r.status === 'Available').length;
   const deletedRequests = serviceRequests.filter(r => r.status === 'Deleted').length;
 
   const columns = [
@@ -259,7 +259,7 @@ const AdminServiceRequest: React.FC = () => {
       key: 'status',
       render: (status: string) => {
         const statusConfig = {
-          'Active': { color: 'green', text: 'Active' },
+          'Available': { color: 'green', text: 'Available' },
           'Deleted': { color: 'red', text: 'Deleted' },
         };
         
