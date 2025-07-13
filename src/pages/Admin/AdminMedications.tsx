@@ -305,7 +305,7 @@ const AdminMedications: React.FC = () => {
               position: 'relative',
               overflow: 'hidden'
             }}>
-              <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ position: 'relative', zIndex: 1, marginTop: '-90px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                   <div>
                     <Title level={1} style={{ color: 'white', margin: 0, marginBottom: '8px', marginTop: '150px', fontSize: '36px', fontWeight: 700 }}>
