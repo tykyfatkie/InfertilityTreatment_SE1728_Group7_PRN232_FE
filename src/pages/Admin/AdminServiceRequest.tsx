@@ -205,40 +205,55 @@ const AdminServiceRequest: React.FC = () => {
   };
 
   const handleEditModalOk = async () => {
-    try {
-      const values = await form.validateFields();
-      
-      if (editingRequest) {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/UpdateServiceRequest/${editingRequest.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+  try {
+    const values = await form.validateFields();
+    
+    if (editingRequest) {
+      const requestBody = {
+        id: editingRequest.id,
+        doctorId: values.doctorId,
+        serviceName: values.serviceName,
+        type: values.type,
+        price: values.price,
+        description: values.description,
+        status: editingRequest.status || "Available" 
+      };
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      console.log('Sending update request:', requestBody);
 
-        message.success('Service request updated successfully');
-        setEditModalVisible(false);
-        form.resetFields();
-        setEditingRequest(null);
-        setDoctors([]); // Clear doctors list
-        fetchServiceRequests();
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/UpdateServiceRequest`, {
+        method: 'PATCH', // Changed from PUT to PATCH
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || 'Unknown error'}`);
       }
-    } catch (error) {
-      message.error('Failed to update service request');
-      console.error('Error updating service request:', error);
+
+      const result = await response.json();
+      console.log('Update response:', result);
+
+      message.success('Service request updated successfully');
+      setEditModalVisible(false);
+      form.resetFields();
+      setEditingRequest(null);
+      setDoctors([]); // Clear doctors list
+      fetchServiceRequests();
     }
-  };
+  } catch (error) {
+    console.error('Error updating service request:', error);
+  }
+};
 
   const handleEditModalCancel = () => {
     setEditModalVisible(false);
     form.resetFields();
     setEditingRequest(null);
-    setDoctors([]); // Clear doctors list when canceling
+    setDoctors([]); 
   };
 
   const filteredData = serviceRequests.filter(item =>
