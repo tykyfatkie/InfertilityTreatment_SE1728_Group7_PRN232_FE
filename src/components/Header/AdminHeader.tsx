@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layout, Space, Button, Avatar, Dropdown, Menu } from 'antd';
 import {
-  MedicineBoxOutlined,
   UserOutlined,
   DownOutlined,
   LogoutOutlined
@@ -56,8 +55,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
   return (
     <Header className="admin-header">
       <div className="admin-header-left">
-        <div className="admin-logo">
-          <MedicineBoxOutlined style={{ color: 'orange' }} />
+        <div className="admin-logo">        
           <span style={{ color: 'orange' }}>Admin Dashboard</span>
         </div>
       </div>

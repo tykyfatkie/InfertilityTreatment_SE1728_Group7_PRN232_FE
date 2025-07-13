@@ -5,9 +5,9 @@ import {
   DashboardOutlined,
   TeamOutlined,
   UserOutlined,
+  MedicineBoxOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom'; 
-import MedicationOutlinedIcon from '@mui/icons-material/MedicationOutlined';
 
 const { Sider } = Layout;
 
@@ -24,7 +24,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
     { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors', path: '/admin/doctors' },
     { key: 'patients', icon: <UserOutlined />, label: 'Patients', path: '/admin/patients' },
     { key: 'services', icon: <CustomerServiceOutlined />, label: 'Services', path: '/admin/services' },
-    { key: 'medications', icon: <MedicationOutlinedIcon />, label: 'Medications', path: '/admin/medications' },
+    { key: 'medications', icon: <MedicineBoxOutlined />, label: 'Medications', path: '/admin/medications' },
   ];
 
   const handleMenuClick = (key: string, path: string) => {
