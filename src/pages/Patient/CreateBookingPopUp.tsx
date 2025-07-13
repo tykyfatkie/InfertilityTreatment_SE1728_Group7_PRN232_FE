@@ -57,25 +57,40 @@ const CreateBookingPopUp: React.FC<CreateRequestPopUpProps> = ({
   }, [visible]);
 
     const fetchServiceRequests = async () => {
-    setLoadingServiceRequests(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
+  setLoadingServiceRequests(true);
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/GetAllServiceRequests`);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('API Response:', data);
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('API Response:', data);
-        const activeRequests = data.$values?.filter((request: ServiceRequest) => request.status === 'Active') || [];
-        
-        console.log('Active requests:', activeRequests);
-        setServiceRequests(activeRequests);
-      } else {
+      // Lấy dữ liệu từ $values array
+      const serviceRequestsData = data.$values || [];
+      console.log('All service requests:', serviceRequestsData);
+      
+      // Filter chỉ lấy những request có status là 'Available' (không phải 'Active')
+      const availableRequests = serviceRequestsData.filter((request: ServiceRequest) => 
+        request && request.status === 'Available'
+      );
+      
+      console.log('Available requests:', availableRequests);
+      setServiceRequests(availableRequests);
+      
+      if (availableRequests.length === 0) {
+        message.info('No available service requests found');
       }
-    } catch (error) {
-
-    } finally {
-      setLoadingServiceRequests(false);
+    } else {
+      console.error('API request failed:', response.status, response.statusText);
+      message.error('Failed to fetch service requests');
     }
-  };
+  } catch (error) {
+    console.error('Error fetching service requests:', error);
+    message.error('Error loading services. Please try again.');
+  } finally {
+    setLoadingServiceRequests(false);
+  }
+};
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
