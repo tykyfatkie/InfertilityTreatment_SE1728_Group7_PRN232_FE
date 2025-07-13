@@ -70,11 +70,6 @@ const AdminDashboard: React.FC = () => {
     fetchDashboardStats();
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchDashboardStats();
-    setRefreshing(false);
-  };
 
   const getCurrentDate = () => {
     return new Date().toLocaleDateString('en-US', {
@@ -261,22 +256,7 @@ const AdminDashboard: React.FC = () => {
                         {getCurrentDate()}
                       </Text>
                     </div>
-                  </div>
-                  
-                  <Button 
-                    type="primary"
-                    icon={<ReloadOutlined spin={refreshing} />}
-                    onClick={handleRefresh}
-                    loading={refreshing}
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      borderColor: 'rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px',
-                      backdropFilter: 'blur(10px)'
-                    }}
-                  >
-                    Refresh Data
-                  </Button>
+                  </div>             
                 </div>
               </div>
               
