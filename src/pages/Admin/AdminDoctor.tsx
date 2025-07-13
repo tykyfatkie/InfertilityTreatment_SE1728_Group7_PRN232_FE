@@ -34,7 +34,6 @@ import {
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 import CreateDoctorPopUp from './CreateDoctorPopUp';
-import './AdminPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -378,7 +377,7 @@ const AdminDoctor: React.FC = () => {
           <div className="admin-content-wrapper">
             {/* Header Section */}
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', marginTop: '500px' }}>
                 <div>
                   <Title level={2} style={{ margin: 0, color: '#1a1a1a' }}>
                     <TeamOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
@@ -409,7 +408,7 @@ const AdminDoctor: React.FC = () => {
               </div>
 
               {/* Stats Cards */}
-              <Row gutter={16} style={{ marginBottom: '24px' }}>
+              <Row gutter={16} style={{ marginBottom: '24px', marginTop: '100px' }}>
                 <Col span={6}>
                   <Card 
                     bordered={false}
