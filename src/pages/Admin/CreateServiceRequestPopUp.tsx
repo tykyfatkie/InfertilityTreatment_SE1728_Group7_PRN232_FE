@@ -10,17 +10,6 @@ interface Doctor {
   specialization: string;
 }
 
-interface ServiceRequest {
-  id: string;
-  doctorId: string;
-  serviceName: string;
-  type: string;
-  price: number;
-  description: string;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 interface CreateServiceRequestPopUpProps {
   visible: boolean;
