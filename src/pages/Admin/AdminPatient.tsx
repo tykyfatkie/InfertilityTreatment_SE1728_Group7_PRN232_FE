@@ -366,11 +366,11 @@ const AdminPatient: React.FC = () => {
           onMenuItemSelect={setSelectedMenuItem} 
         />
 
-        <Content className="admin-content" style={{ padding: '24px', backgroundColor: '#f5f5f5' }}>
+        <Content className="admin-content" style={{ padding: '24px', backgroundColor: '#f5f5f5', marginTop: '100px' }}>
           <div className="admin-content-wrapper">
             {/* Header Section */}
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', marginTop: '100px' }}>
                 <div>
                   <Title level={2} style={{ margin: 0, color: '#1a1a1a' }}>
                     <TeamOutlined style={{ marginRight: '8px', color: '#1890ff' }} />

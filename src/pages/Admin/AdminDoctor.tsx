@@ -377,7 +377,7 @@ const AdminDoctor: React.FC = () => {
           <div className="admin-content-wrapper">
             {/* Header Section */}
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', marginTop: '500px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '-76px', marginTop: '500px' }}>
                 <div>
                   <Title level={2} style={{ margin: 0, color: '#1a1a1a' }}>
                     <TeamOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
