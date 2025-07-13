@@ -54,21 +54,26 @@ interface Doctor {
   id: string;
   fullName: string;
   specialization: string;
+  accountId?: string;
+  accountName?: string;
+  imageUrl?: string;
+  introduction?: string;
+  isActive?: boolean;
+  role?: string;
 }
 
 const AdminServiceRequest: React.FC = () => {
   const [username, setUsername] = useState('');
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
-  const [doctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [doctorsLoading, setDoctorsLoading] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingRequest, setEditingRequest] = useState<ServiceRequest | null>(null);
   const [form] = Form.useForm();
   const [selectedMenuItem, setSelectedMenuItem] = useState('service-requests');
   const [searchText, setSearchText] = useState('');
-  
-
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -115,6 +120,43 @@ const AdminServiceRequest: React.FC = () => {
     }
   };
 
+  const fetchDoctors = async () => {
+    try {
+      setDoctorsLoading(true);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/doctors`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Doctors API Response:', data);
+      
+      // Xử lý dữ liệu doctors từ API response
+      let doctorsList = [];
+      if (Array.isArray(data)) {
+        doctorsList = data;
+      } else if (data.$values) {
+        doctorsList = data.$values;
+      } else if (data.values) {
+        doctorsList = data.values;
+      } else if (data.data) {
+        doctorsList = Array.isArray(data.data) ? data.data : (data.data.$values || data.data.values || []);
+      }
+      
+      // Lọc chỉ lấy các doctor đang active
+      const activeDoctors = doctorsList.filter((doctor: Doctor) => doctor.isActive !== false);
+      
+      console.log('Extracted doctors:', activeDoctors);
+      setDoctors(activeDoctors);
+    } catch (error) {
+      message.error('Failed to fetch doctors');
+      console.error('Error fetching doctors:', error);
+    } finally {
+      setDoctorsLoading(false);
+    }
+  };
+
   const handleCreate = () => {
     setCreateModalVisible(true);
   };
@@ -128,9 +170,13 @@ const AdminServiceRequest: React.FC = () => {
     setCreateModalVisible(false);
   };
 
-  const handleEdit = (record: ServiceRequest) => {
+  const handleEdit = async (record: ServiceRequest) => {
     setEditingRequest(record);
     setEditModalVisible(true);
+    
+    // Fetch doctors when opening edit modal
+    await fetchDoctors();
+    
     form.setFieldsValue({
       doctorId: record.doctorId,
       serviceName: record.serviceName,
@@ -178,6 +224,8 @@ const AdminServiceRequest: React.FC = () => {
         message.success('Service request updated successfully');
         setEditModalVisible(false);
         form.resetFields();
+        setEditingRequest(null);
+        setDoctors([]); // Clear doctors list
         fetchServiceRequests();
       }
     } catch (error) {
@@ -190,6 +238,7 @@ const AdminServiceRequest: React.FC = () => {
     setEditModalVisible(false);
     form.resetFields();
     setEditingRequest(null);
+    setDoctors([]); // Clear doctors list when canceling
   };
 
   const filteredData = serviceRequests.filter(item =>
@@ -565,8 +614,13 @@ const AdminServiceRequest: React.FC = () => {
           >
             <Select
               placeholder="Select a doctor"
-              showSearch                        
+              showSearch
+              loading={doctorsLoading}
               style={{ borderRadius: '8px' }}
+              filterOption={(input, option) =>
+                (option?.children as string)?.toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={doctorsLoading ? <Spin size="small" /> : 'No doctors found'}
             >
               {doctors.map(doctor => (
                 <Option key={doctor.id} value={doctor.id}>
