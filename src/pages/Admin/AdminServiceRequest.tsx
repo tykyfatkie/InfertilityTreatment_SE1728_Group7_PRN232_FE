@@ -24,7 +24,6 @@ import {
   EditOutlined, 
   DeleteOutlined,
   MedicineBoxOutlined,
-  ReloadOutlined,
   SearchOutlined,
   DollarOutlined,
   InfoCircleOutlined
