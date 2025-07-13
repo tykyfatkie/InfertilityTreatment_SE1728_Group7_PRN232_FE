@@ -56,7 +56,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
     <Header className="admin-header">
       <div className="admin-header-left">
         <div className="admin-logo">        
-          <span style={{ color: 'orange' }}>Admin Dashboard</span>
+          <span style={{ color: 'green' }}>Doctor Dashboard</span>
         </div>
       </div>
       <div className="admin-header-right">
@@ -65,7 +65,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
             <Button type="text" className="user-dropdown">
               <Avatar icon={<UserOutlined />} />
               <span>
-                Welcome back <span style={{ color: 'orange' }}>{username}</span>!
+                Welcome back <span style={{ color: 'green' }}>{username}</span>!
               </span>
               <DownOutlined />
             </Button>
