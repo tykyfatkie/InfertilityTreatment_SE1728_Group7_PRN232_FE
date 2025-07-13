@@ -85,7 +85,13 @@ const AdminServiceRequest: React.FC = () => {
       }
       
       const data = await response.json();
-      setServiceRequests(data.values || []);
+      console.log('API Response:', data);
+      
+      // Fix: sử dụng data.$values thay vì data.values
+      const requests = data.$values || data.values || [];
+      console.log('Extracted requests:', requests);
+      
+      setServiceRequests(requests);
     } catch (error) {
       message.error('Failed to fetch service requests');
       console.error('Error fetching service requests:', error);
@@ -241,7 +247,7 @@ const AdminServiceRequest: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={status === 'active' ? 'green' : 'orange'}>
+        <Tag color={status === 'Active' ? 'green' : 'orange'}>
           {status || 'pending'}
         </Tag>
       ),
@@ -416,7 +422,7 @@ const AdminServiceRequest: React.FC = () => {
                     <div>
                       <Text style={{ fontSize: '14px', color: '#666' }}>Active Requests</Text>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                        {serviceRequests.filter(r => r.status === 'active').length}
+                        {serviceRequests.filter(r => r.status === 'Active').length}
                       </div>
                     </div>
                   </div>
