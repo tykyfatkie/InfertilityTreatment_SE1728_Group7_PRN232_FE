@@ -30,7 +30,7 @@ import {
   ClockCircleOutlined
 } from '@ant-design/icons';
 import DoctorHeader from '../../components/Header/DoctorHeader';
-import AdminSidebar from '../../components/Sidebar/AdminSidebar';
+import DoctorSidebar from '../../components/Sidebar/DoctorSidebar';
 import dayjs from 'dayjs';
 
 const { Content } = Layout;
@@ -326,7 +326,7 @@ const DoctorBooking: React.FC = () => {
       <DoctorHeader username={username} />
       
       <Layout>
-        <AdminSidebar 
+        <DoctorSidebar 
           selectedMenuItem={selectedMenuItem} 
           onMenuItemSelect={setSelectedMenuItem} 
         />
