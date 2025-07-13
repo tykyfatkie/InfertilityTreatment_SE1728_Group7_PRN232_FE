@@ -318,20 +318,7 @@ const AdminServiceRequest: React.FC = () => {
                     </Text>
                   </div>
                   
-                  <Space style={{ marginTop: '120px'}}>
-                    <Button 
-                      type="primary"
-                      icon={<ReloadOutlined />}
-                      onClick={fetchServiceRequests}
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        borderRadius: '8px',
-                        backdropFilter: 'blur(10px)'
-                      }}
-                    >
-                      Refresh
-                    </Button>
+                  <Space style={{ marginTop: '140px'}}>
                     <Button 
                       type="primary"
                       icon={<PlusOutlined />}
