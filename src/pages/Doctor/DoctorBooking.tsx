@@ -143,7 +143,8 @@ const DoctorBooking: React.FC = () => {
           appointmentTime: values.appointmentTime ? values.appointmentTime.format('HH:mm') : null,
         };
 
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/${editingBooking.id}`, {
+        // First API call - Update booking details
+        const updateResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Booking/${editingBooking.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -151,8 +152,26 @@ const DoctorBooking: React.FC = () => {
           body: JSON.stringify(formattedValues),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!updateResponse.ok) {
+          throw new Error(`HTTP error! status: ${updateResponse.status}`);
+        }
+
+        // Second API call - Update booking status (if status has changed)
+        if (values.status && values.status !== editingBooking.status) {
+          const statusUpdateResponse = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/api/Booking/UpdateBooking/${editingBooking.id}?status=${encodeURIComponent(values.status)}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!statusUpdateResponse.ok) {
+            console.warn('Status update failed, but main update succeeded');
+            // Don't throw error here to avoid blocking the success flow
+          }
         }
 
         message.success('Booking updated successfully');
