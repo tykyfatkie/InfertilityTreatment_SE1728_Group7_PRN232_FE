@@ -20,7 +20,7 @@ const CreateMedicationsPopUp: React.FC<CreateMedicationsPopUpProps> = ({
     try {
       const values = await form.validateFields();
       
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Medications`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Medications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
