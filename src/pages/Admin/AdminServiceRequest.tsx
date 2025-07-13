@@ -31,6 +31,7 @@ import {
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
+import CreateServiceRequestPopUp from './CreateServiceRequestPopUp';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -60,7 +61,8 @@ const AdminServiceRequest: React.FC = () => {
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [doctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingRequest, setEditingRequest] = useState<ServiceRequest | null>(null);
   const [form] = Form.useForm();
   const [selectedMenuItem, setSelectedMenuItem] = useState('service-requests');
@@ -101,14 +103,21 @@ const AdminServiceRequest: React.FC = () => {
   };
 
   const handleCreate = () => {
-    setEditingRequest(null);
-    setModalVisible(true);
-    form.resetFields();
+    setCreateModalVisible(true);
+  };
+
+  const handleCreateSuccess = () => {
+    setCreateModalVisible(false);
+    fetchServiceRequests();
+  };
+
+  const handleCreateCancel = () => {
+    setCreateModalVisible(false);
   };
 
   const handleEdit = (record: ServiceRequest) => {
     setEditingRequest(record);
-    setModalVisible(true);
+    setEditModalVisible(true);
     form.setFieldsValue({
       doctorId: record.doctorId,
       serviceName: record.serviceName,
@@ -136,7 +145,7 @@ const AdminServiceRequest: React.FC = () => {
     }
   };
 
-  const handleModalOk = async () => {
+  const handleEditModalOk = async () => {
     try {
       const values = await form.validateFields();
       
@@ -154,34 +163,18 @@ const AdminServiceRequest: React.FC = () => {
         }
 
         message.success('Service request updated successfully');
-      } else {
-        // Create new service request
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/CreateServiceRequest`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        message.success('Service request created successfully');
+        setEditModalVisible(false);
+        form.resetFields();
+        fetchServiceRequests();
       }
-
-      setModalVisible(false);
-      form.resetFields();
-      fetchServiceRequests();
     } catch (error) {
-      message.error('Failed to save service request');
-      console.error('Error saving service request:', error);
+      message.error('Failed to update service request');
+      console.error('Error updating service request:', error);
     }
   };
 
-  const handleModalCancel = () => {
-    setModalVisible(false);
+  const handleEditModalCancel = () => {
+    setEditModalVisible(false);
     form.resetFields();
     setEditingRequest(null);
   };
@@ -504,15 +497,23 @@ const AdminServiceRequest: React.FC = () => {
         </Content>
       </Layout>
 
-      {/* Create/Edit Modal */}
+      {/* Create Modal */}
+      <CreateServiceRequestPopUp
+        visible={createModalVisible}
+        onCancel={handleCreateCancel}
+        onSuccess={handleCreateSuccess}
+        doctors={doctors}
+      />
+
+      {/* Edit Modal */}
       <Modal
-        title={editingRequest ? 'Edit Service Request' : 'Create Service Request'}
-        open={modalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
+        title="Edit Service Request"
+        open={editModalVisible}
+        onOk={handleEditModalOk}
+        onCancel={handleEditModalCancel}
         width={600}
         style={{ top: 20 }}
-        okText={editingRequest ? 'Update' : 'Create'}
+        okText="Update"
         cancelText="Cancel"
       >
         <Form
