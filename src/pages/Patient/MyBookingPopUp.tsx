@@ -342,7 +342,7 @@ const MyBookingPopUp: React.FC<MyBookingsDisplayProps> = ({
         </Button>
       ]}
       width={950}
-      destroyOnClose
+      destroyOnHidden
       className="request-modal bookings-display-modal"
       styles={{
         content: { padding: '24px' },
