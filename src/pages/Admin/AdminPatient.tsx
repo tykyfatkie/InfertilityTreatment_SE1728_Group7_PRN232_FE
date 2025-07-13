@@ -532,9 +532,6 @@ const AdminPatient: React.FC = () => {
                   description="No patients found"
                   style={{ padding: '60px 0' }}
                 >
-                  <Button type="primary" icon={<PlusOutlined />}>
-                    Add First Patient
-                  </Button>
                 </Empty>
               ) : (
                 <Table
