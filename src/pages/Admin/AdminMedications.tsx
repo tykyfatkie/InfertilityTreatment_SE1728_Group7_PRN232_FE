@@ -70,7 +70,7 @@ const AdminMedications: React.FC = () => {
   const fetchMedications = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Medications`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Medications`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -120,7 +120,7 @@ const AdminMedications: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Medications/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Medications/${id}`, {
         method: 'DELETE',
       });
 
@@ -141,7 +141,7 @@ const AdminMedications: React.FC = () => {
       const values = await form.validateFields();
       
       if (editingMedication) {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Medications/${editingMedication.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Medications/${editingMedication.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
