@@ -10,7 +10,6 @@ interface Doctor {
   specialization: string;
 }
 
-
 interface CreateServiceRequestPopUpProps {
   visible: boolean;
   onCancel: () => void;
@@ -58,12 +57,18 @@ const CreateServiceRequestPopUp: React.FC<CreateServiceRequestPopUpProps> = ({
     try {
       const values = await form.validateFields();
       
+      // Thêm status: "Available" vào dữ liệu gửi đi
+      const requestData = {
+        ...values,
+        status: "Available"
+      };
+      
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/serviceRequest/CreateServiceRequest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
