@@ -13,7 +13,7 @@ interface AdminHeaderProps {
   username: string;
 }
 
-const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
+const DoctorHeader: React.FC<AdminHeaderProps> = ({ username }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -76,4 +76,4 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ username }) => {
   );
 };
 
-export default AdminHeader;
+export default DoctorHeader;
