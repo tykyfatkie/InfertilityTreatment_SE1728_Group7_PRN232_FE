@@ -502,7 +502,6 @@ const AdminServiceRequest: React.FC = () => {
         visible={createModalVisible}
         onCancel={handleCreateCancel}
         onSuccess={handleCreateSuccess}
-        doctors={doctors}
       />
 
       {/* Edit Modal */}
