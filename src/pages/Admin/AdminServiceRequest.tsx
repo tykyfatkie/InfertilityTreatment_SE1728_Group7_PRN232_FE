@@ -26,7 +26,8 @@ import {
   MedicineBoxOutlined,
   SearchOutlined,
   DollarOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  StopOutlined
 } from '@ant-design/icons';
 import AdminHeader from '../../components/Header/AdminHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
@@ -198,7 +199,9 @@ const AdminServiceRequest: React.FC = () => {
     item.description?.toLowerCase().includes(searchText.toLowerCase())
   );
 
-
+  // Tính toán statistics
+  const activeRequests = serviceRequests.filter(r => r.status === 'Active').length;
+  const deletedRequests = serviceRequests.filter(r => r.status === 'Deleted').length;
 
   const columns = [
     {
@@ -254,11 +257,20 @@ const AdminServiceRequest: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'Active' ? 'green' : 'orange'}>
-          {status || 'Deleted'}
-        </Tag>
-      ),
+      render: (status: string) => {
+        const statusConfig = {
+          'Active': { color: 'green', text: 'Active' },
+          'Deleted': { color: 'red', text: 'Deleted' },
+        };
+        
+        const config = statusConfig[status as keyof typeof statusConfig] || { color: 'orange', text: status || 'Unknown' };
+        
+        return (
+          <Tag color={config.color}>
+            {config.text}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Actions',
@@ -274,6 +286,7 @@ const AdminServiceRequest: React.FC = () => {
               size="small"
               onClick={() => handleEdit(record)}
               style={{ borderRadius: '6px' }}
+              disabled={record.status === 'Deleted'}
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -289,6 +302,7 @@ const AdminServiceRequest: React.FC = () => {
                 icon={<DeleteOutlined />} 
                 size="small"
                 style={{ borderRadius: '6px' }}
+                disabled={record.status === 'Deleted'}
               />
             </Popconfirm>
           </Tooltip>
@@ -367,7 +381,7 @@ const AdminServiceRequest: React.FC = () => {
 
             {/* Statistics Cards */}
             <Row gutter={[24, 24]} style={{ marginBottom: '24px' }}>
-              <Col xs={24} sm={8} lg={8}>
+              <Col xs={24} sm={6} lg={6}>
                 <Card 
                   style={{
                     borderRadius: '16px',
@@ -395,7 +409,7 @@ const AdminServiceRequest: React.FC = () => {
                   </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={8} lg={8}>
+              <Col xs={24} sm={6} lg={6}>
                 <Card 
                   style={{
                     borderRadius: '16px',
@@ -417,13 +431,41 @@ const AdminServiceRequest: React.FC = () => {
                     <div>
                       <Text style={{ fontSize: '14px', color: '#666' }}>Active Requests</Text>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                        {serviceRequests.filter(r => r.status === 'Active' || r.status === 'Deleted').length}
+                        {activeRequests}
                       </div>
                     </div>
                   </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={8} lg={8}>
+              <Col xs={24} sm={6} lg={6}>
+                <Card 
+                  style={{
+                    borderRadius: '16px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid #f0f0f0',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 100%)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ 
+                      backgroundColor: '#ff4d4f15', 
+                      borderRadius: '12px', 
+                      padding: '16px',
+                      fontSize: '24px',
+                      color: '#ff4d4f'
+                    }}>
+                      <StopOutlined />
+                    </div>
+                    <div>
+                      <Text style={{ fontSize: '14px', color: '#666' }}>Deleted Requests</Text>
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
+                        {deletedRequests}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} sm={6} lg={6}>
                 <Card 
                   style={{
                     borderRadius: '16px',
