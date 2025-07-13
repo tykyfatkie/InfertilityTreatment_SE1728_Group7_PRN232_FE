@@ -200,7 +200,7 @@ const AdminServiceRequest: React.FC = () => {
       width: 80,
       render: (text: string) => (
         <Tooltip title={text}>
-          <Text code>{text?.substring(0, 8)}...</Text>
+          <Text code>{String(text || '').substring(0, 8)}...</Text>
         </Tooltip>
       ),
     },
@@ -507,7 +507,7 @@ const AdminServiceRequest: React.FC = () => {
       {/* Create/Edit Modal */}
       <Modal
         title={editingRequest ? 'Edit Service Request' : 'Create Service Request'}
-        visible={modalVisible}
+        open={modalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={600}
