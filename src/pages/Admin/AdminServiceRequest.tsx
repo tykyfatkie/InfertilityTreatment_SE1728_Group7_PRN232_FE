@@ -66,6 +66,8 @@ const AdminServiceRequest: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedMenuItem, setSelectedMenuItem] = useState('service-requests');
   const [searchText, setSearchText] = useState('');
+  
+
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -88,9 +90,20 @@ const AdminServiceRequest: React.FC = () => {
       const data = await response.json();
       console.log('API Response:', data);
       
-      // Fix: sử dụng data.$values thay vì data.values
-      const requests = data.$values || data.values || [];
+      // Xử lý dữ liệu trả về từ API
+      let requests = [];
+      if (Array.isArray(data)) {
+        requests = data;
+      } else if (data.$values) {
+        requests = data.$values;
+      } else if (data.values) {
+        requests = data.values;
+      } else if (data.data) {
+        requests = Array.isArray(data.data) ? data.data : (data.data.$values || data.data.values || []);
+      }
+      
       console.log('Extracted requests:', requests);
+      console.log('Total requests count:', requests.length);
       
       setServiceRequests(requests);
     } catch (error) {
@@ -178,11 +191,14 @@ const AdminServiceRequest: React.FC = () => {
     setEditingRequest(null);
   };
 
+  // Lọc dữ liệu theo search text
   const filteredData = serviceRequests.filter(item =>
     item.serviceName?.toLowerCase().includes(searchText.toLowerCase()) ||
     item.type?.toLowerCase().includes(searchText.toLowerCase()) ||
     item.description?.toLowerCase().includes(searchText.toLowerCase())
   );
+
+
 
   const columns = [
     {
@@ -401,7 +417,7 @@ const AdminServiceRequest: React.FC = () => {
                     <div>
                       <Text style={{ fontSize: '14px', color: '#666' }}>Active Requests</Text>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                        {serviceRequests.filter(r => r.status === 'Active').length}
+                        {serviceRequests.filter(r => r.status === 'Active' || r.status === 'Deleted').length}
                       </div>
                     </div>
                   </div>
@@ -446,7 +462,9 @@ const AdminServiceRequest: React.FC = () => {
               }}
             >
               <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={3} style={{ margin: 0 }}>Service Requests List</Title>
+                <Title level={3} style={{ margin: 0 }}>
+                  Service Requests List ({filteredData.length} items)
+                </Title>
                 <Input
                   placeholder="Search service requests..."
                   prefix={<SearchOutlined />}
@@ -465,17 +483,12 @@ const AdminServiceRequest: React.FC = () => {
                 <Table
                   columns={columns}
                   dataSource={filteredData}
-                  rowKey="id"
-                  pagination={{
-                    total: filteredData.length,
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-                    style: { marginTop: '16px' }
-                  }}
+                  rowKey={(record) => record.id}
+                  loading={loading}
+                  pagination={false}
                   scroll={{ x: 1200 }}
                   style={{ borderRadius: '8px' }}
+                  size="middle"
                 />
               )}
             </Card>
