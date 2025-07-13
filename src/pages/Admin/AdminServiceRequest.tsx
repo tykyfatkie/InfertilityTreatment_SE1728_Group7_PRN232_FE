@@ -617,9 +617,6 @@ const AdminServiceRequest: React.FC = () => {
               showSearch
               loading={doctorsLoading}
               style={{ borderRadius: '8px' }}
-              filterOption={(input, option) =>
-                (option?.children as string)?.toLowerCase().includes(input.toLowerCase())
-              }
               notFoundContent={doctorsLoading ? <Spin size="small" /> : 'No doctors found'}
             >
               {doctors.map(doctor => (
