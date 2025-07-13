@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, Form, Input, Select, InputNumber, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Modal, Form, Input, Select, InputNumber, message, Spin } from 'antd';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -15,16 +15,45 @@ interface CreateServiceRequestPopUpProps {
   visible: boolean;
   onCancel: () => void;
   onSuccess: () => void;
-  doctors: Doctor[];
 }
 
 const CreateServiceRequestPopUp: React.FC<CreateServiceRequestPopUpProps> = ({
   visible,
   onCancel,
-  onSuccess,
-  doctors
+  onSuccess
 }) => {
   const [form] = Form.useForm();
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      fetchDoctors();
+    }
+  }, [visible]);
+
+  const fetchDoctors = async () => {
+    try {
+      setLoadingDoctors(true);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/doctors`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Doctors API Response:', data);
+      
+      // Handle different response formats
+      const doctorsList = data.$values || data.values || data || [];
+      setDoctors(doctorsList);
+    } catch (error) {
+      message.error('Failed to fetch doctors');
+      console.error('Error fetching doctors:', error);
+    } finally {
+      setLoadingDoctors(false);
+    }
+  };
 
   const handleOk = async () => {
     try {
@@ -79,8 +108,10 @@ const CreateServiceRequestPopUp: React.FC<CreateServiceRequestPopUpProps> = ({
         >
           <Select
             placeholder="Select a doctor"
-            showSearch                        
+            showSearch
+            loading={loadingDoctors}
             style={{ borderRadius: '8px' }}
+            notFoundContent={loadingDoctors ? <Spin size="small" /> : 'No doctors found'}
           >
             {doctors.map(doctor => (
               <Option key={doctor.id} value={doctor.id}>
