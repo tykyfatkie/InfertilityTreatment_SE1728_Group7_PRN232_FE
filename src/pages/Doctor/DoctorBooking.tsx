@@ -29,7 +29,7 @@ import {
   InfoCircleOutlined,
   ClockCircleOutlined
 } from '@ant-design/icons';
-import AdminHeader from '../../components/Header/AdminHeader';
+import DoctorHeader from '../../components/Header/DoctorHeader';
 import AdminSidebar from '../../components/Sidebar/AdminSidebar';
 import dayjs from 'dayjs';
 
@@ -323,7 +323,7 @@ const DoctorBooking: React.FC = () => {
 
   return (
     <Layout className="admin-layout" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
-      <AdminHeader username={username} />
+      <DoctorHeader username={username} />
       
       <Layout>
         <AdminSidebar 
