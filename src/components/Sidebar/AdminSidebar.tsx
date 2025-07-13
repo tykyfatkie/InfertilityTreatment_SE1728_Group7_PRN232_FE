@@ -22,7 +22,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ selectedMenuItem, onMenuIte
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard', path: '/admin/dashboard' },
     { key: 'doctors', icon: <TeamOutlined />, label: 'Doctors', path: '/admin/doctors' },
     { key: 'patients', icon: <UserOutlined />, label: 'Patients', path: '/admin/patients' },
-    { key: 'service', icon: <CustomerServiceOutlined />, label: 'Services', path: '/admin/services' },
+    { key: 'services', icon: <CustomerServiceOutlined />, label: 'Services', path: '/admin/services' },
+    { key: 'medications', icon: <CustomerServiceOutlined />, label: 'Services', path: '/admin/services' },
   ];
 
   const handleMenuClick = (key: string, path: string) => {
