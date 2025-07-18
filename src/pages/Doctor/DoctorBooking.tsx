@@ -68,7 +68,7 @@ const DoctorBooking: React.FC = () => {
     }
 
     // Get doctor ID from localStorage or props
-    const storedDoctorId = localStorage.getItem('doctorId') || '3';
+    const storedDoctorId = localStorage.getItem('doctorId') || '7';
     setDoctorId(storedDoctorId);
     
     if (storedDoctorId) {
