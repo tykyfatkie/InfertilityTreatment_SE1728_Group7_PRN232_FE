@@ -35,11 +35,9 @@ interface Booking {
   id: string;
   patientName: string;
   doctorName: string;
-  appointmentDate: string;
-  appointmentTime: string;
+  timeStarted: string;
   status: string;
-  notes?: string;
-  reason?: string;
+  price?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -176,9 +174,7 @@ const DoctorBooking: React.FC = () => {
 
   const filteredData = bookings.filter(item =>
     item.patientName?.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.reason?.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.status?.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.notes?.toLowerCase().includes(searchText.toLowerCase())
+    item.status?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
@@ -206,23 +202,23 @@ const DoctorBooking: React.FC = () => {
     },
     {
       title: 'Date',
-      dataIndex: 'appointmentDate',
-      key: 'appointmentDate',
-      render: (date: string) => (
+      dataIndex: 'timeStarted',
+      key: 'timeStarted',
+      render: (timeStarted: string) => (
         <Text>
           <CalendarOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
-          {date ? dayjs(date).format('DD/MM/YYYY') : 'N/A'}
+          {timeStarted ? dayjs(timeStarted).format('DD/MM/YYYY') : 'N/A'}
         </Text>
       ),
     },
     {
       title: 'Time',
-      dataIndex: 'appointmentTime',
-      key: 'appointmentTime',
-      render: (time: string) => (
+      dataIndex: 'timeStarted',
+      key: 'timeStarted',
+      render: (timeStarted: string) => (
         <Text>
           <ClockCircleOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-          {time || 'N/A'}
+          {timeStarted ? dayjs(timeStarted).format('HH:mm') : 'N/A'}
         </Text>
       ),
     },
@@ -234,30 +230,6 @@ const DoctorBooking: React.FC = () => {
         <Tag color={getStatusColor(status)}>
           {status || 'pending'}
         </Tag>
-      ),
-    },
-    {
-      title: 'Reason',
-      dataIndex: 'reason',
-      key: 'reason',
-      render: (text: string) => (
-        <Tooltip title={text}>
-          <Text ellipsis style={{ maxWidth: 150 }}>
-            {text?.length > 30 ? `${text.substring(0, 30)}...` : text}
-          </Text>
-        </Tooltip>
-      ),
-    },
-    {
-      title: 'Notes',
-      dataIndex: 'notes',
-      key: 'notes',
-      render: (text: string) => (
-        <Tooltip title={text}>
-          <Text ellipsis style={{ maxWidth: 150 }}>
-            {text?.length > 30 ? `${text.substring(0, 30)}...` : text}
-          </Text>
-        </Tooltip>
       ),
     },
     {
@@ -335,11 +307,11 @@ const DoctorBooking: React.FC = () => {
   ];
 
   const todayBookings = bookings.filter(booking => 
-    dayjs(booking.appointmentDate).isSame(dayjs(), 'day')
+    booking.timeStarted && dayjs(booking.timeStarted).isSame(dayjs(), 'day')
   );
 
   const upcomingBookings = bookings.filter(booking => 
-    dayjs(booking.appointmentDate).isAfter(dayjs(), 'day')
+    booking.timeStarted && dayjs(booking.timeStarted).isAfter(dayjs(), 'day')
   );
 
   const completedBookings = bookings.filter(booking => 
