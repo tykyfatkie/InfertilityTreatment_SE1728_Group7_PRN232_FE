@@ -21,13 +21,15 @@ import {
   Col
 } from 'antd';
 import { 
-  EditOutlined, 
-  DeleteOutlined,
+  CheckOutlined, 
+  CloseOutlined,
   CalendarOutlined,
   SearchOutlined,
   UserOutlined,
   InfoCircleOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  DeleteOutlined,
+  EditOutlined
 } from '@ant-design/icons';
 import DoctorHeader from '../../components/Header/DoctorHeader';
 import DoctorSidebar from '../../components/Sidebar/DoctorSidebar';
@@ -59,7 +61,7 @@ const DoctorBooking: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedMenuItem, setSelectedMenuItem] = useState('bookings');
   const [searchText, setSearchText] = useState('');
-  const [doctorId, setDoctorId] = useState('');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -67,19 +69,22 @@ const DoctorBooking: React.FC = () => {
       setUsername(storedUsername);
     }
 
-    // Get doctor ID from localStorage or props
-    const storedDoctorId = localStorage.getItem('doctorId') || '7';
-    setDoctorId(storedDoctorId);
-    
-    if (storedDoctorId) {
-      fetchBookings(storedDoctorId);
+    // Get userId from localStorage instead of doctorId
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+      fetchBookings(storedUserId);
+    } else {
+      message.error('User ID not found in session. Please login again.');
+      setLoading(false);
     }
   }, []);
 
-  const fetchBookings = async (doctorId: string) => {
+  const fetchBookings = async (userId: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/GetBookingAsDoctor/${doctorId}`);
+      // Updated API endpoint to use userId instead of doctorId
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/GetBookingAsDoctor/${userId}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -125,7 +130,8 @@ const DoctorBooking: React.FC = () => {
       }
 
       message.success('Booking deleted successfully');
-      fetchBookings(doctorId);
+      // Use userId instead of doctorId when refetching
+      fetchBookings(userId);
     } catch (error) {
       message.error('Failed to delete booking');
       console.error('Error deleting booking:', error);
@@ -177,7 +183,8 @@ const DoctorBooking: React.FC = () => {
         message.success('Booking updated successfully');
         setEditModalVisible(false);
         form.resetFields();
-        fetchBookings(doctorId);
+        // Use userId instead of doctorId when refetching
+        fetchBookings(userId);
       }
     } catch (error) {
       message.error('Failed to update booking');
