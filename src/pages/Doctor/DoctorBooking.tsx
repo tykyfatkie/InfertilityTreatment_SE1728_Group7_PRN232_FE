@@ -4,12 +4,6 @@ import {
   Card, 
   Table, 
   Button, 
-  Modal, 
-  Form, 
-  Input, 
-  Select, 
-  DatePicker, 
-  TimePicker,
   message, 
   Popconfirm, 
   Space, 
@@ -18,7 +12,8 @@ import {
   Tag,
   Tooltip,
   Row,
-  Col
+  Col,
+  Input
 } from 'antd';
 import { 
   CheckOutlined, 
@@ -27,9 +22,7 @@ import {
   SearchOutlined,
   UserOutlined,
   InfoCircleOutlined,
-  ClockCircleOutlined,
-  DeleteOutlined,
-  EditOutlined
+  ClockCircleOutlined
 } from '@ant-design/icons';
 import DoctorHeader from '../../components/Header/DoctorHeader';
 import DoctorSidebar from '../../components/Sidebar/DoctorSidebar';
@@ -37,7 +30,6 @@ import dayjs from 'dayjs';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 interface Booking {
   id: string;
@@ -56,12 +48,10 @@ const DoctorBooking: React.FC = () => {
   const [username, setUsername] = useState('');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
-  const [form] = Form.useForm();
   const [selectedMenuItem, setSelectedMenuItem] = useState('bookings');
   const [searchText, setSearchText] = useState('');
   const [userId, setUserId] = useState('');
+  const [processingBookings, setProcessingBookings] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -106,96 +96,68 @@ const DoctorBooking: React.FC = () => {
     }
   };
 
-  const handleEdit = (record: Booking) => {
-    setEditingBooking(record);
-    setEditModalVisible(true);
-    form.setFieldsValue({
-      patientName: record.patientName,
-      appointmentDate: record.appointmentDate ? dayjs(record.appointmentDate) : null,
-      appointmentTime: record.appointmentTime ? dayjs(record.appointmentTime, 'HH:mm') : null,
-      status: record.status,
-      notes: record.notes,
-      reason: record.reason
-    });
-  };
-
-  const handleDelete = async (id: string) => {
+  const handleAccept = async (bookingId: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/${id}`, {
-        method: 'DELETE',
-      });
+      setProcessingBookings(prev => new Set(prev).add(bookingId));
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/Booking/UpdateBooking/${bookingId}?status=confirmed`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      message.success('Booking deleted successfully');
-      // Use userId instead of doctorId when refetching
-      fetchBookings(userId);
+      message.success('Booking accepted successfully');
+      fetchBookings(userId); // Refresh the bookings list
     } catch (error) {
-      message.error('Failed to delete booking');
-      console.error('Error deleting booking:', error);
+      message.error('Failed to accept booking');
+      console.error('Error accepting booking:', error);
+    } finally {
+      setProcessingBookings(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(bookingId);
+        return newSet;
+      });
     }
   };
 
-  const handleEditModalOk = async () => {
+  const handleDecline = async (bookingId: string) => {
     try {
-      const values = await form.validateFields();
+      setProcessingBookings(prev => new Set(prev).add(bookingId));
       
-      if (editingBooking) {
-        const formattedValues = {
-          ...values,
-          appointmentDate: values.appointmentDate ? values.appointmentDate.format('YYYY-MM-DD') : null,
-          appointmentTime: values.appointmentTime ? values.appointmentTime.format('HH:mm') : null,
-        };
-
-        // First API call - Update booking details
-        const updateResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/Booking/${editingBooking.id}`, {
-          method: 'PUT',
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/Booking/UpdateBooking/${bookingId}?status=cancelled`,
+        {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formattedValues),
-        });
-
-        if (!updateResponse.ok) {
-          throw new Error(`HTTP error! status: ${updateResponse.status}`);
         }
+      );
 
-        // Second API call - Update booking status (if status has changed)
-        if (values.status && values.status !== editingBooking.status) {
-          const statusUpdateResponse = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/Booking/UpdateBooking/${editingBooking.id}?status=${encodeURIComponent(values.status)}`,
-            {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-
-          if (!statusUpdateResponse.ok) {
-            console.warn('Status update failed, but main update succeeded');
-            // Don't throw error here to avoid blocking the success flow
-          }
-        }
-
-        message.success('Booking updated successfully');
-        setEditModalVisible(false);
-        form.resetFields();
-        // Use userId instead of doctorId when refetching
-        fetchBookings(userId);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (error) {
-      message.error('Failed to update booking');
-      console.error('Error updating booking:', error);
-    }
-  };
 
-  const handleEditModalCancel = () => {
-    setEditModalVisible(false);
-    form.resetFields();
-    setEditingBooking(null);
+      message.success('Booking declined successfully');
+      fetchBookings(userId); // Refresh the bookings list
+    } catch (error) {
+      message.error('Failed to decline booking');
+      console.error('Error declining booking:', error);
+    } finally {
+      setProcessingBookings(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(bookingId);
+        return newSet;
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -302,36 +264,73 @@ const DoctorBooking: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       fixed: 'right' as const,
-      width: 120,
-      render: (_: any, record: Booking) => (
-        <Space size="small">
-          <Tooltip title="Edit">
-            <Button 
-              type="primary" 
-              icon={<EditOutlined />} 
-              size="small"
-              onClick={() => handleEdit(record)}
-              style={{ borderRadius: '6px' }}
-            />
-          </Tooltip>
-          <Tooltip title="Delete">
-            <Popconfirm
-              title="Are you sure you want to delete this booking?"
-              onConfirm={() => handleDelete(record.id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button 
-                type="primary" 
-                danger 
-                icon={<DeleteOutlined />} 
-                size="small"
-                style={{ borderRadius: '6px' }}
-              />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
+      width: 140,
+      render: (_: any, record: Booking) => {
+        const isProcessing = processingBookings.has(record.id);
+        const isPending = record.status?.toLowerCase() === 'pending';
+        const isConfirmed = record.status?.toLowerCase() === 'confirmed';
+        const isCancelled = record.status?.toLowerCase() === 'cancelled';
+        
+        return (
+          <Space size="small">
+            {isPending && (
+              <>
+                <Tooltip title="Accept Booking">
+                  <Popconfirm
+                    title="Accept this booking?"
+                    description="Are you sure you want to accept this booking?"
+                    onConfirm={() => handleAccept(record.id)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button 
+                      type="primary" 
+                      icon={<CheckOutlined />} 
+                      size="small"
+                      loading={isProcessing}
+                      style={{ 
+                        borderRadius: '6px',
+                        backgroundColor: '#52c41a',
+                        borderColor: '#52c41a'
+                      }}
+                    />
+                  </Popconfirm>
+                </Tooltip>
+                <Tooltip title="Decline Booking">
+                  <Popconfirm
+                    title="Decline this booking?"
+                    description="Are you sure you want to decline this booking?"
+                    onConfirm={() => handleDecline(record.id)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button 
+                      type="primary" 
+                      danger 
+                      icon={<CloseOutlined />} 
+                      size="small"
+                      loading={isProcessing}
+                      style={{ borderRadius: '6px' }}
+                    />
+                  </Popconfirm>
+                </Tooltip>
+              </>
+            )}
+            {isConfirmed && (
+              <Tag color="green" style={{ margin: 0 }}>
+                <CheckOutlined style={{ marginRight: '4px' }} />
+                Accepted
+              </Tag>
+            )}
+            {isCancelled && (
+              <Tag color="red" style={{ margin: 0 }}>
+                <CloseOutlined style={{ marginRight: '4px' }} />
+                Declined
+              </Tag>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
@@ -345,6 +344,10 @@ const DoctorBooking: React.FC = () => {
 
   const completedBookings = bookings.filter(booking => 
     booking.status?.toLowerCase() === 'completed'
+  );
+
+  const pendingBookings = bookings.filter(booking => 
+    booking.status?.toLowerCase() === 'pending'
   );
 
   return (
@@ -439,18 +442,18 @@ const DoctorBooking: React.FC = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ 
-                      backgroundColor: '#1890ff15', 
+                      backgroundColor: '#fa8c1615', 
                       borderRadius: '12px', 
                       padding: '16px',
                       fontSize: '24px',
-                      color: '#1890ff'
+                      color: '#fa8c16'
                     }}>
                       <ClockCircleOutlined />
                     </div>
                     <div>
-                      <Text style={{ fontSize: '14px', color: '#666' }}>Today</Text>
+                      <Text style={{ fontSize: '14px', color: '#666' }}>Pending</Text>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                        {todayBookings.length}
+                        {pendingBookings.length}
                       </div>
                     </div>
                   </div>
@@ -467,18 +470,18 @@ const DoctorBooking: React.FC = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ 
-                      backgroundColor: '#fa8c1615', 
+                      backgroundColor: '#1890ff15', 
                       borderRadius: '12px', 
                       padding: '16px',
                       fontSize: '24px',
-                      color: '#fa8c16'
+                      color: '#1890ff'
                     }}>
                       <InfoCircleOutlined />
                     </div>
                     <div>
-                      <Text style={{ fontSize: '14px', color: '#666' }}>Upcoming</Text>
+                      <Text style={{ fontSize: '14px', color: '#666' }}>Today</Text>
                       <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                        {upcomingBookings.length}
+                        {todayBookings.length}
                       </div>
                     </div>
                   </div>
@@ -559,94 +562,6 @@ const DoctorBooking: React.FC = () => {
           </div>
         </Content>
       </Layout>
-
-      {/* Edit Modal */}
-      <Modal
-        title="Edit Booking"
-        open={editModalVisible}
-        onOk={handleEditModalOk}
-        onCancel={handleEditModalCancel}
-        width={600}
-        style={{ top: 20 }}
-        okText="Update"
-        cancelText="Cancel"
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          style={{ marginTop: '20px' }}
-        >
-          <Form.Item
-            name="patientName"
-            label="Patient Name"
-            rules={[{ required: true, message: 'Please enter patient name!' }]}
-          >
-            <Input placeholder="Enter patient name" style={{ borderRadius: '8px' }} />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="appointmentDate"
-                label="Appointment Date"
-                rules={[{ required: true, message: 'Please select appointment date!' }]}
-              >
-                <DatePicker 
-                  style={{ width: '100%', borderRadius: '8px' }}
-                  format="DD/MM/YYYY"
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="appointmentTime"
-                label="Appointment Time"
-                rules={[{ required: true, message: 'Please select appointment time!' }]}
-              >
-                <TimePicker 
-                  style={{ width: '100%', borderRadius: '8px' }}
-                  format="HH:mm"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select status!' }]}
-          >
-            <Select placeholder="Select status" style={{ borderRadius: '8px' }}>
-              <Option value="pending">Pending</Option>
-              <Option value="confirmed">Confirmed</Option>
-              <Option value="completed">Completed</Option>
-              <Option value="cancelled">Cancelled</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="reason"
-            label="Reason"
-          >
-            <Input.TextArea
-              rows={2}
-              placeholder="Enter reason for appointment"
-              style={{ borderRadius: '8px' }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="notes"
-            label="Notes"
-          >
-            <Input.TextArea
-              rows={3}
-              placeholder="Enter additional notes"
-              style={{ borderRadius: '8px' }}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
     </Layout>
   );
 };
